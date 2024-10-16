@@ -63,6 +63,7 @@ INSTALLED_APPS = [
 
     # local apps
     'apps.main',
+    'apps.library',
 
     # 3rd-party apps
     'widget_tweaks',
