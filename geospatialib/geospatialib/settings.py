@@ -11,9 +11,16 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import os
+
+if os.name == 'nt':
+    VENV_BASE = os.environ['VIRTUAL_ENV']
+    os.environ['PATH'] = os.path.join(VENV_BASE, 'Lib\\\\site-packages\\\\osgeo') + ';' + os.environ['PATH']
+    os.environ['PROJ_LIB'] = os.path.join(VENV_BASE, 'Lib\\\\site-packages\\\\osgeo\\\\data\\\\proj') + ';' + os.environ['PATH']
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
 
 
 # Quick-start development settings - unsuitable for production
@@ -25,7 +32,14 @@ SECRET_KEY = 'django-insecure--!^$7x&a6b$0lbvp!z8tw*&@a%wtqe)*%_f@_sdf3%0a-zv$g9
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    # '127.0.0.1',
+    # '192.168.1.6',
+    # 'geospatialib.com',
+    # 'www.geospatialib.com',
+]
+
+AUTH_USER_MODEL = 'main.User'
 
 
 # Application definition
@@ -37,7 +51,43 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # postgres
+    'django.contrib.postgres',
+    
+    # gis
+    'django.contrib.gis',
+
+    # utils
+    'tags',
+
+    # local apps
+    'apps.main',
+
+    # 3rd-party apps
+    'widget_tweaks',
+    'leaflet',
+    'django_htmx',
+    'debug_toolbar',
 ]
+
+LEAFLET_CONFIG = {
+    'DEFAULT_CENTER': (45, 0),
+    'DEFAULT_ZOOM': 2,
+    'MIN_ZOOM': 1,
+    'MAX_ZOOM': 20,
+    'DEFAULT_PRECISION': 6,
+    'RESET_VIEW': False,
+    'NO_GLOBALS': False,
+    'SCALE': None,
+    'PLUGINS': {
+        'geocoder': {
+            'css': ['https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css', ],
+            'js': ['https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js'],
+            'auto_include': True,
+        },
+    },
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -47,6 +97,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    # 3rd party
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'django_htmx.middleware.HtmxMiddleware',
+
 ]
 
 ROOT_URLCONF = 'geospatialib.urls'
@@ -54,7 +109,7 @@ ROOT_URLCONF = 'geospatialib.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [TEMPLATE_DIR,],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -73,13 +128,30 @@ WSGI_APPLICATION = 'geospatialib.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": "django.contrib.gis.db.backends.postgis",
+        "NAME": "geospatialib-lite",
+        "USER": "geospatialib",
+        "PASSWORD": "geospatialib",
+        "HOST": "127.0.0.1",
+        "PORT": "5432",
     }
 }
 
+# NOTE: 
+# Create postgis extension in database
+# pip install pipwin
+# pip install psycopg2
+# pipwin install gdal 
+# https://github.com/ranjanport/GDAL/releases
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -116,6 +188,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = 'media/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
