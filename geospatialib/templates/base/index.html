@@ -1,0 +1,39 @@
+{% load static leaflet_tags %}
+
+<!DOCTYPE html>
+<html lang="en" data-bs-theme='light'>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        {% block title_prefix %}{% endblock title_prefix %} — Geospatialib
+    </title>
+
+    {% include "base/resources/styles.html" %}
+    {% include "base/resources/leaflet.html" %}
+    
+</head>
+<body>
+    {% include "base/resources/icons.html" %}
+
+    {% with sidebar_id='geospatialibSidebar' map_id='geospatialibMap' %}
+    
+        <div class="container-fluid vh-100">
+            <div class="row vh-100">
+                {% include "base/sidebar/body.html" %}
+                <div class='col vh-100 p-0'>
+                    <div class='d-lg-none z-2 position-fixed fixed-bottom start-0 d-flex flex-column gap-2 align-items-start fit-content p-0 margin-10'>
+                        {% include "base/sidebar/toggle.html" %}
+                    </div>
+                    <div class='vh-100'>
+                        {% leaflet_map map_id %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+    {% endwith %}
+
+    {% include "base/resources/scripts.html" %}
+</body>
+</html>

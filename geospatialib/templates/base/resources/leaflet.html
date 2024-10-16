@@ -1,0 +1,9 @@
+{% load leaflet_tags %}
+
+{% comment %} leaflet {% endcomment %}
+{% leaflet_css plugins="forms, geocoder" %}
+{% leaflet_js plugins="forms, geocoder" %}
+
+{% comment %} proj4 {% endcomment %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.12.1/proj4.js" integrity="sha512-8cX2hkLcrgklvabUEGfanjHM+J9Aw1/WEt+649vdP8QcbmRLAnxT4YS2/plOSsQzv7PDBogUYxbMxB9LdBN1oA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4leaflet/1.0.2/proj4leaflet.min.js" integrity="sha512-GsAYl1wxzWW6azVpXkhyYfjMb2LbaOnlrqWMBdAk9xDcilinFvGMN+48Ajp/10u/9lcnh8YyS2CYNgung7ewHg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>

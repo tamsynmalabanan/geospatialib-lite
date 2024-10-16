@@ -1,0 +1,16 @@
+.margin-10 {
+    margin: 10px;
+}
+
+.sticky-top {
+    position: sticky;
+    top: 0;
+}
+
+.text-justify {
+    text-align: justify;
+}
+
+.user-select-none {
+    user-select: none;
+}

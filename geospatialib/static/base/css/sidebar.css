@@ -1,0 +1,7 @@
+.btn-sidebar {
+    padding: 0px 8px;
+    font-size: 18px;
+    background-color: transparent;
+    border: 0px;
+    color: var(--bs-secondary-color)
+}
