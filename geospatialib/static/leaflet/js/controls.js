@@ -51,6 +51,8 @@ const searchBar = (map, include=true) => {
         .addTo(map);
 
         const geocoderContainer = geocoder.getContainer()
+        setAsThemedControl(geocoderContainer)
+
         const topLeftContainer = map._controlCorners.topleft
         if (topLeftContainer.firstChild !== geocoderContainer) {
             topLeftContainer.insertBefore(geocoderContainer, topLeftContainer.firstChild);

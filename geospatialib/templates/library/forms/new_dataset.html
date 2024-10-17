@@ -1,0 +1,1 @@
+{% lorem 1 b random %}

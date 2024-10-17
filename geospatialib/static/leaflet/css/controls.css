@@ -6,7 +6,7 @@
 
 .leaflet-bar {
     a.btn-dark {
-        background-color: #333;
+        background-color: var(--bs-body-bg);
         color: #fff;
     }
 
@@ -14,7 +14,7 @@
     a.btn-dark:hover,
     a.btn-dark:focus,
     a.btn-dark:visited {
-        background-color: #333;
+        background-color: var(--bs-body-bg);
         color: #fff;
     }
 }
@@ -33,9 +33,23 @@
 .leaflet-control-geocoder {
     border-radius: var(--bs-border-radius) !important;
     
+    .leaflet-control-geocoder-form-no-error {
+        border-radius: var(--bs-border-radius) !important;
+        padding-bottom: 5px;
+    }
+    
+    .leaflet-control-geocoder-alternatives {
+        width: 100%;
+        padding-left: 3px;
+        padding-right: 3px;
+    }
+    
+    .leaflet-control-geocoder-alternatives li:last-child {
+        border-radius: var(--bs-border-radius) !important;
+    }
+
     .leaflet-control-geocoder-form input {
-        color: #333;
-        margin-left: 5px;
+        margin-left: 3px;
     }
     
     .leaflet-control-geocoder-icon {
@@ -44,7 +58,18 @@
     }
     
     .leaflet-control-geocoder-icon.btn-dark {
-        background-color: #333;
+        background-color: var(--bs-body-bg);
+        color: #fff;
+    }
+
+}
+
+.leaflet-control-geocoder.text-bg-dark {
+    ul:hover,
+    li:hover,
+    div, div:hover,
+    a, a:hover {
+        background-color: var(--bs-body-bg);
         color: #fff;
     }
 }
