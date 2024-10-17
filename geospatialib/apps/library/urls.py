@@ -6,5 +6,5 @@ from . import views
 app_name = 'library'
 
 urlpatterns = [
-    path('', views.index, name='login'),
+    path('', views.index, name='index'),
 ]

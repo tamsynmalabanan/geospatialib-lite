@@ -1,0 +1,9 @@
+{% load leaflet_tags %}
+
+<div 
+    class='vh-100'
+    data-leaflet-controls-included='all'
+    {% comment %} data-leaflet-controls-excluded='all' {% endcomment %}
+>
+    {% leaflet_map map_id %}
+</div>

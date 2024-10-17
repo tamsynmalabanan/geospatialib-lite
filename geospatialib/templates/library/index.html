@@ -3,3 +3,29 @@
 {% block title_prefix %}
     Library
 {% endblock title_prefix %}
+
+{% block sidebar_toggle_name %}
+    Search library
+{% endblock sidebar_toggle_name %}
+
+{% block sidebar_toggle_icon %}
+    <i class="bi bi-search"></i>
+{% endblock sidebar_toggle_icon %}
+
+{% block toggle_menu %}
+    {% with button_class='btn btn-light d-flex gap-2 w-100 justify-content-start' %}
+        {% include "library/new_dataset/toggle.html" %}
+        {% include "library/new_map/toggle.html" %}
+    {% endwith %}
+{% endblock toggle_menu %}
+
+{% block offcanvas_footer %}
+    {% with button_class='btn btn-light d-flex gap-2 flex-grow-1 justify-content-center' %}
+        {% include "library/new_dataset/toggle.html" %}
+        {% include "library/new_map/toggle.html" %}
+    {% endwith %}
+{% endblock offcanvas_footer %}
+
+{% block offcanvas_body %}
+    {% lorem 20 b random %}
+{% endblock offcanvas_body %}

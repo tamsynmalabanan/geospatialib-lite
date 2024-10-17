@@ -2,11 +2,6 @@
     margin: 10px;
 }
 
-.sticky-top {
-    position: sticky;
-    top: 0;
-}
-
 .text-justify {
     text-align: justify;
 }

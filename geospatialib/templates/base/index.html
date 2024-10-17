@@ -1,4 +1,4 @@
-{% load static leaflet_tags %}
+{% load static %}
 
 <!DOCTYPE html>
 <html lang="en" data-bs-theme='light'>
@@ -17,26 +17,54 @@
     {% include "base/resources/icons.html" %}
 
     {% with sidebar_id='geospatialibSidebar' map_id='geospatialibMap' %}
-    
         <div class="container-fluid vh-100">
             <div class="row vh-100">
-                {% include "base/sidebar/body.html" %}
+                <div 
+                    class="offcanvas-lg offcanvas-start col-lg-4 vh-100 px-3 d-flex flex-column shadow-lg border-end" 
+                    tabindex="-1" 
+                    data-bs-scroll="true" 
+                    data-bs-backdrop="false" 
+                    id="{{sidebar_id}}" 
+                    aria-labelledby="{{sidebar_id}}Label"
+                >
+                    {% include "base/sections/header.html" %}
+                    <div class="offcanvas-body d-flex flex-column flex-grow-1 overflow-auto pe-3 ps-0">
+                        {% block offcanvas_body %}{% endblock offcanvas_body %}
+                    </div>
+                    <div class="footer border-top mt-3 d-none d-lg-flex py-2 gap-3">
+                        {% block offcanvas_footer %}{% endblock offcanvas_footer %}
+                    </div>
+                </div>
                 <div class='col vh-100 p-0'>
-                    <div class='d-lg-none z-2 position-fixed fixed-bottom start-0 d-flex flex-column gap-2 align-items-start fit-content p-0 margin-10'>
-                        {% include "base/sidebar/toggle.html" %}
+                    <div class='d-lg-none z-2 position-fixed fixed-bottom start-0 p-0 margin-10 d-flex gap-2 align-items-start fit-content shadow-lg flex-shrink-1'>
+                        <div class="btn-group dropup">
+                            <button 
+                                type="button" 
+                                class="btn btn-light flex-shrink-1"
+                                data-bs-toggle="offcanvas"
+                                data-bs-target="#{{sidebar_id}}"
+                                aria-controls="{{sidebar_id}}"
+                            >
+                                {% block sidebar_toggle_icon %}<i class="bi bi-layout-sidebar-inset"></i>{% endblock sidebar_toggle_icon %}
+                                <span class='ms-2 d-none d-xl-inline'>
+                                    {% block sidebar_toggle_name %}Sidebar{% endblock sidebar_toggle_name %}
+                                </span>
+                            </button>
+                            <button type="button" class="btn btn-light dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                                <span class="visually-hidden">Toggle Dropdown</span>
+                            </button>
+                            <div class="dropdown-menu p-2">
+                                {% block toggle_menu %}{% endblock toggle_menu %}
+                            </div>
+                        </div>
                     </div>
-                    <div 
-                        class='vh-100'
-                        data-leaflet-controls-included='all'
-                        {% comment %} data-leaflet-controls-excluded='all' {% endcomment %}
-                    >
-                        {% leaflet_map map_id %}
-                    </div>
+                    {% include "base/sections/map.html" %}
                 </div>
             </div>
         </div>
-    
     {% endwith %}
+
+    {% include "base/sections/modals.html" %}
 
     {% include "base/resources/scripts.html" %}
 </body>
