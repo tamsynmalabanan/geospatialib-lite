@@ -1,0 +1,9 @@
+from django import forms
+
+from . import models
+
+
+class NewDatasetForm(forms.ModelForm):
+
+    class Meta:
+        model = models.Dataset

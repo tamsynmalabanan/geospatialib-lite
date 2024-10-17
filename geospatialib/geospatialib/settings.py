@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     'tags',
 
     # local apps
+    'apps.htmx',
     'apps.main',
     'apps.library',
 
