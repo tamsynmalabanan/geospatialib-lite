@@ -29,3 +29,22 @@
 .leaflet-control-scale-line {
     text-shadow: none !important;
 }
+
+.leaflet-control-geocoder {
+    border-radius: var(--bs-border-radius) !important;
+    
+    .leaflet-control-geocoder-form input {
+        color: #333;
+        margin-left: 5px;
+    }
+    
+    .leaflet-control-geocoder-icon {
+        border-radius: var(--bs-border-radius) !important;
+        background-image: none !important;
+    }
+    
+    .leaflet-control-geocoder-icon.btn-dark {
+        background-color: #333;
+        color: #fff;
+    }
+}
