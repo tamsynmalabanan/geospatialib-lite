@@ -12,7 +12,16 @@ const getPreferredTheme = () => {
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 }
 
-const getThemeControls = () => {
+const setAsThemedControl = (element) => {
+    const tagName = element.tagName.toLowerCase()
+    if (tagName === 'button' || element.classList.contains('btn')) {
+        element.classList.add(`btn-${getPreferredTheme()}`)
+    } else {
+        element.classList.add(`text-bg-${getPreferredTheme()}`)
+    }
+}
+
+const getThemedControls = () => {
     return [
         {
             elements: document.querySelectorAll(`[onclick='toggleDarkMode(event)']`),
@@ -22,8 +31,9 @@ const getThemeControls = () => {
             }
         },
         {
-            elements: Array.from(document.querySelectorAll(`.btn-light`)).concat(
-                Array.from(document.querySelectorAll(`.btn-dark`))
+            elements: Array().concat(
+                Array.from(document.querySelectorAll(`.btn-light`)),
+                Array.from(document.querySelectorAll(`.btn-dark`)),
             ),
             classes: {
                 light: ['btn-light'],
@@ -31,8 +41,9 @@ const getThemeControls = () => {
             }
         },
         {
-            elements: Array.from(document.querySelectorAll(`.btn-outline-light`)).concat(
-                Array.from(document.querySelectorAll(`.btn-outline-dark`))
+            elements: Array().concat(
+                Array.from(document.querySelectorAll(`.btn-outline-light`)),
+                Array.from(document.querySelectorAll(`.btn-outline-dark`)),
             ),
             classes: {
                 light: ['btn-outline-light'],
@@ -40,7 +51,8 @@ const getThemeControls = () => {
             }
         },
         {
-            elements: Array.from(document.querySelectorAll(`.text-bg-light`)).concat(
+            elements: Array().concat(
+                Array.from(document.querySelectorAll(`.text-bg-light`)),
                 Array.from(document.querySelectorAll(`.text-bg-dark`))
             ),
             classes: {
@@ -49,7 +61,8 @@ const getThemeControls = () => {
             }
         },
         {
-            elements: Array.from(document.querySelectorAll(`.leaflet-basemap-light`)).concat(
+            elements: Array().concat(
+                Array.from(document.querySelectorAll(`.leaflet-basemap-light`)),
                 Array.from(document.querySelectorAll(`.leaflet-basemap-dark`))
             ),
             classes: {
@@ -57,11 +70,21 @@ const getThemeControls = () => {
                 dark: ['leaflet-basemap-dark'],
             }
         },
+        {
+            elements: Array().concat(
+                Array.from(document.querySelectorAll(`.bg-light`)),
+                Array.from(document.querySelectorAll(`.bg-dark`))
+            ),
+            classes: {
+                light: ['bg-light'],
+                dark: ['bg-dark'],
+            }
+        },
     ]
 }
 
 const toggleControlsTheme = (theme) => {
-    getThemeControls().forEach(control => {
+    getThemedControls().forEach(control => {
         control.elements.forEach(element => {
             for (let themeName in control.classes) {
                 const themeClasses = control.classes[themeName]

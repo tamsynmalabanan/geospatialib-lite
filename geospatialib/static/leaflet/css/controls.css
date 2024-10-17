@@ -20,12 +20,12 @@
 }
 
 .leaflet-container {
-    /* .leaflet-control-attribution.text-bg-dark {
-        background-color: RGBA(var(--bs-dark-rgb), var(--bs-bg-opacity, 0.75)) !important;
-    } */
-
     .leaflet-control-attribution.text-bg-dark a {
         text-decoration: none;
         color: white;
     }
+}
+
+.leaflet-control-scale-line {
+    text-shadow: none !important;
 }

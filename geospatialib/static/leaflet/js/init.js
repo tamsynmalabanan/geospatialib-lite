@@ -4,7 +4,8 @@ const getMapDataset = (map) => {
 
 const handleMapContainer = (map) => {
     const container = map.getContainer()
-    container.classList.add('z-1', `text-bg-${getPreferredTheme()}`)
+    container.classList.add('z-1')
+    setAsThemedControl(container)
 }
 
 const handleMapSize = (map) => {
@@ -34,21 +35,26 @@ const handleMapControls = (map) => {
         mapControls[controlName](map, included && !excluded)
     }
 
-    const controlsContainer = map._controlContainer
-    const controls = Array.from(
-        controlsContainer.querySelectorAll('.leaflet-bar a')
-    ).concat(
-        Array.from(controlsContainer.querySelectorAll('.leaflet-bar button'))
-    )
+    Array().concat(
+        Array.from(map.getContainer().querySelectorAll('.leaflet-bar a')),
+        Array.from(map.getContainer().querySelectorAll('.leaflet-bar button')),
+    ).forEach(control => {
+        control.classList.add(
+            'btn', 
+            'p-0',
+            'text-reset',
+            'text-decoration-none',
+            'border-0',
+            'rounded-0',
+        )
 
-    controls.forEach(control => {
-        getControlClasses().forEach(className => {
-            control.classList.add(className)
-        })
+        setAsThemedControl(control)
     })
 
-    const attribution = controlsContainer.querySelector('.leaflet-control-attribution')
-    attribution.classList.add(`text-bg-${getPreferredTheme()}`)
+    setAsThemedControl(map.attributionControl.getContainer())
+
+    map.getContainer().querySelectorAll('.leaflet-control-scale-line')
+    .forEach(scale => setAsThemedControl(scale))
 }
 
 const handleMapBasemap = (map) => {

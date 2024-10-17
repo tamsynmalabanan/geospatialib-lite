@@ -1,18 +1,9 @@
 const getMapControls = () => {
     return {
-        zoom: zoomBar
+        zoom: zoomBar,
+        scale: scaleBar,
     }
 }
-
-const getControlClasses = () => Array(
-    'btn', 
-    `btn-${getPreferredTheme()}`, 
-    'p-0',
-    'text-reset',
-    'text-decoration-none',
-    'border-0',
-    'rounded-0',
-)
 
 const zoomBar = (map, include=true) => {    
     if (include) {
@@ -30,5 +21,11 @@ const zoomBar = (map, include=true) => {
         }
     } else {
         map.removeControl(map.zoomControl)
+    }
+}
+
+const scaleBar = (map, include=true) => {
+    if (include) {
+        L.control.scale({ position: 'bottomright' }).addTo(map)
     }
 }
