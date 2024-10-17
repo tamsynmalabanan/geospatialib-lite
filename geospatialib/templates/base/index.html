@@ -25,7 +25,11 @@
                     <div class='d-lg-none z-2 position-fixed fixed-bottom start-0 d-flex flex-column gap-2 align-items-start fit-content p-0 margin-10'>
                         {% include "base/sidebar/toggle.html" %}
                     </div>
-                    <div class='vh-100'>
+                    <div 
+                        class='vh-100'
+                        data-leaflet-controls-included='all'
+                        {% comment %} data-leaflet-controls-excluded='all' {% endcomment %}
+                    >
                         {% leaflet_map map_id %}
                     </div>
                 </div>

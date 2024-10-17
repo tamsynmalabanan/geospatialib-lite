@@ -73,6 +73,7 @@ INSTALLED_APPS = [
 ]
 
 LEAFLET_CONFIG = {
+    'TILES': [],
     'DEFAULT_CENTER': (45, 0),
     'DEFAULT_ZOOM': 2,
     'MIN_ZOOM': 1,
@@ -83,8 +84,12 @@ LEAFLET_CONFIG = {
     'SCALE': None,
     'PLUGINS': {
         'geocoder': {
-            'css': ['https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css', ],
-            'js': ['https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js'],
+            'css': [
+                'https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css', 
+            ],
+            'js': [
+                'https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js'
+            ],
             'auto_include': True,
         },
     },

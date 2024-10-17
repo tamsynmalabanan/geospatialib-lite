@@ -1,0 +1,31 @@
+.leaflet-touch .leaflet-control-layers, 
+.leaflet-touch .leaflet-bar {
+    border: none !important;
+    box-shadow: var(--bs-box-shadow) !important;
+}
+
+.leaflet-bar {
+    a.btn-dark {
+        background-color: #333;
+        color: #fff;
+    }
+
+    a.btn-dark:active,
+    a.btn-dark:hover,
+    a.btn-dark:focus,
+    a.btn-dark:visited {
+        background-color: #333;
+        color: #fff;
+    }
+}
+
+.leaflet-container {
+    /* .leaflet-control-attribution.text-bg-dark {
+        background-color: RGBA(var(--bs-dark-rgb), var(--bs-bg-opacity, 0.75)) !important;
+    } */
+
+    .leaflet-control-attribution.text-bg-dark a {
+        text-decoration: none;
+        color: white;
+    }
+}

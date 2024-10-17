@@ -1,4 +1,4 @@
-.btn-sidebar {
+.offcanvas-header button:not(.btn-close) {
     padding: 0px 8px;
     font-size: 18px;
     background-color: transparent;
