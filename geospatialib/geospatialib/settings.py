@@ -39,6 +39,27 @@ ALLOWED_HOSTS = [
     # 'www.geospatialib.com',
 ]
 
+SITE_ID = 1
+SOCIALACCOUNT_LOGIN_ON_GET = True
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online'
+        },
+    }
+}
+
+SOCIALACCOUNT_ADAPTER = 'apps.main.adapters.CustomSocialAccountAdapter'
+
+AUTHENTICATION_BACKENDS = (
+    'apps.main.backends.CustomAuthenticationBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+)
+
 AUTH_USER_MODEL = 'main.User'
 
 
@@ -52,16 +73,21 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    # social auth
+    'django.contrib.sites',
+    'allauth',    
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',          
+
     # postgres
     'django.contrib.postgres',
     
     # gis
     'django.contrib.gis',
 
-    # utils
-    'tags',
-
     # local apps
+    'apps.utils',
     'apps.htmx',
     'apps.main',
     'apps.library',
@@ -105,10 +131,16 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
+    # social auth
+    'allauth.account.middleware.AccountMiddleware',
+
     # 3rd party
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django_htmx.middleware.HtmxMiddleware',
 
+    # local
+    'apps.main.middleware.RedirectCancelledSocialLogin',
+    'apps.htmx.middleware.HTMXDomainRestriction',
 ]
 
 ROOT_URLCONF = 'geospatialib.urls'
@@ -203,3 +235,7 @@ MEDIA_URL = 'media/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGIN_URL = '/'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'

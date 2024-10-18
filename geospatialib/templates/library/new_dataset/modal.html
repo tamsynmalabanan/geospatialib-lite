@@ -1,60 +1,48 @@
 {% load static %}
+{% load leaflet_tags %}
 
-<div
-    class="modal fade"
-    id="newDatasetModal"
-    tabindex="-1"
-    role="dialog"
-    aria-labelledby="newDatasetModalTitle"
-    aria-hidden="true"
->
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="newDatasetModalTitle">
-                    Share a dataset
-                </h5>
-                <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal"
-                    aria-label="Close"
-                ></button>
-            </div>
-            <div class="modal-body">
-                <div class="container-fluid">
-                    <div 
-                        class="row"
-                        hx-get="{% url 'htmx:new_dataset' %}"
-                        hx-trigger='load'
-                        hx-target='this'
-                        hx-swap='innerHTML'
-                    ></div>
+{% with endpoint='htmx:new_dataset' id='newDatasetModal' %}
+    <div class="modal fade" id="{{id}}" tabindex="-1" role="dialog" aria-labelledby="{{id}}Title" aria-hidden="true" >
+        <div class="modal-dialog modal-lg modal-fullscreen-sm-down modal-dialog-scrollable modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="{{id}}Title">
+                        Share a dataset
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" ></button>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button
-                    type="button"
-                    class="btn btn-secondary"
-                    data-bs-dismiss="modal"
-                >
-                    Close
-                </button>
-                <button type="button" class="btn btn-primary">Save</button>
+                <div class="modal-body">
+                    <div class="container-fluid">
+                        <div class="row gap-4 gap-lg-0">
+                            <div class='col-12 col-lg-6' data-leaflet-controls-excluded='all' data-leaflet-map-class='rounded border'>
+                                {% leaflet_map id|add:"Map" %}
+                            </div>
+                            <div class="col" hx-get="{% url endpoint %}" hx-trigger='load' hx-target='this' hx-swap='innerHTML' ></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" tabindex='-1' class="btn btn-secondary" data-bs-dismiss="modal" >Close</button>
+                    <button 
+                        type="button" 
+                        class="btn btn-primary"
+                        hx-post="{% url endpoint %}"
+                        hx-trigger='click'
+                        hx-target="[hx-get='{% url endpoint %}'][hx-target='this']"
+                        hx-swap='innerHTML'
+                        hx-include="[hx-get='{% url endpoint %}'][hx-target='this'] form"
+                        hx-vals='{"submit":"true"}'
+                        disabled
+                    >Share</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-{% comment %} <script>
-    var newDatasetModal = document.getElementById('newDatasetModal');
-
-    newDatasetModal.addEventListener('show.bs.modal', function (event) {
-          // Button that triggered the modal
-          let button = event.relatedTarget;
-          // Extract info from data-bs-* attributes
-          let recipient = button.getAttribute('data-bs-whatever');
-
-        // Use above variables to manipulate the DOM
-    });
-</script> {% endcomment %}
+    {% comment %} <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const modal = new bootstrap.Modal("#{{id}}")
+            modal.show()
+        })
+    </script> {% endcomment %}
+{% endwith %}

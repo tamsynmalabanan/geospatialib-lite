@@ -25,6 +25,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('__debug__/', include(debug_toolbar.urls)),
 
+    # social auth paths
+    path('accounts/', include('allauth.urls')),
+
     path('htmx/', include('apps.htmx.urls')),
     
     path('', include('apps.main.urls')),

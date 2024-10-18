@@ -6,6 +6,7 @@ const handleMapContainer = (map) => {
     const container = map.getContainer()
     container.classList.add('z-1')
     setAsThemedControl(container)
+    container.className = `${container.className} ${getMapDataset(map).leafletMapClass}`
 }
 
 const handleMapSize = (map) => {

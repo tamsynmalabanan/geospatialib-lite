@@ -1,0 +1,21 @@
+{% load widget_tweaks %}
+{% load util_tags %}
+
+{% assign_field_attributes field as field %}
+{% var field.field.widget as widget %}
+
+<div>
+    {% if widget.input_type == 'hidden' or widget.attrs.hidden %}
+        {% render_field field %}
+    {% else %}
+        <div class="form-floating">
+            {% render_field field %}
+            <label for="floatingInput">{{field.label}}</label>
+            <div class="invalid-feedback">
+                {% for error in field.errors %}
+                    {{ error }}
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+</div>
