@@ -25,3 +25,15 @@
 .user-select-none {
     user-select: none;
 }
+
+.font-family-pacifico {
+    font-family: 'Pacifico';
+}
+
+.underline-on-hover {
+    text-decoration: none;
+}
+
+.underline-on-hover:hover {
+    text-decoration: underline;
+}

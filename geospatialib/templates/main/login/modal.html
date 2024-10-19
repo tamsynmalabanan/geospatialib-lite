@@ -1,4 +1,5 @@
 {% load static %}
+{% load socialaccount %}
 
 {% with id='loginModal' %}
     <div class="modal fade" id="{{id}}" tabindex="-1" role="dialog" aria-labelledby="{{id}}Title" aria-hidden="true" >
@@ -15,6 +16,26 @@
                         <div class="row">
                             <div class="col-12" hx-get="{% url 'htmx:login' %}" hx-trigger='load' hx-target='this' hx-swap='innerHTML'></div>
                         </div>
+                        <div class='row justify-content-center'>
+                            <p class="text-center user-select-none font-family-pacifico mb-1">or</p>
+                        </div>
+                        <div class='row justify-content-center'>
+                            <a href="{% provider_login_url 'google' %}?next={% url 'library:index' %}" class='fit-content lead text-reset border-0 text-nowrap text-decoration-none text-center py-0 text-truncate'>
+                                <i class="bi bi-google"></i>
+                                <span class='text-nowrap ms-2'>Continue with Google</span>
+                            </a>
+                        </div>                    
+                        <div class='row justify-content-center my-2'>
+                            <small class='text-reset border-0 text-center py-0 text-wrap'>
+                                By signing in, you are agreeing to our
+                                <a
+                                    class="text-reset"
+                                    role="button"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#termsModal"
+                                >Terms of Use</a>
+                            </small>
+                        </div>                                        
                     </div>
                 </div>
             </div>
