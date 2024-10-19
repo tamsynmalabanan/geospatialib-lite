@@ -1,0 +1,8 @@
+{% with button_class='btn btn-light d-flex gap-2 w-100 justify-content-start' %}
+    {% include "main/dashboard/toggle.html" %}
+    {% include "main/account/toggle.html" %}
+    {% include "main/logout/toggle.html" %}
+    <div class="dropdown-divider"></div>
+    {% include "main/admin/link.html" %}
+    {% include "main/about/toggle.html" %}
+{% endwith %}

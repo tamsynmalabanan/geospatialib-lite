@@ -1,0 +1,11 @@
+{% if user.is_authenticated and user.is_staff %}
+    <a
+        class="{{button_class}}"
+        role="button"
+        target="_blaknk"
+        href="/admin"
+    >
+        <i class="bi bi-gear-fill"></i>
+        <span class='text-nowrap'>Admin</span>
+    </a>
+{% endif %}

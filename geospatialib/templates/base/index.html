@@ -31,13 +31,24 @@
                     <div class="offcanvas-body d-flex flex-column flex-grow-1 overflow-auto pe-3 ps-0">
                         {% block offcanvas_body %}{% endblock offcanvas_body %}
                     </div>
-                    <div class="footer border-top mt-3 d-none d-lg-flex py-2 gap-3">
-                        {% block offcanvas_footer %}{% endblock offcanvas_footer %}
+                    <div class="footer border-top mt-3 d-none d-lg-flex py-2 gap-3 justify-content-center">
+                        {% with button_class='btn btn-light d-flex gap-2 justify-content-center' label_class='text-nowrap d-none d-xl-inline' %}
+                            {% if user.is_authenticated %}
+                                {% include "main/menu/dropup.html" %}
+                                {% block offcanvas_footer %}{% endblock offcanvas_footer %}
+                            {% else %}
+                                {% include "main/about/toggle.html" %}
+                                {% include "main/login/toggle.html" %}
+                            {% endif %}
+                        {% endwith %}
                     </div>
                 </div>
                 <div class='col vh-100 p-0'>
-                    <div class='d-lg-none z-2 position-fixed bottom-0 p-0 m-10 shadow-lg'>
-                        <div class="btn-group dropup">
+                    <div class='d-lg-none z-2 position-fixed bottom-0 p-0 m-10 d-flex flex-column gap-2'>
+                        {% if not user.is_authenticated %}
+                            {% include "main/login/toggle.html" %}
+                        {% endif %}
+                        <div class="btn-group dropup shadow-lg">
                             <button 
                                 type="button" 
                                 class="btn btn-light flex-shrink-1"
@@ -45,17 +56,27 @@
                                 data-bs-target="#{{sidebar_id}}"
                                 aria-controls="{{sidebar_id}}"
                             >
-                                {% block sidebar_toggle_icon %}<i class="bi bi-layout-sidebar-inset"></i>{% endblock sidebar_toggle_icon %}
+                                {% block sidebar_toggle_icon %}
+                                    <i class="bi bi-layout-sidebar-inset"></i>
+                                {% endblock sidebar_toggle_icon %}
                                 <span class='ms-2 d-none d-xl-inline'>
-                                    {% block sidebar_toggle_name %}Sidebar{% endblock sidebar_toggle_name %}
+                                    {% block sidebar_toggle_name %}
+                                        Sidebar
+                                    {% endblock sidebar_toggle_name %}
                                 </span>
                             </button>
-                            <button type="button" class="btn btn-light dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                                <span class="visually-hidden">Toggle Dropdown</span>
-                            </button>
-                            <div class="dropdown-menu p-2">
-                                {% block toggle_menu %}{% endblock toggle_menu %}
-                            </div>
+                            {% if user.is_authenticated %}
+                                {% include "main/menu/toggle.html" with button_class='btn btn-light dropdown-toggle-split rounded-end' %}
+                                <div class="dropdown-menu p-3 mb-1">
+                                    {% with button_class='btn btn-light d-flex gap-2 w-100 justify-content-start' label_class='text-nowrap' %}
+                                        {% block toggle_menu %}{% endblock toggle_menu %}
+                                        <div class="dropdown-divider"></div>
+                                        {% include "main/menu/items.html" %}
+                                    {% endwith %}
+                                </div>
+                            {% else %}
+                                {% include "main/about/toggle.html" with button_class='btn btn-light rounded-end d-flex gap-2' label_class='text-nowrap d-none d-xl-inline' %}
+                            {% endif %}
                         </div>
                     </div>
                     {% include "base/sections/map.html" %}

@@ -1,3 +1,5 @@
 document.addEventListener("submit", (event) => {
-    event.preventDefault();
+    if (event.target.tagName === 'FORM' && event.target.classList.contains('htmx-form')) {
+        event.preventDefault();
+    }
 });
