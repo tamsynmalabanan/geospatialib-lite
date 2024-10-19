@@ -1,6 +1,6 @@
 {% load static %}
 
-{% with endpoint='htmx:login' id='loginModal' %}
+{% with id='loginModal' %}
     <div class="modal fade" id="{{id}}" tabindex="-1" role="dialog" aria-labelledby="{{id}}Title" aria-hidden="true" >
         <div class="modal-dialog modal-fullscreen-sm-down modal-dialog-scrollable modal-dialog-centered" role="document">
             <div class="modal-content">
@@ -11,7 +11,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" ></button>
                 </div>
                 <div class="modal-body">
-                    <div class="container-fluid" hx-get="{% url endpoint %}" hx-trigger='load' hx-target='this' hx-swap='innerHTML'>
+                    <div class="container-fluid" hx-get="{% url 'htmx:login' %}" hx-trigger='load' hx-target='this' hx-swap='innerHTML'>
                     </div>
                 </div>
             </div>
