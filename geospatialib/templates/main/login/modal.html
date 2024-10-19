@@ -11,17 +11,20 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" ></button>
                 </div>
                 <div class="modal-body">
-                    <div class="container-fluid" hx-get="{% url 'htmx:login' %}" hx-trigger='load' hx-target='this' hx-swap='innerHTML'>
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-12" hx-get="{% url 'htmx:login' %}" hx-trigger='load' hx-target='this' hx-swap='innerHTML'></div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    {% comment %} <script>
+    <script>
         document.addEventListener('DOMContentLoaded', () => {
             const modal = new bootstrap.Modal("#{{id}}")
             modal.show()
         })
-    </script> {% endcomment %}
+    </script>
 {% endwith %}

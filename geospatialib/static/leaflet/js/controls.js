@@ -9,8 +9,8 @@ const getMapControls = () => {
 const zoomBar = (map, include=true) => {    
     if (include) {
         const buttons = {
-            _zoomInButton: ['bi', 'bi-plus', 'rounded-top', 'pt-1', 'pe-1'],
-            _zoomOutButton: ['bi', 'bi-dash', 'rounded-bottom', 'pe-1'],
+            _zoomInButton: ['bi', 'bi-plus', 'rounded-top', 'pt-1'],
+            _zoomOutButton: ['bi', 'bi-dash', 'rounded-bottom'],
         }
 
         for (let buttonName in buttons) {

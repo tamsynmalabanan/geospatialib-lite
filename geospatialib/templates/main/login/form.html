@@ -1,0 +1,26 @@
+{% load static %}
+
+{% with endpoint='htmx:login' %}
+    <form 
+        hx-post="{% url endpoint %}"
+        hx-trigger='submit'
+        hx-target="[hx-get='{% url endpoint %}'][hx-target='this']"
+        hx-swap='innerHTML'
+        hx-include="[hx-get='{% url endpoint %}'][hx-target='this'] form"
+    >
+        {% include "base/components/messages/body.html" with dismissible=1 tag='login-form' %}
+        {% csrf_token %}
+        <div class='d-flex flex-column gap-3 overflow-hidden'>
+            {% for field in form %}
+                {% include "base/components/form/field.html" %}
+            {% endfor %}
+            <button
+                type="submit"
+                class="btn btn-lg btn-success"
+            >
+                <i class="bi bi-box-arrow-in-right"></i>
+                <span class='text-nowrap'>Login</span>
+            </button>
+        </div>
+    </form>
+{% endwith %}

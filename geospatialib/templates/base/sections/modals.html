@@ -1,2 +1,6 @@
-{% include "library/new_dataset/modal.html" %}
-{% include "library/new_map/modal.html" %}
+{% if user.is_authenticated %}
+    {% include "library/new_dataset/modal.html" %}
+    {% include "library/new_map/modal.html" %}
+{% else %}
+    {% include "main/login/modal.html" %}
+{% endif %}

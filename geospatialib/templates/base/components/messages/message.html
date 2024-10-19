@@ -1,0 +1,27 @@
+<div
+    role="alert"
+    class="alert d-flex align-items-center fade show {{message.tags}}
+        {% if dismissible == 1 %}
+            alert-dismissible
+        {% endif %}
+        {% if 'success' in message.tags %}
+            alert-success
+        {% elif 'error' in message.tags %}
+            alert-danger
+        {% elif 'info' in message.tags %}
+            alert-primary
+        {% elif 'warning' in message.tags %}
+            alert-warning
+        {% endif %}
+    "
+>
+    {% if "message-template" in message.tags %}
+        {% include message|safe %}
+    {% else %}
+        {{ message|safe|escape }}
+    {% endif %}
+    
+    {% if dismissible == 1 %}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    {% endif %}
+</div>

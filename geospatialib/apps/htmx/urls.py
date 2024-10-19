@@ -6,5 +6,6 @@ from . import views
 app_name = 'htmx'
 
 urlpatterns = [
+    path('login/', views.login, name='login'),
     path('new_dataset/', views.new_dataset, name='new_dataset'),
 ]
