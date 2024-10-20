@@ -4,9 +4,6 @@
     <form 
         hx-post="{% url endpoint %}"
         hx-trigger='submit'
-        hx-target="[hx-get='{% url endpoint %}'][hx-target='this']"
-        hx-swap='innerHTML'
-        hx-include="[hx-get='{% url endpoint %}'][hx-target='this'] form"
     >
         {% include "base/components/messages/body.html" with dismissible=1 tag='login-form' %}
         {% csrf_token %}

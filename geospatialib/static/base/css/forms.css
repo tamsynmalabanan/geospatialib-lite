@@ -1,0 +1,6 @@
+.focus-ring-none:focus {
+    border-color: var(--bs-border-color);
+    outline: inherit;
+    box-shadow: none;
+    background-color: inherit;
+}

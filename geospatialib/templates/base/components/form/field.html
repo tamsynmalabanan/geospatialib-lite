@@ -7,10 +7,15 @@
 <div>
     {% if widget.input_type == 'hidden' or widget.attrs.hidden %}
         {% render_field field %}
+    {% elif widget.input_type == 'checkbox' %}
+        <div class="form-check">
+            {% render_field field %}
+            <label class="form-check-label" for="{{widget.attrs.id}}">{{field.label}}</label>
+        </div>
     {% else %}
         <div class="form-floating">
             {% render_field field %}
-            <label for="floatingInput">{{field.label}}</label>
+            <label for="{{widget.attrs.id}}">{{field.label}}</label>
             <div class="invalid-feedback">
                 {% for error in field.errors %}
                     {{ error }}

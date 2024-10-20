@@ -6,7 +6,6 @@ class RedirectCancelledSocialLogin:
         self.get_response = get_response
 
     def __call__(self, request):
-        print(request.path, resolve(request.path).app_name, resolve(request.path).url_name)
         if resolve(request.path).url_name == 'socialaccount_login_cancelled':
             return redirect('library:index')
         response = self.get_response(request)

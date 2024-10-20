@@ -30,6 +30,8 @@ def assign_field_style_classes(field):
     input_type = field.field.widget.input_type
     if input_type == 'select':
         field_classes.append('form-select')
+    elif input_type == 'checkbox':
+        field_classes.append('form-check-input') 
     else:
         field_classes.append('form-control')
     

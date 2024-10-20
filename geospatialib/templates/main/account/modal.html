@@ -1,0 +1,26 @@
+{% load static %}
+
+{% with id='accountModal' %}
+    <div class="modal fade" id="{{id}}" tabindex="-1" role="dialog" aria-labelledby="{{id}}Title" aria-hidden="true" >
+        <div class="modal-dialog modal-fullscreen-sm-down modal-dialog-scrollable modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="{{id}}Title">
+                        Account
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" ></button>
+                </div>
+                <div class="modal-body">
+                    <div class="" hx-get="{% url 'htmx:user_account' name='get' %}" hx-trigger='load' hx-target='this' hx-swap='innerHTML' ></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const modal = new bootstrap.Modal("#{{id}}")
+            modal.show()
+        })
+    </script>
+{% endwith %}

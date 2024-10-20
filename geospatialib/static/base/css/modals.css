@@ -1,0 +1,8 @@
+.modal-title {
+    user-select: none;
+}
+
+.modal-content nav a {
+    text-decoration: none;
+    color: inherit;
+}

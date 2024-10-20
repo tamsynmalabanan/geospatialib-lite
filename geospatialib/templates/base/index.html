@@ -32,13 +32,13 @@
                         {% block offcanvas_body %}{% endblock offcanvas_body %}
                     </div>
                     <div class="footer border-top mt-3 d-none d-lg-flex py-2 gap-3 justify-content-center">
-                        {% with button_class='btn btn-light d-flex gap-2 justify-content-center' label_class='text-nowrap d-none d-xl-inline' %}
+                        {% with button_class='btn btn-light d-flex gap-2 justify-content-center align-items-center' label_class='text-nowrap d-none d-xl-inline' %}
                             {% if user.is_authenticated %}
                                 {% include "main/menu/dropup.html" %}
                                 {% block offcanvas_footer %}{% endblock offcanvas_footer %}
                             {% else %}
                                 {% include "main/about/toggle.html" %}
-                                {% include "main/login/toggle.html" %}
+                                {% include "main/login/toggle.html" with button_class='flex-grow-1' %}
                             {% endif %}
                         {% endwith %}
                     </div>
@@ -46,7 +46,7 @@
                 <div class='col vh-100 p-0'>
                     <div class='d-lg-none z-2 position-fixed bottom-0 p-0 m-10 d-flex flex-column gap-2'>
                         {% if not user.is_authenticated %}
-                            {% include "main/login/toggle.html" %}
+                            {% include "main/login/toggle.html" with button_class='flex-grow-1' %}
                         {% endif %}
                         <div class="btn-group dropup shadow-lg">
                             <button 
@@ -67,7 +67,7 @@
                             </button>
                             {% if user.is_authenticated %}
                                 {% include "main/menu/toggle.html" with button_class='btn btn-light dropdown-toggle-split rounded-end' %}
-                                <div class="dropdown-menu p-3 mb-1">
+                                <div class="dropdown-menu p-2 mb-1">
                                     {% with button_class='btn btn-light d-flex gap-2 w-100 justify-content-start' label_class='text-nowrap' %}
                                         {% block toggle_menu %}{% endblock toggle_menu %}
                                         <div class="dropdown-divider"></div>

@@ -19,6 +19,7 @@ from ..utils.gis import dataset_helpers
 
 User = get_user_model()
 
+
 def login(request):
     if request.method == 'POST':
         user = request.user
@@ -52,6 +53,20 @@ def login(request):
         messages.info(request, 'main/login/message.html', extra_tags='login-form message-template')
 
     return render(request, 'main/login/form.html', {'form':form})
+
+@login_required
+def user_account(request, name):
+    user = request.user
+    forms = {
+        'password': main_forms.SetPasswordForm(user=user),
+    }
+
+    if request.method == 'POST':
+        form = forms[name]
+        form.data = request.POST.dict()
+        return render(request, f'main/account/{name}.html', {'form':form})
+    
+    return render(request, 'main/account/forms.html', {'forms':forms})
 
 @login_required
 def new_dataset(request):

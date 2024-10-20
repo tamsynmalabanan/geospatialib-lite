@@ -1,0 +1,3 @@
+{% for name, form in forms.items %}
+    {% include "main/account/"|add:name|add:".html" with form=form %}
+{% endfor %}
