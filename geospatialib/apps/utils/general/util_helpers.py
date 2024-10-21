@@ -14,7 +14,7 @@ def split_by_special_characters(string):
         string = string.replace(sc, ',')
     return list(set([i for i in string.split(',') if i != '']))
 
-def get_first_substring_match(value, lst, ext=None):
+def get_first_substring_match(value, lst, helpers=None):
     value_lower = value.lower()
     list_clean = [sub for sub in lst if sub != '']
 
@@ -31,9 +31,9 @@ def get_first_substring_match(value, lst, ext=None):
             current_len = match_len
             current_sub = sub
 
-    if not current_sub and ext is not None:
+    if not current_sub and helpers is not None:
         current_per = 0
-        for sub, keywords in ext.items():
+        for sub, keywords in helpers.items():
             if sub in lst:
                 matches = [i for i in keywords if i.lower() in value_lower]
                 per = len(matches) / len(keywords)

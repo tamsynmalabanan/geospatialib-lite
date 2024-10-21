@@ -6,11 +6,11 @@ from ...library import choices
 
 
 def get_dataset_format(url):
-    dataset_format_ext = {
+    helpers = {
         'xyz': ['{x}','{y}','{z}', 'tile'],
     }
     format_list = list(choices.DATASET_FORMATS.keys())
-    match = util_helpers.get_first_substring_match(url, format_list, dataset_format_ext)
+    match = util_helpers.get_first_substring_match(url, format_list, helpers)
     return match
 
 

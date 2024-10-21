@@ -4,16 +4,24 @@
 {% with endpoint='htmx:share_dataset' id='shareDatasetModal' %}
     <div class="modal fade" id="{{id}}" tabindex="-1" role="dialog" aria-labelledby="{{id}}Title" aria-hidden="true" >
         <div class="modal-dialog modal-lg modal-fullscreen-sm-down modal-dialog-scrollable modal-dialog-centered" role="document">
-            <div class="modal-content">
+            <form
+                class='modal-content d-flex flex-column'
+                hx-post="{% url endpoint %}"
+                hx-trigger='submit'
+                hx-target="[hx-get='{% url endpoint %}'][hx-target='this']"
+                hx-swap='innerHTML'
+            >
                 <div class="modal-header">
                     <h5 class="modal-title" id="{{id}}Title">
                         Share a dataset
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" ></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body flex-grow-1">
                     <div class="container-fluid">
-                        {% include "library/share_dataset/message.html" %}
+                        <div class="row">
+                            {% include "base/components/messages/body.html" with dismissible=0 tag='share-dataset-form' hx_swap_oob="true" %}
+                        </div>
                         <div class="row gap-4 gap-lg-0">
                             <div class='col-12 col-lg-6' data-leaflet-controls-excluded='all' data-leaflet-map-class='rounded border'>
                                 {% leaflet_map id|add:"Map" %}
@@ -23,24 +31,13 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button 
-                        type="submit"
-                        name='submit' 
-                        class="btn btn-primary htmx-request-hide"
-                        hx-post="{% url endpoint %}"
-                        hx-trigger='click'
-                        hx-target="[hx-get='{% url endpoint %}'][hx-target='this']"
-                        hx-swap='innerHTML'
-                        hx-include="[hx-get='{% url endpoint %}'][hx-target='this'] form"
-                        hx-indicator='#shareDatasetModal .htmx-indicator'
-                        disabled
-                    >Share dataset</button>
+                    <button type="submit" name='submit' class="btn btn-primary htmx-request-hide" disabled>Share dataset</button>
                     <button class="btn btn-primary htmx-indicator" type="button" disabled>
                         <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
                         <span role="status">Onboarding dataset...</span>
                     </button>               
                 </div>
-            </div>
+            </form>
         </div>
     </div>
 

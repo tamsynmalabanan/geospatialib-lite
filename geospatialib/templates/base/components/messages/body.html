@@ -1,6 +1,14 @@
 {% load static %}
 
-<div class="gap-3 d-flex flex-column">
+<div 
+    {% if tag %}
+        id="{{tag}}_msg_container"
+    {% endif %}
+    {% if hx_swap_oob %}
+        hx-swap-oob="{{hx_swap_oob}}"
+    {% endif %}
+    class="gap-3 d-flex flex-column"
+>
     {% if messages %}
         {% for message in messages %}
             {% if tag and tag != '' %}

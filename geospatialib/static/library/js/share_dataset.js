@@ -1,6 +1,6 @@
 let sharedDatasetExists
 
-const getShareDatasetSubmitBtn = () => document.querySelector('#shareDatasetModal .btn[name="submit"]')
+const getShareDatasetSubmitBtn = () => document.querySelector('#shareDatasetModal .btn[type="submit"]')
 const getShareDatasetNameField = () => document.querySelector('#shareDatasetModal [name="name"]')
 const getShareDatasetMap = () => mapQuerySelector('#shareDatasetModal .leaflet-container')
 
