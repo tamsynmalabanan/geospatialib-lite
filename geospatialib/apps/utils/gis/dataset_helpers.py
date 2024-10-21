@@ -21,7 +21,7 @@ def get_dataset_layers(path, format):
     else:
         handler = {
             'wms': get_wms_layers,
-            'ogc-wfs': get_wfs_layers,
+            'wfs': get_wfs_layers,
         }.get(format, None)
 
         if handler:
