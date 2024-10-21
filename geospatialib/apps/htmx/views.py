@@ -1,14 +1,14 @@
 from django.shortcuts import render, HttpResponse
 from django.core.cache import cache
 from django.shortcuts import render, redirect
-from django.contrib.auth import get_user_model, authenticate
+from django.contrib.auth import get_user_model, authenticate, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth import logout, login as login_user
 from django.contrib import messages
 from django.urls import reverse_lazy
 from django.http import JsonResponse
-
+from django.contrib.auth.password_validation import get_default_password_validators, validate_password as vp
 
 from urllib.parse import urlparse, parse_qs
 
@@ -58,15 +58,60 @@ def login(request):
 def user_account(request, name):
     user = request.user
     forms = {
+        'profile': main_forms.UserProfileForm(instance=user),
         'password': main_forms.SetPasswordForm(user=user),
     }
 
-    if request.method == 'POST':
-        form = forms[name]
-        form.data = request.POST.dict()
+    if request.method == 'POST' and name in forms:
+        form_class = forms[name].__class__
+        if name == 'password':
+            form = form_class(user=user, data=request.POST)
+            if form.is_valid():
+                if not user.check_password(form.cleaned_data.get('new_password1')):
+                    user = form.save()
+                    update_session_auth_hash(request, user)
+                    messages.success(request, f'You have successfully updated your password.', extra_tags=f'password-form')
+                else:
+                    messages.info(request, f'No changes made to your password.', extra_tags=f'password-form')
+            else:
+                message = '<ul class="list-unstyled m-0">'
+                for error in list(form.errors.values()):
+                    message = message + '<li>' + list(error.data[0])[0] + '</li>'
+                message = message + '</ul>'
+                messages.error(request, message, 'password-form')
+            form = forms[name]
+        else:
+            form = form_class(instance=user, data=request.POST)
+            if form.is_valid():
+                if form.cleaned_data != form.initial:
+                    user = form.save()
+                    messages.success(request, f'You have successfully updated your {name}.', extra_tags=f'{name}-form')
+                else:
+                    messages.info(request, f'No changes made to your {name}.', extra_tags=f'{name}-form')
+            else:
+                messages.error(request, 'Please review the errors below.', f'{name}-form')
+                for field in form.errors:
+                    form_helpers.validate_field(form[field])
         return render(request, f'main/account/{name}.html', {'form':form})
     
-    return render(request, 'main/account/forms.html', {'forms':forms})
+    if user.has_no_password:
+        messages.info(request, 'Please set a login password for your account.', extra_tags='password-form')
+    if user.has_no_first_name:
+        messages.info(request, 'Please review or update details in your profile.', extra_tags='profile-form')
+
+    return render(request, 'main/account/forms.html', {
+        'forms':forms,
+        'active': 'password' if user.has_no_password else 'profile'
+    })
+
+@require_http_methods(['POST'])
+@login_required
+def password_validation(request):
+    user = request.user
+    data = {name:value for name, value in request.POST.items() if 'new_password' in name}
+    form = main_forms.SetPasswordForm(user=user, data=data)
+    form.validate_password(user)
+    return render(request, 'main/account/password_validation.html', {'form':form})
 
 @login_required
 def new_dataset(request):

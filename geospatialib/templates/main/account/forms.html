@@ -1,3 +1,36 @@
-{% for name, form in forms.items %}
-    {% include "main/account/"|add:name|add:".html" with form=form %}
-{% endfor %}
+{% load static %}
+
+<div class="accordion accordion-flush px-0 flex-grow-1 d-flex flex-column" id="accountAccordion">
+    <ul class="nav nav-tabs card-header-tabs ps-3">
+        {% for name in forms.keys  %}
+            <li class="nav-item">
+                <button
+                    class="accordion-button me-2 p-2 ps-3 text-bg-light rounded-top z-3 {% if name != active %}collapsed{% endif %}"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#{{name}}AccountAccordion"
+                    aria-expanded="{% if name == active %}true{% else %}false{% endif %}"
+                    aria-controls="{{name}}AccountAccordion"
+                >
+                    {{name|title}}
+                </button>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <div class="modal-body p-0 border-top text-bg-light z-2 flex-grow-1 d-flex flex-column" style='margin-top:-1px;'>
+        {% for name, form in forms.items %}
+            <div
+                id="{{name}}AccountAccordion"
+                class="accordion-collapse collapse flex-grow-1 {% if name == active %}show fade{% endif %}"
+                data-bs-parent="#accountAccordion"
+            >
+                <div class="accordion-body h-100">
+                    {% include "main/account/"|add:name|add:".html" with form=form %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script type="text/javascript" src="{% static 'main/js/account.js' %}"></script>

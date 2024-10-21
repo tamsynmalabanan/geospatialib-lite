@@ -19,14 +19,14 @@
                         <div class='row justify-content-center'>
                             <p class="text-center user-select-none font-family-pacifico mb-1">or</p>
                         </div>
-                        <div class='row justify-content-center'>
-                            <a href="{% provider_login_url 'google' %}?next={% url 'library:index' %}" class='fit-content lead text-reset border-0 text-nowrap text-decoration-none text-center py-0 text-truncate'>
+                        <div class='row justify-content-center d-flex fit-content'>
+                            <a href="{% provider_login_url 'google' %}?next={% url 'library:index' %}" class='flex-shrink-1 lead text-reset border-0 text-nowrap text-decoration-none text-center py-0 text-truncate d-flex justify-content-center'>
                                 <i class="bi bi-google"></i>
                                 <span class='text-nowrap ms-2'>Continue with Google</span>
                             </a>
                         </div>                    
                         <div class='row justify-content-center my-2'>
-                            <small class='text-reset border-0 text-center py-0 text-wrap'>
+                            <small class='text-reset border-0 text-center py-0 text-wrap px-5'>
                                 By signing in, you are agreeing to our
                                 <a
                                     class="text-reset"

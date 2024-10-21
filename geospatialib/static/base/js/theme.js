@@ -21,10 +21,10 @@ const setAsThemedControl = (element) => {
     }
 }
 
-const getThemedControls = () => {
+const getThemedControls = (parent=document) => {
     return [
         {
-            elements: document.querySelectorAll(`[onclick='toggleDarkMode(event)']`),
+            elements: parent.querySelectorAll(`[onclick='toggleDarkMode(event)']`),
             classes: {
                 light: ['bi-moon'],
                 dark: ['bi-moon-fill'],
@@ -32,8 +32,8 @@ const getThemedControls = () => {
         },
         {
             elements: Array().concat(
-                Array.from(document.querySelectorAll(`.btn-light`)),
-                Array.from(document.querySelectorAll(`.btn-dark`)),
+                Array.from(parent.querySelectorAll(`.btn-light`)),
+                Array.from(parent.querySelectorAll(`.btn-dark`)),
             ),
             classes: {
                 light: ['btn-light'],
@@ -42,8 +42,8 @@ const getThemedControls = () => {
         },
         {
             elements: Array().concat(
-                Array.from(document.querySelectorAll(`.btn-outline-light`)),
-                Array.from(document.querySelectorAll(`.btn-outline-dark`)),
+                Array.from(parent.querySelectorAll(`.btn-outline-light`)),
+                Array.from(parent.querySelectorAll(`.btn-outline-dark`)),
             ),
             classes: {
                 light: ['btn-outline-light'],
@@ -52,8 +52,8 @@ const getThemedControls = () => {
         },
         {
             elements: Array().concat(
-                Array.from(document.querySelectorAll(`.text-bg-light`)),
-                Array.from(document.querySelectorAll(`.text-bg-dark`))
+                Array.from(parent.querySelectorAll(`.text-bg-light`)),
+                Array.from(parent.querySelectorAll(`.text-bg-dark`))
             ),
             classes: {
                 light: ['text-bg-light'],
@@ -62,8 +62,8 @@ const getThemedControls = () => {
         },
         {
             elements: Array().concat(
-                Array.from(document.querySelectorAll(`.leaflet-basemap-light`)),
-                Array.from(document.querySelectorAll(`.leaflet-basemap-dark`))
+                Array.from(parent.querySelectorAll(`.leaflet-basemap-light`)),
+                Array.from(parent.querySelectorAll(`.leaflet-basemap-dark`))
             ),
             classes: {
                 light: ['leaflet-basemap-light'],
@@ -72,8 +72,8 @@ const getThemedControls = () => {
         },
         {
             elements: Array().concat(
-                Array.from(document.querySelectorAll(`.bg-light`)),
-                Array.from(document.querySelectorAll(`.bg-dark`))
+                Array.from(parent.querySelectorAll(`.bg-light`)),
+                Array.from(parent.querySelectorAll(`.bg-dark`))
             ),
             classes: {
                 light: ['bg-light'],
@@ -83,8 +83,8 @@ const getThemedControls = () => {
     ]
 }
 
-const toggleControlsTheme = (theme) => {
-    getThemedControls().forEach(control => {
+const toggleControlsTheme = (theme, parent=document) => {
+    getThemedControls(parent).forEach(control => {
         control.elements.forEach(element => {
             for (let themeName in control.classes) {
                 const themeClasses = control.classes[themeName]
@@ -110,6 +110,9 @@ const setTheme = theme => {
     document.documentElement.setAttribute('data-bs-theme', theme)
     setStoredTheme(theme)
     toggleControlsTheme(theme)
+
+    const setThemeEvent = new Event('setTheme')
+    document.dispatchEvent(setThemeEvent)
 }
 
 const toggleDarkMode = (event) => {
@@ -123,4 +126,8 @@ const toggleDarkMode = (event) => {
 
 document.addEventListener('DOMContentLoaded', () => {
     setTheme(getPreferredTheme())
+})
+
+document.addEventListener('htmx:afterSwap', (event) => {
+    toggleControlsTheme(getPreferredTheme(), parent=event.target)
 })

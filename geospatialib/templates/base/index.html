@@ -34,7 +34,7 @@
                     <div class="footer border-top mt-3 d-none d-lg-flex py-2 gap-3 justify-content-center">
                         {% with button_class='btn btn-light d-flex gap-2 justify-content-center align-items-center' label_class='text-nowrap d-none d-xl-inline' %}
                             {% if user.is_authenticated %}
-                                {% include "main/menu/dropup.html" %}
+                                {% include "main/menu/dropup.html" with label_class='text-nowrap' %}
                                 {% block offcanvas_footer %}{% endblock offcanvas_footer %}
                             {% else %}
                                 {% include "main/about/toggle.html" %}

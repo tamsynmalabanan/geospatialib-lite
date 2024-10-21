@@ -1,0 +1,17 @@
+<div id='accountModalHeader' hx-swap-oob="true" class="modal-header border-0">
+    <h5 class="modal-title" id="accountModalTitle">
+        Account
+    </h5>
+    {% if not user.has_no_password and not user.has_no_first_name %}
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" ></button>
+        <script>
+            if (document.readyState === 'complete') {
+                removeModalStaticBackdrop('accountModal')
+            } else {
+                document.addEventListener('DOMContentLoaded', () => {
+                    removeModalStaticBackdrop('accountModal')
+                })
+            }
+        </script>
+    {% endif %}
+</div>

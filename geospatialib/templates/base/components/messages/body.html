@@ -1,13 +1,15 @@
 {% load static %}
 
-{% if messages %}
-    {% for message in messages %}
-        {% if tag and tag != '' %}
-            {% if tag in message.tags %}
+<div class="px-3">
+    {% if messages %}
+        {% for message in messages %}
+            {% if tag and tag != '' %}
+                {% if tag in message.tags %}
+                    {% include "base/components/messages/message.html" %}
+                {% endif %}
+            {% else %}
                 {% include "base/components/messages/message.html" %}
             {% endif %}
-        {% else %}
-            {% include "base/components/messages/message.html" %}
-        {% endif %}
-    {% endfor %}                                    
-{% endif %}
+        {% endfor %}                                    
+    {% endif %}
+</div>

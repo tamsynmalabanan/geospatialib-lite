@@ -6,3 +6,11 @@
     text-decoration: none;
     color: inherit;
 }
+
+.modal .accordion {
+    .nav {
+        .accordion-button {
+            box-shadow: none;
+        }
+    }
+}

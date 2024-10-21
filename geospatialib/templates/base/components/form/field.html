@@ -4,7 +4,7 @@
 {% assign_field_attributes field as field %}
 {% var field.field.widget as widget %}
 
-<div>
+<div class="flex-grow-1">
     {% if widget.input_type == 'hidden' or widget.attrs.hidden %}
         {% render_field field %}
     {% elif widget.input_type == 'checkbox' %}

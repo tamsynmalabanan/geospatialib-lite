@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from django.utils.text import slugify
 from django.core.exceptions import PermissionDenied, ValidationError
+from django.contrib.auth.hashers import UNUSABLE_PASSWORD_PREFIX
 
 
 from random_username.generate import generate_username
@@ -68,3 +69,11 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
+
+    @property
+    def has_no_password(self):
+        return self.password.startswith(UNUSABLE_PASSWORD_PREFIX)
+
+    @property
+    def has_no_first_name(self):
+        return not self.first_name or self.first_name.strip() == ''
