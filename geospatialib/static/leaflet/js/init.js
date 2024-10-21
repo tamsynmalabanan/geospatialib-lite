@@ -65,6 +65,22 @@ const handleMapBasemap = (map) => {
     }).addTo(map);
 }
 
+const handleMapLayerGroups = (map) => {
+    const layerGroups = {
+        client: L.layerGroup(),
+        library: L.layerGroup(),
+    }
+
+    for (let group in layerGroups) {
+        const layerGroup = layerGroups[group]
+        layerGroup.show = () => map.addLayer(layerGroup)
+        layerGroup.hide = () => map.removeLayer(layerGroup)
+        layerGroup.show()
+    }
+
+    map.getLayerGroups = () => layerGroups
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener("map:init", function (event) {
         const map = event.detail.map
@@ -73,6 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
         handleMapSize(map)
         handleMapControls(map)
         handleMapBasemap(map)
+        handleMapLayerGroups(map)
 
     })
 })

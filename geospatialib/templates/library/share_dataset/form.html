@@ -1,0 +1,22 @@
+{% include "library/share_dataset/message.html" %}
+
+<form 
+    class='htmx-form'
+>
+    {% csrf_token %}
+    <div class='d-flex flex-column gap-3'>
+        {% for field in form %}
+            {% include "base/components/form/field.html" %}
+        {% endfor %}
+    </div>
+</form>
+
+<script>
+    if (document.readyState === 'complete') {
+        sharedDatasetExists = {% if dataset %}true{% else %}false{% endif %}
+        handleShareDatasetForm("{{dataset}}")
+        {% if form.is_valid %}
+            renderSharedDatasetLayer()
+        {% endif %}
+    }
+</script>

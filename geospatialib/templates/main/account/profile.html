@@ -6,7 +6,9 @@
     hx-target='this'
     hx-swap='outerHTML'
 >
-    {% include "base/components/messages/body.html" with dismissible=1 tag='profile-form' %}
+    <div class='px-3'>
+        {% include "base/components/messages/body.html" with dismissible=1 tag='profile-form' %}
+    </div>
     {% csrf_token %}
     <div class='d-flex flex-column gap-3 overflow-hidden p-3'>
         <div class="d-flex gap-2">

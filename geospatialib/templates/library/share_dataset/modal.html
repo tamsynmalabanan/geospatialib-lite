@@ -1,7 +1,7 @@
 {% load static %}
 {% load leaflet_tags %}
 
-{% with endpoint='htmx:new_dataset' id='newDatasetModal' %}
+{% with endpoint='htmx:share_dataset' id='shareDatasetModal' %}
     <div class="modal fade" id="{{id}}" tabindex="-1" role="dialog" aria-labelledby="{{id}}Title" aria-hidden="true" >
         <div class="modal-dialog modal-lg modal-fullscreen-sm-down modal-dialog-scrollable modal-dialog-centered" role="document">
             <div class="modal-content">
@@ -13,6 +13,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="container-fluid">
+                        {% include "library/share_dataset/message.html" %}
                         <div class="row gap-4 gap-lg-0">
                             <div class='col-12 col-lg-6' data-leaflet-controls-excluded='all' data-leaflet-map-class='rounded border'>
                                 {% leaflet_map id|add:"Map" %}
@@ -25,16 +26,28 @@
                     <button 
                         type="submit"
                         name='submit' 
-                        class="btn btn-primary"
+                        class="btn btn-primary htmx-request-hide"
                         hx-post="{% url endpoint %}"
                         hx-trigger='click'
                         hx-target="[hx-get='{% url endpoint %}'][hx-target='this']"
                         hx-swap='innerHTML'
                         hx-include="[hx-get='{% url endpoint %}'][hx-target='this'] form"
+                        hx-indicator='#shareDatasetModal .htmx-indicator'
                         disabled
-                    >Share</button>
+                    >Share dataset</button>
+                    <button class="btn btn-primary htmx-indicator" type="button" disabled>
+                        <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                        <span role="status">Onboarding dataset...</span>
+                    </button>               
                 </div>
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const modal = new bootstrap.Modal("#{{id}}")
+            modal.show()
+        })
+    </script>
 {% endwith %}

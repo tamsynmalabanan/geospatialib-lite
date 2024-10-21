@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='dataset',
             name='format',
-            field=models.CharField(choices=[('ogc-wms', 'OGC Web Map Service'), ('xyz-tiles', 'XYZ Tiles')], max_length=16, verbose_name='Format'),
+            field=models.CharField(choices=[('wms', 'OGC Web Map Service'), ('xyz', 'XYZ Tiles')], max_length=16, verbose_name='Format'),
         ),
     ]

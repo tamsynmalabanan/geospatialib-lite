@@ -18,11 +18,11 @@
 
 {% if user.is_authenticated %}
     {% block toggle_menu %}
-        {% include "library/new_dataset/toggle.html" %}
-        {% include "library/new_map/toggle.html" %}
+        {% include "library/share_dataset/toggle.html" %}
+        {% include "library/create_map/toggle.html" %}
     {% endblock toggle_menu %}
     {% block offcanvas_footer %}
-        {% include "library/new_dataset/toggle.html" %}
-        {% include "library/new_map/toggle.html" %}
+        {% include "library/share_dataset/toggle.html" %}
+        {% include "library/create_map/toggle.html" %}
     {% endblock offcanvas_footer %}
 {% endif %}

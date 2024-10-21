@@ -139,7 +139,8 @@ def generate_random_username(request):
     return render(request, 'base/components/form/field.html', {'field': username_field})
 
 @login_required
-def new_dataset(request):
+def share_dataset(request):
+    dataset = None
     form = library_forms.NewDatasetForm(data={})
     if request.method == 'POST':
         data = request.POST.dict()
@@ -159,7 +160,7 @@ def new_dataset(request):
                 if format_value:
                     form.data.update({'format': format_value})
                     form.full_clean()
-                    
+                
                 format_is_valid = form_helpers.validate_field(format_field)
                 if format_is_valid:
                     name_field = form['name']
@@ -174,10 +175,15 @@ def new_dataset(request):
                     form.data.update({'name': name_value})
                     form.full_clean()
 
-            if data.get('submit', None) is not None:
-                if form.is_valid():
-                    print('save dataset')
-                else:
-                    print(form.errors)
+            form_is_valid = form.is_valid()
+            if form_is_valid:
+                print('check if dataset instance exists')
 
-    return render(request, 'library/new_dataset/form.html', {'form':form})
+            if not dataset and data.get('submit') is not None:
+                if form_is_valid:
+                    print('save dataset')
+                    messages.success(request, 'Thank you for sharing a dataset to Geospatialib.', 'share-dataset-form')
+                else:
+                    messages.error(request, 'There was an error in saving the dataset your are sharing.', 'share-dataset-form')
+
+    return render(request, 'library/share_dataset/form.html', {'form':form, 'dataset':dataset})

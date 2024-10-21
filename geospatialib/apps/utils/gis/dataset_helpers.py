@@ -7,7 +7,7 @@ from ...library import choices
 
 def get_dataset_format(url):
     dataset_format_ext = {
-        'xyz-tiles': ['{x}','{y}','{z}', 'tile'],
+        'xyz': ['{x}','{y}','{z}', 'tile'],
     }
     format_list = list(choices.DATASET_FORMATS.keys())
     match = util_helpers.get_first_substring_match(url, format_list, dataset_format_ext)
@@ -15,12 +15,12 @@ def get_dataset_format(url):
 
 
 def get_dataset_layers(path, format):
-    if format == 'xyz-tiles':
+    if format == 'xyz':
         domain = urlparse(path).netloc
         return {domain: domain}
     else:
         handler = {
-            'ogc-wms': get_wms_layers,
+            'wms': get_wms_layers,
             'ogc-wfs': get_wfs_layers,
         }.get(format, None)
 

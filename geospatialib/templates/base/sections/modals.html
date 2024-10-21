@@ -1,7 +1,7 @@
 {% if user.is_authenticated %}
     {% include "main/account/modal.html" %}
-    {% include "library/new_dataset/modal.html" %}
-    {% include "library/new_map/modal.html" %}
+    {% include "library/share_dataset/modal.html" %}
+    {% include "library/create_map/modal.html" %}
 {% else %}
     {% include "main/login/modal.html" %}
 {% endif %}

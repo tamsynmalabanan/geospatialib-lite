@@ -6,12 +6,12 @@ from . import models, choices
 from ..utils.general import form_helpers, util_helpers
 from ..utils.gis import dataset_helpers
 
-class NewDatasetForm(forms.ModelForm):
+class NewDatasetForm(forms.Form):
     path = forms.URLField(
         label='URL',
         required=True,
         widget=forms.URLInput(attrs={
-            'hx-post':reverse_lazy('htmx:new_dataset'),
+            'hx-post':reverse_lazy('htmx:share_dataset'),
             'hx-trigger':'input changed delay:1000ms',
         })
     )
@@ -23,7 +23,7 @@ class NewDatasetForm(forms.ModelForm):
             'required': 'Select a format.',
         },
         widget=forms.Select(attrs={
-            'hx-post':reverse_lazy('htmx:new_dataset'),
+            'hx-post':reverse_lazy('htmx:share_dataset'),
             'hx-trigger':'change delay:1000ms',
             'disabled': True
         })
@@ -35,16 +35,12 @@ class NewDatasetForm(forms.ModelForm):
             'required': 'Select a layer.',
         },
         widget=forms.Select(attrs={
-            'hx-post':reverse_lazy('htmx:new_dataset'),
+            'hx-post':reverse_lazy('htmx:share_dataset'),
             'hx-trigger':'change delay:1000ms',
+            'onchange':'disabledShareDatasetSubmitBtn()',
             'disabled':True,
         })
     )
-
-
-    class Meta:
-        model = models.Dataset
-        fields = ['path', 'format', 'name']
 
     @property
     def cache_key(self):

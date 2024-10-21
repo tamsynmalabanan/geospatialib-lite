@@ -7,7 +7,9 @@
         hx-target='this'
         hx-swap='outerHTML'
     >
-        {% include "base/components/messages/body.html" with dismissible=1 tag='login-form' %}
+        <div class='px-3'>
+            {% include "base/components/messages/body.html" with dismissible=1 tag='login-form' %}
+        </div>
         <div class='d-flex flex-column gap-3 overflow-hidden p-3'>
             {% csrf_token %}
             {% for field in form %}
