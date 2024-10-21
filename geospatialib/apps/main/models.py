@@ -17,10 +17,10 @@ class UserManager(BaseUserManager):
             user_query = user_query.exclude(pk=user.pk)
         return not user_query.exists()
 
-    def generate_random_username(self):
+    def generate_random_username(self, user=None):
         while True:
             username = slugify(generate_username(1)[0])
-            if self.username_is_available(username):
+            if self.username_is_available(username, user):
                 try:
                     validators.validate_username(username)
                     break

@@ -83,7 +83,7 @@ def user_account(request, name):
         else:
             form = form_class(instance=user, data=request.POST)
             if form.is_valid():
-                if form.cleaned_data != form.initial:
+                if len(form.changed_data) != 0:
                     user = form.save()
                     messages.success(request, f'You have successfully updated your {name}.', extra_tags=f'{name}-form')
                 else:
@@ -112,6 +112,31 @@ def password_validation(request):
     form = main_forms.SetPasswordForm(user=user, data=data)
     form.validate_password(user)
     return render(request, 'main/account/password_validation.html', {'form':form})
+
+@require_http_methods(['POST'])
+@login_required
+def username_validation(request):
+    user = request.user
+    form = main_forms.UserProfileForm(instance=user, data=request.POST.dict())
+    username_field = form['username']
+    if form.data['username'] == '':
+        form.data.update({'username':user.username})
+    if 'username' in form.changed_data:
+        form_helpers.validate_field(username_field, style_if_valid=True)
+    return render(request, 'base/components/form/field.html', {'field': username_field})
+
+@require_http_methods(['GET'])
+@login_required
+def generate_random_username(request):
+    user = request.user
+    form = main_forms.UserProfileForm(instance=user, data=request.GET.dict())
+    username_field = form['username']
+    
+    random_username = User.objects.generate_random_username(user=user)
+    form.data.update({'username':random_username})
+    form_helpers.validate_field(username_field, style_if_valid=True)
+    
+    return render(request, 'base/components/form/field.html', {'field': username_field})
 
 @login_required
 def new_dataset(request):

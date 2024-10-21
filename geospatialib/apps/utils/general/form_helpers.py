@@ -16,12 +16,16 @@ def remove_classes_from_field(field, excluded_classes:list):
     current_class = attrs.get('class', '').split(' ')
     attrs['class'] = ' '.join([i for i in current_class if i not in excluded_classes]).strip()
 
-def validate_field(field):
+def validate_field(field, style_if_valid=False):
     valid = field.name not in field.form.errors
     if valid:
         remove_classes_from_field(field, ['is-invalid'])
+        if style_if_valid:
+            append_classes_to_field(field, ['is-valid'])
     else:
         append_classes_to_field(field, ['is-invalid'])
+        if style_if_valid:
+            remove_classes_from_field(field, ['is-valid'])
     return valid
 
 def assign_field_style_classes(field):

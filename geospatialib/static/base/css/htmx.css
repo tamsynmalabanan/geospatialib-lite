@@ -1,0 +1,21 @@
+.htmx-indicator{
+    display: none;
+}
+
+.htmx-request:not(body) {
+    .htmx-indicator {
+        display: inline;
+    }
+
+    .htmx-request-hide {
+        display: none;
+    }    
+}
+
+.htmx-request.htmx-indicator{
+    display: inline;
+}
+
+.htmx-request.htmx-request-hide {
+    display: none;
+}

@@ -63,10 +63,21 @@ class SetPasswordForm(SetPasswordForm):
                         del attrs['checked']
 
 class UserProfileForm(forms.ModelForm):
+    username = forms.CharField(
+        label='Username', 
+        max_length=32, 
+        required=True,
+        widget=forms.TextInput(attrs={
+            'hx-post': reverse_lazy('htmx:username_validation'),
+            'hx-trigger': 'input changed delay:1000ms',
+            'hx-target':'.field-container:has(input[name="username"])',
+            'hx-swap':'outerHTML',
+        })
+    )
     first_name = forms.CharField(
         label='First name',
         max_length=32, 
-        required=True
+        required=True,
     )
 
     class Meta:

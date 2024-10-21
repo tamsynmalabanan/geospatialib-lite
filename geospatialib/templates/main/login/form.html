@@ -5,7 +5,7 @@
         hx-post="{% url endpoint %}"
         hx-trigger='submit'
         hx-target='this'
-        hx-swap='outerHTML'    
+        hx-swap='outerHTML'
     >
         {% include "base/components/messages/body.html" with dismissible=1 tag='login-form' %}
         <div class='d-flex flex-column gap-3 overflow-hidden p-3'>
@@ -15,10 +15,14 @@
             {% endfor %}
             <button
                 type="submit"
-                class="btn btn-lg btn-primary"
+                class="btn btn-lg btn-primary htmx-request-hide"
             >
                 <i class="bi bi-box-arrow-in-right"></i>
                 <span class='text-nowrap'>Login</span>
+            </button>
+            <button class="btn btn-lg btn-primary htmx-indicator" type="button" disabled>
+                <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                <span role="status">Logging in...</span>
             </button>
         </div>
     </form>
