@@ -6,6 +6,9 @@
             <div class="modal-content">
                 {% include "main/account/header.html" %}
                 <div hx-get="{% url 'htmx:user_account' name='get' %}" hx-trigger='load' hx-target='this' hx-swap='outerHTML' ></div>
+                <div class="modal-footer text-muted small">
+                    Joined {{user.joined_on|timesince}} ago
+                </div>
             </div>
         </div>
     </div>
