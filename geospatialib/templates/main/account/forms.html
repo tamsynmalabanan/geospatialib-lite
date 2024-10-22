@@ -25,7 +25,7 @@
                 class="accordion-collapse collapse flex-grow-1 {% if name == active %}show fade{% endif %}"
                 data-bs-parent="#accountAccordion"
             >
-                <div class="accordion-body h-100">
+                <div class="accordion-body h-100 pt-4">
                     {% include "main/account/"|add:name|add:".html" with form=form %}
                 </div>
             </div>

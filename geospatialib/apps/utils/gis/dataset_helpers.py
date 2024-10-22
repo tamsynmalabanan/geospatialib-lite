@@ -4,6 +4,9 @@ from urllib.parse import urlparse, urlunparse
 from ..general import util_helpers
 from ...library import choices
 
+class XYZHandler():
+    pass
+
 
 def get_dataset_format(url):
     helpers = {
@@ -51,3 +54,23 @@ def get_wfs_layers(path):
     for layer_name in contents:
         layers[layer_name] = service[layer_name].title
     return layers
+
+
+def wms_request(url, name):
+    service = wms.WebMapService(url=url)
+    layer = service[name]
+    
+    try:
+        response = service.getmap(
+            layers=[name],
+            srs='EPSG:4326',
+            bbox=layer.boundingBoxWGS84,
+            size=(512, 512),
+            format='image/jpeg',
+            transparent=True
+        )
+        print(response)
+        with open('map.png', 'wb') as f:
+            f.write(response.read())
+    except Exception as e:
+        print('ERROR with wms_request: ', e)

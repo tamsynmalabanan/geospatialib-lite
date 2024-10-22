@@ -190,6 +190,9 @@ def share_dataset(request):
                     clean_data['path'], 
                     clean_data['format']
                 )
+
+                # dataset_helpers.wms_request(clean_path, name_value)
+                
                 url_instance, created = lib_models.URL.objects.get_or_create(
                     path=clean_path,
                     defaults={'added_by':user}
