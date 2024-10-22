@@ -1,5 +1,5 @@
 from owslib import wms, wfs
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urlunparse
 
 from ..general import util_helpers
 from ...library import choices
@@ -12,6 +12,12 @@ def get_dataset_format(url):
     format_list = list(choices.DATASET_FORMATS.keys())
     match = util_helpers.get_first_substring_match(url, format_list, helpers)
     return match
+
+def resolve_dataset_access_path(path, format):
+    if format in ['wms', 'xyz']:
+        parsed_url = urlparse(path)
+        parsed_url = parsed_url._replace(query='')
+        return urlunparse(parsed_url)
 
 
 def get_dataset_layers(path, format):

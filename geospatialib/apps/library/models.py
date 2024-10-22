@@ -11,7 +11,7 @@ from ..utils.general import form_helpers
 
 class MetaAbstractModel(models.Model):
     uuid = models.SlugField('UUID', unique=True, editable=False, null=True, blank=True, max_length=16)
-    added_by = models.ForeignKey("main.User", verbose_name='Added by', editable=False, on_delete=models.DO_NOTHING, related_name='%(class)ss_added')
+    added_by = models.ForeignKey("main.User", verbose_name='Added by', editable=False, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='%(class)ss_added')
     updated_by = models.ForeignKey("main.User", verbose_name='Updated by', editable=False, on_delete=models.DO_NOTHING, blank=True, null=True, related_name='%(class)ss_updated')
     added_on = models.DateTimeField('Added on', auto_now_add=True)
     updated_on = models.DateTimeField('Updated on', auto_now=True)
@@ -43,3 +43,6 @@ class Dataset(MetaAbstractModel):
     url = models.ForeignKey("library.URL", verbose_name='URL', on_delete=models.CASCADE)
     format = models.CharField('Format', max_length=16, choices=form_helpers.dict_to_choices(choices.DATASET_FORMATS))
     name = models.CharField('Layer', max_length=256)
+
+    class Meta:
+        unique_together = ['url', 'format', 'name']

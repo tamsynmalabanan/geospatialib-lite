@@ -13,7 +13,11 @@ from django.contrib.auth.password_validation import get_default_password_validat
 from urllib.parse import urlparse, parse_qs
 
 from ..main import forms as main_forms
-from ..library import forms as library_forms, choices as library_choices
+from ..library import (
+    forms as lib_forms, 
+    choices as lib_choices, 
+    models as lib_models
+)
 from ..utils.general import form_helpers, util_helpers
 from ..utils.gis import dataset_helpers
 
@@ -141,7 +145,7 @@ def generate_random_username(request):
 @login_required
 def share_dataset(request):
     dataset = None
-    form = library_forms.NewDatasetForm(data={})
+    form = lib_forms.NewDatasetForm(data={})
     if request.method == 'POST':
         data = request.POST.dict()
         path_value = data.get('path', '')
@@ -177,7 +181,14 @@ def share_dataset(request):
 
             form_is_valid = form.is_valid()
             if form_is_valid:
-                print('check if dataset instance exists')
+                clean_data = form.cleaned_data
+                clean_path = dataset_helpers.resolve_dataset_access_path(
+                    clean_data['path'], 
+                    clean_data['format']
+                )
+                url_instance, created = lib_models.URL.objects.get_or_create(path=clean_path)
+                if url_instance:
+                    print(url_instance)
 
             if not dataset and data.get('submit') is not None:
                 if form_is_valid:
