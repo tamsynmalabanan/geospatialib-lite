@@ -2,6 +2,7 @@ from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
+from django.utils import timezone
 
 User = get_user_model()
 
@@ -19,6 +20,8 @@ class CustomAuthenticationBackend(ModelBackend):
             raise PermissionDenied("Multiple users found with given credentials.")
 
         if user.check_password(password) and self.user_can_authenticate(user):
+            user.lastloggedin_on = timezone.now()
+            user.save()
             return user
         else:
             raise PermissionDenied("Invalid login credentials.")
