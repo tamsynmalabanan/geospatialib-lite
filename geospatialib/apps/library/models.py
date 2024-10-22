@@ -7,7 +7,7 @@ from . import choices
 from ..utils.general import form_helpers
 
 class MetaAbstractModel(models.Model):
-    added_by = models.ForeignKey("main.User", verbose_name='Added by', on_delete=models.DO_NOTHING, blank=True, null=True, related_name='%(class)ss_added')
+    added_by = models.ForeignKey("main.User", verbose_name='Added by', on_delete=models.DO_NOTHING, related_name='%(class)ss_added')
     added_on = models.DateTimeField('Added on', auto_now_add=True)
     updated_by = models.ForeignKey("main.User", verbose_name='Updated by', on_delete=models.DO_NOTHING, blank=True, null=True, related_name='%(class)ss_updated')
     updated_on = models.DateTimeField('Updated on', auto_now=True)
