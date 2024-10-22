@@ -1,4 +1,6 @@
 from django.core.cache import cache
+from django.contrib.gis.geos import Polygon
+from django.contrib.gis.gdal import SpatialReference
 
 from owslib import wms, wfs
 from urllib.parse import urlparse, urlunparse
@@ -31,6 +33,11 @@ class XYZHandler(DatasetHandler):
         self.access_url = self.path
         self.layers = self.get_layers()
 
+    def populate_dataset(self, dataset):
+        dataset.bbox = geom_helpers.WORLD_GEOM
+        
+        dataset.save()
+
 class WMSHandler(DatasetHandler):
     
     def get_layers(self, service):
@@ -48,8 +55,46 @@ class WMSHandler(DatasetHandler):
         except Exception as e:
             print(e)
 
+    def get_bbox(self, layer):
+        bbox = None
+        
+        geom_attrs = ['boundingBoxWGS84', 'boundingBox']
+        for attr in geom_attrs:
+            if hasattr(layer, attr) and isinstance(getattr(layer, attr), tuple):
+                bbox = getattr(layer, attr)
+                break
+        
+        if bbox:
+            w,s,e,n,*srid = bbox
+            bbox_corners = [(w,s), (e,s), (e,n), (w,n), (w,s)]
+            if len(srid) != 0 and ':' in srid[0]:
+                bbox_srid = int(srid[0].split(':')[1])
+            else:
+                bbox_srid = 4326
+            
+            if bbox_srid == 4326:
+                return Polygon(bbox_corners, srid=bbox_srid)
+            else:
+                wgs84_srs = SpatialReference(4326)
+                return Polygon(
+                    bbox_corners, 
+                    srid=bbox_srid
+                ).transform(wgs84_srs, clone=True)
+        else:
+            return geom_helpers.WORLD_GEOM
+
     def populate_dataset(self, dataset):
-        pass
+        try:
+            service = wms.WebMapService(self.path)
+            id = service.identification
+            provider = service.provider
+            layer = service[dataset.name]
+            
+            dataset.bbox = self.get_bbox(layer)
+
+            dataset.save()
+        except Exception as e:
+            print(e)
 
 class WFSHandler(DatasetHandler):
 

@@ -214,7 +214,7 @@ def share_dataset(request):
                     )
                     if dataset_instance:
                         if created:
-                            # get dataset info
+                            dataset_handler.populate_dataset(dataset_instance)
                             messages.success(
                                 request, 
                                 'Thank you for sharing a dataset to Geospatialib.', 
