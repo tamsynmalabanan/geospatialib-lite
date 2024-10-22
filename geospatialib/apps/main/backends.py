@@ -20,8 +20,8 @@ class CustomAuthenticationBackend(ModelBackend):
             raise PermissionDenied("Multiple users found with given credentials.")
 
         if user.check_password(password) and self.user_can_authenticate(user):
-            user.lastloggedin_on = timezone.now()
-            user.save()
+            # user.lastloggedin_on = timezone.now()
+            # user.save()
             return user
         else:
             raise PermissionDenied("Invalid login credentials.")
