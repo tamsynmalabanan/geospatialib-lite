@@ -31,6 +31,11 @@ class MetaAbstractModel(models.Model):
         self.assign_uuid()
         super().save(*args, **kwargs)
 
+class GeomAbstractModel(models.Model):
+    bbox = models.PolygonField('Bounding box', blank=True, null=True)
+
+    class Meta:
+        abstract = True
 
 class URL(MetaAbstractModel):
     path = models.URLField('URL', max_length=256, unique=True)
@@ -42,7 +47,7 @@ class URL(MetaAbstractModel):
     def domain(self):
         return urlparse(self.path).netloc
     
-class Dataset(MetaAbstractModel):
+class Dataset(MetaAbstractModel, GeomAbstractModel):
     url = models.ForeignKey("library.URL", verbose_name='URL', on_delete=models.CASCADE)
     format = models.CharField('Format', max_length=16, choices=form_helpers.dict_to_choices(choices.DATASET_FORMATS))
     name = models.CharField('Layer', max_length=256)

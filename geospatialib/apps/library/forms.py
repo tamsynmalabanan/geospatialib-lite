@@ -43,27 +43,35 @@ class NewDatasetForm(forms.Form):
     )
 
     @property
-    def cache_key(self):
+    def cached_handler_key(self):
         clean_data = self.cleaned_data
         path = clean_data.get('path')
         format = clean_data.get('format')
         if path and format:
             return util_helpers.build_cache_key(
-                self.__class__.__name__, path, format)
-
+                'dataset-handler', 
+                format, 
+                path
+            )
+        
     def clean_format(self):
         clean_data = self.cleaned_data
         format = clean_data.get('format')
+
         if not self.fields['name'].choices:
             path = clean_data.get('path')
             if path and format:
-                cache_key = self.cache_key
-                layers = cache.get(cache_key)
-                if not layers:
-                    layers = dataset_helpers.get_dataset_layers(path, format)
-                if layers:
-                    cache.set(cache_key, layers, timeout=600)
-                    self.fields['name'].choices = form_helpers.dict_to_choices(layers)
+                key = self.cached_handler_key
+                handler = cache.get(key)
+                if not handler or not handler.layers:
+                    handler = dataset_helpers.get_dataset_handler(
+                        format, 
+                        path=path,
+                        key=key,
+                    ) 
+                if handler and handler.layers:
+                    self.fields['name'].choices = form_helpers.dict_to_choices(handler.layers)
                 else:
                     raise forms.ValidationError('No layers retrived in this format.')
+        
         return format

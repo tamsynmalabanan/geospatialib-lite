@@ -152,11 +152,8 @@ def share_dataset(request):
         data = request.POST.dict()
         path_value = data.get('path', '')
         if path_value.strip() != '':
-            url_instance = None
-
-            form.data.update({'path':path_value})
-
             path_field = form['path']
+            form.data.update({'path':path_value})
             path_is_valid = form_helpers.validate_field(path_field)
             if path_is_valid:
                 format_field = form['format']
@@ -183,18 +180,14 @@ def share_dataset(request):
                     form.data.update({'name': name_value})
                     form.full_clean()
 
+            dataset_handler = cache.get(form.cached_handler_key)
             form_is_valid = form.is_valid()
-            if form_is_valid:
-                clean_data = form.cleaned_data
-                clean_path = dataset_helpers.resolve_dataset_access_path(
-                    clean_data['path'], 
-                    clean_data['format']
-                )
-
-                # dataset_helpers.wms_request(clean_path, name_value)
-                
+            clean_data = form.cleaned_data
+            url_instance = None
+            
+            if form_is_valid and dataset_handler:
                 url_instance, created = lib_models.URL.objects.get_or_create(
-                    path=clean_path,
+                    path=dataset_handler.access_url,
                     defaults={'added_by':user}
                 )
                 if url_instance:
@@ -205,7 +198,11 @@ def share_dataset(request):
                     )
                     if dataset_queryset.exists():
                         dataset_instance = dataset_queryset.first()
-                        messages.info(request, 'This dataset is already on Geospatialib.', 'share-dataset-form')
+                        messages.info(
+                            request, 
+                            'This dataset is already on Geospatialib.', 
+                            'share-dataset-form'
+                        )
 
             if data.get('submit') is not None and not dataset_instance:
                 if form_is_valid and url_instance:
@@ -217,10 +214,23 @@ def share_dataset(request):
                     )
                     if dataset_instance:
                         if created:
-                            messages.success(request, 'Thank you for sharing a dataset to Geospatialib.', 'share-dataset-form')
+                            # get dataset info
+                            messages.success(
+                                request, 
+                                'Thank you for sharing a dataset to Geospatialib.', 
+                                'share-dataset-form'
+                            )
                         else:
-                            messages.info(request, 'This dataset is already on Geospatialib.', 'share-dataset-form')
+                            messages.info(
+                                request, 
+                                'This dataset is already on Geospatialib.', 
+                                'share-dataset-form'
+                            )
                 else:
-                    messages.error(request, 'There was an error in saving the dataset your are sharing.', 'share-dataset-form')
+                    messages.error(
+                        request, 
+                        'There was an error in saving the dataset your are sharing.', 
+                        'share-dataset-form'
+                    )
 
     return render(request, 'library/share_dataset/form.html', {'form':form, 'dataset':dataset_instance})
