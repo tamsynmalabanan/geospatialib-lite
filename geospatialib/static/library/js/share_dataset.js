@@ -36,7 +36,7 @@ const shareDatasetLayerLoadError = (event) => {
         nameField.classList.add('is-invalid')
         
         const invalidFeedback = nameField.parentElement.querySelector('.invalid-feedback')
-        invalidFeedback.textContent = 'Layer is not loading within the current map extent. Try to zoom in or span to other parts of the map.'
+        invalidFeedback.textContent = 'Layer is not loading within the current map extent. Provided the the URL and format are valid, it may load when you zoom in or span to other parts of the map.'
     }    
 }
 

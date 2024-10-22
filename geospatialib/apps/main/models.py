@@ -64,6 +64,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     first_name = models.CharField('First name', max_length=32, blank=True, null=True)
     last_name = models.CharField('Last name', max_length=32, blank=True, null=True)
+    join_data = models.DateTimeField('Join date', auto_now_add=True, null=True)
 
     objects = UserManager()
 

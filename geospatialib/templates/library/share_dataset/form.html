@@ -7,6 +7,10 @@
     {% endfor %}
 </div>
 
+{% if dataset %}
+    {{dataset.added_on|timesince}}
+{% endif %}
+
 <script>
     if (document.readyState === 'complete') {
         sharedDatasetExists = {% if dataset %}true{% else %}false{% endif %}

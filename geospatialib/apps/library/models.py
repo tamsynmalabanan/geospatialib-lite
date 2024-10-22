@@ -35,10 +35,13 @@ class MetaAbstractModel(models.Model):
 class URL(MetaAbstractModel):
     path = models.URLField('URL', max_length=256, unique=True)
 
+    def __str__(self) -> str:
+        return self.path
+
     @property
     def domain(self):
         return urlparse(self.path).netloc
-
+    
 class Dataset(MetaAbstractModel):
     url = models.ForeignKey("library.URL", verbose_name='URL', on_delete=models.CASCADE)
     format = models.CharField('Format', max_length=16, choices=form_helpers.dict_to_choices(choices.DATASET_FORMATS))
@@ -46,3 +49,6 @@ class Dataset(MetaAbstractModel):
 
     class Meta:
         unique_together = ['url', 'format', 'name']
+
+    def __str__(self) -> str:
+        return self.name

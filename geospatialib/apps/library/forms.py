@@ -62,7 +62,7 @@ class NewDatasetForm(forms.Form):
                 if not layers:
                     layers = dataset_helpers.get_dataset_layers(path, format)
                 if layers:
-                    cache.set(cache_key, layers, timeout=3600)
+                    cache.set(cache_key, layers, timeout=600)
                     self.fields['name'].choices = form_helpers.dict_to_choices(layers)
                 else:
                     raise forms.ValidationError('No layers retrived in this format.')
