@@ -1,22 +1,7 @@
 {% if datasets %}
     <ul class="list-unstyled">
         {% for dataset in datasets %}
-            <li>
-                <div class="card">
-                    <img
-                        class="card-img-top"
-                        src="holder.js/100x180/?text=Image cap"
-                        alt="Card image cap"
-                    />
-                    <div class="card-body">
-                        <h4 class="card-title">{{dataset.title}}</h4>
-                        <p class="card-text">Text</p>
-                        <a href="{{dataset.url.path}}" target='_blank' class="card-link">Access URL</a>
-                        
-                    </div>
-                </div>
-            </li>
+            <li>{{dataset.title}}</li>
         {% endfor %}
     </ul>
-    
 {% endif %}
