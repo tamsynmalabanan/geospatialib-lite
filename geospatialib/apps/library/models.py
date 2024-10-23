@@ -53,7 +53,7 @@ class Dataset(MetaAbstractModel, GeomAbstractModel):
     url = models.ForeignKey("library.URL", verbose_name='URL', on_delete=models.CASCADE)
     format = models.CharField('Format', max_length=16, choices=form_helpers.dict_to_choices(choices.DATASET_FORMATS))
     name = models.CharField('Layer', max_length=256)
-    data = models.JSONField('Data', default=dict)
+    data = models.JSONField('Data', blank=True, null=True)
 
     class Meta:
         unique_together = ['url', 'format', 'name']
@@ -70,7 +70,7 @@ class Dataset(MetaAbstractModel, GeomAbstractModel):
                 'url':self.url.path,
                 'format':self.format,
                 'name':self.name,
-                'data':json.loads(self.data),
+                'data':json.loads(self.data) if self.data else {},
             },
         )
         return feature
