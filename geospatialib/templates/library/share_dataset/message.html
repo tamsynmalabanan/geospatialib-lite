@@ -1,11 +1,23 @@
 {% if geojson %}
-    {% if 'info' in message.tags %}
-        View or share additional information about this dataset:
-    {% endif %}
-    {% if 'success' in message.tags %}
-        Successfully onboarded! View or share additional information about this dataset:
-    {% endif %}
-    {{dataset.title}}
+    <div>
+        {% if 'info' in message.tags %}
+            View or share additional information about this dataset:
+        {% elif 'success' in message.tags %}
+            Successfully onboarded! View or share additional information about this dataset:
+        {% endif %}
+        <a
+            class="text-reset text-decoration-none"
+            data-bs-toggle="modal"
+            href="#datasetInfoModal"
+            role="button"
+            onclick='showDatasetInfo(sharedDataset)'
+        >
+            <i class="bi bi-layers-half mx-2"></i>
+            <span>
+                {{dataset.title}}
+            </span>
+        </a>
+    </div>
 {% else %}    
     {% if 'error' in message.tags %}
         There was an error while onboarding the dataset. Please try again.

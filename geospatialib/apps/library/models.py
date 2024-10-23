@@ -55,6 +55,7 @@ class Dataset(MetaAbstractModel, GeomAbstractModel):
     format = models.CharField('Format', max_length=16, choices=form_helpers.dict_to_choices(choices.DATASET_FORMATS))
     name = models.CharField('Layer', max_length=256)
     data = models.JSONField('Data', blank=True, null=True)
+    title = models.CharField('Title', max_length=256, blank=True, null=True)
 
     class Meta:
         unique_together = ['url', 'format', 'name']
@@ -62,15 +63,15 @@ class Dataset(MetaAbstractModel, GeomAbstractModel):
     def __str__(self) -> str:
         return self.name
     
-    @property
-    def title(self):
-        title = None
-        if self.data:
-            data = json.loads(self.data)
-            title = data.get('title')
-        if not title:
-            title = self.name
-        return title
+    # @property
+    # def title(self):
+    #     title = None
+    #     if self.data:
+    #         data = json.loads(self.data)
+    #         title = data.get('title')
+    #     if not title:
+    #         title = self.name
+    #     return title
 
     @property
     def geojson(self):
@@ -81,6 +82,7 @@ class Dataset(MetaAbstractModel, GeomAbstractModel):
                 'url':self.url.path,
                 'format':self.format,
                 'name':self.name,
+                'title':self.title,
                 'data':json.loads(self.data) if self.data else None,
             },
         )

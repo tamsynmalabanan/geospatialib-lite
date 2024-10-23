@@ -51,12 +51,24 @@ def login(request):
             response['HX-Redirect'] = next_url
             return response
         else:
-            messages.error(request, 'Invalid login credentials.', extra_tags='login-form')
+            if 'captcha' in form.errors:
+                message = list(form.errors['captcha'].data[0])[0]
+                if message == 'This field is required.':
+                    message = 'You must pass the reCAPTCHA test to login. Please try again.'
+            else:
+                message = '<ul class="list-unstyled m-0">'
+                for error in list(form.errors.values()):
+                    clean_error = list(error.data[0])[0]
+                    clean_error = clean_error.replace('Email', 'email or username')
+                    message = message + '<li>' + clean_error + '</li>'
+                message = message + '</ul>'
+            messages.error(request, message, 'login-form')
     else:
         form = main_forms.AuthenticationForm()
         messages.info(request, 'main/login/message.html', extra_tags='login-form message-template')
 
     return render(request, 'main/login/form.html', {'form':form})
+
 
 @login_required
 def user_account(request, name):
@@ -93,7 +105,7 @@ def user_account(request, name):
                 else:
                     messages.info(request, f'No changes made to your {name}.', extra_tags=f'{name}-form')
             else:
-                messages.error(request, 'Please review the errors below.', f'{name}-form')
+                messages.error(request, 'Please review the error/s below.', f'{name}-form')
                 for field in form.errors:
                     form_helpers.validate_field(form[field])
         return render(request, f'main/account/{name}.html', {'form':form})

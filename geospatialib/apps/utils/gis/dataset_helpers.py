@@ -56,6 +56,9 @@ class WMSHandler(DatasetHandler):
         except Exception as e:
             print('ERROR with WMSHandler handler', e)
 
+    def get_title(self,):
+        pass
+
     def get_bbox(self, layer):
         bbox = None
         
@@ -108,7 +111,6 @@ class WMSHandler(DatasetHandler):
             'styles': layer.styles,
             'dataurls': layer.dataUrls,
             'auth': vars(layer.auth),
-            # 'crsoptions': layer.crsOptions,
             'metadataurls': layer.metadataUrls,
         }
 
@@ -117,9 +119,10 @@ class WMSHandler(DatasetHandler):
     def populate_dataset(self, dataset):
         try:
             service = wms.WebMapService(self.path)
-            
-            dataset.bbox = self.get_bbox(service[dataset.name])
-            dataset.data = self.get_data(service, dataset.name)
+            layer_name = dataset.name
+            dataset.bbox = self.get_bbox(service[layer_name])
+            dataset.data = self.get_data(service, layer_name)
+            dataset.title = service[layer_name].title
 
             dataset.save()
         except Exception as e:

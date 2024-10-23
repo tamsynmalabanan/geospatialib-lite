@@ -3,12 +3,16 @@ from django.contrib.auth.forms import AuthenticationForm, SetPasswordForm
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth.password_validation import get_default_password_validators, validate_password as vp
 from django.contrib.auth import get_user_model, authenticate
+from django_recaptcha.fields import ReCaptchaField
+from django_recaptcha.widgets import ReCaptchaV2Checkbox
+
 
 User = get_user_model()
 
 
 class AuthenticationForm(AuthenticationForm):
     username = forms.CharField(label='Email address or username')
+    # captcha = ReCaptchaField(widget=ReCaptchaV2Checkbox())
 
 class SetPasswordForm(SetPasswordForm):
     new_password1 = forms.CharField(

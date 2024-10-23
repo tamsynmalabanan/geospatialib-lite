@@ -1,4 +1,5 @@
 from django import template
+from django_recaptcha.widgets import ReCaptchaV2Checkbox
 
 from ..general import form_helpers
 
@@ -19,3 +20,6 @@ def assign_field_attributes(field):
     
     return field
 
+@register.filter
+def is_captchta_widget(widget):
+    return isinstance(widget, ReCaptchaV2Checkbox)

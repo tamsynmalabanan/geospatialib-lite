@@ -1,3 +1,5 @@
+from django_recaptcha.widgets import ReCaptchaV2Checkbox
+
 from collections import OrderedDict
 import random
 import string
@@ -31,20 +33,33 @@ def validate_field(field, style_if_valid=False):
 def assign_field_style_classes(field):
     field_classes = []
     
-    input_type = field.field.widget.input_type
-    if input_type == 'select':
-        field_classes.append('form-select')
-    elif input_type == 'checkbox':
-        field_classes.append('form-check-input') 
+    widget = field.field.widget
+    if isinstance(widget, ReCaptchaV2Checkbox):
+        field_classes.append('d-flex')
+        field_classes.append('justify-content-center')
     else:
-        field_classes.append('form-control')
+        input_type = widget.input_type
+        if input_type == 'select':
+            field_classes.append('form-select')
+        elif input_type == 'checkbox':
+            field_classes.append('form-check-input') 
+        else:
+            field_classes.append('form-control')
     
     append_classes_to_field(field, field_classes)
 
 def assign_field_attributes(field):
-    attrs = field.field.widget.attrs
+    widget = field.field.widget
+    
+    attrs = widget.attrs
     attrs['id'] = f'{field.form.__class__.__name__.lower()}_{field.name}'
-    attrs['placeholder'] = field.label
+
+    if isinstance(widget, ReCaptchaV2Checkbox):
+        pass
+        # attrs['data-theme'] = 'light'
+        # attrs['data-size'] = 'normal'
+    else:
+        attrs['placeholder'] = field.label
 
 def black_choices(value='---------'):
     return [('', value)]

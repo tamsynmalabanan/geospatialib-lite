@@ -68,7 +68,7 @@ const renderSharedDatasetLayer = () => {
             )
     
             map.getLayerGroups().client.addLayer(layer)
-            shareDatasetLayerLoadErrorTimeout = setTimeout(shareDatasetLayerLoadError, 60000)
+            // shareDatasetLayerLoadErrorTimeout = setTimeout(shareDatasetLayerLoadError, 60000)
         }
     
         if (sharedDataset) {
