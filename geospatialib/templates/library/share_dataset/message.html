@@ -1,0 +1,13 @@
+{% if geojson %}
+    {% if 'info' in message.tags %}
+        View or share additional information about this dataset:
+    {% endif %}
+    {% if 'success' in message.tags %}
+        Successfully onboarded! View or share additional information about this dataset:
+    {% endif %}
+    {{geojson.properties.name}}
+{% else %}    
+    {% if 'error' in message.tags %}
+        There was an error while onboarding the dataset. Please try again.
+    {% endif %}
+{% endif %}

@@ -54,7 +54,7 @@ class WMSHandler(DatasetHandler):
             self.access_url = service.url
             self.layers = self.get_layers(service)
         except Exception as e:
-            print(e)
+            print('ERROR with WMSHandler handler', e)
 
     def get_bbox(self, layer):
         bbox = None
@@ -85,7 +85,7 @@ class WMSHandler(DatasetHandler):
     def get_data(self, service, layer_name):
         id = service.identification
         provider = service.provider
-        layer = service.contents.get(layer_name)
+        layer = service[layer_name]
 
         data = {
             'id': layer.id,
@@ -108,7 +108,7 @@ class WMSHandler(DatasetHandler):
             'styles': layer.styles,
             'dataurls': layer.dataUrls,
             'auth': vars(layer.auth),
-            'crsoptions': layer.crsOptions,
+            # 'crsoptions': layer.crsOptions,
             'metadataurls': layer.metadataUrls,
         }
 
@@ -123,7 +123,7 @@ class WMSHandler(DatasetHandler):
 
             dataset.save()
         except Exception as e:
-            print(e)
+            print('ERROR with WMSHandler populate_dataset', e)
 
 class WFSHandler(DatasetHandler):
 
@@ -140,9 +140,8 @@ class WFSHandler(DatasetHandler):
             self.access_url = service.url
             self.layers = self.get_layers(service)
         except Exception as e:
-            print(e)
-
-            
+            print('ERROR with WFSHandler handler', e)
+   
 
 def get_dataset_handler(format, **kwargs):
     handler = {
@@ -162,23 +161,21 @@ def get_dataset_format(url):
     return match
 
 
-
-
-def wms_request(url, name):
-    service = wms.WebMapService(url=url)
-    layer = service[name]
+# def wms_request(url, name):
+#     service = wms.WebMapService(url=url)
+#     layer = service[name]
     
-    try:
-        response = service.getmap(
-            layers=[name],
-            srs='EPSG:4326',
-            bbox=layer.boundingBoxWGS84,
-            size=(512, 512),
-            format='image/jpeg',
-            transparent=True
-        )
-        print(response)
-        with open('map.png', 'wb') as f:
-            f.write(response.read())
-    except Exception as e:
-        print('ERROR with wms_request: ', e)
+#     try:
+#         response = service.getmap(
+#             layers=[name],
+#             srs='EPSG:4326',
+#             bbox=layer.boundingBoxWGS84,
+#             size=(512, 512),
+#             format='image/jpeg',
+#             transparent=True
+#         )
+#         print(response)
+#         with open('map.png', 'wb') as f:
+#             f.write(response.read())
+#     except Exception as e:
+#         print('ERROR with wms_request: ', e)

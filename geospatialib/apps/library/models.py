@@ -39,6 +39,7 @@ class GeomAbstractModel(models.Model):
     class Meta:
         abstract = True
 
+
 class URL(MetaAbstractModel):
     path = models.URLField('URL', max_length=256, unique=True)
 
@@ -50,7 +51,7 @@ class URL(MetaAbstractModel):
         return urlparse(self.path).netloc
     
 class Dataset(MetaAbstractModel, GeomAbstractModel):
-    url = models.ForeignKey("library.URL", verbose_name='URL', on_delete=models.CASCADE)
+    url = models.ForeignKey("library.URL", verbose_name='URL', on_delete=models.CASCADE, related_name='datasets')
     format = models.CharField('Format', max_length=16, choices=form_helpers.dict_to_choices(choices.DATASET_FORMATS))
     name = models.CharField('Layer', max_length=256)
     data = models.JSONField('Data', blank=True, null=True)
@@ -60,6 +61,16 @@ class Dataset(MetaAbstractModel, GeomAbstractModel):
 
     def __str__(self) -> str:
         return self.name
+    
+    @property
+    def title(self):
+        title = None
+        if self.data:
+            data = json.loads(self.data)
+            title = data.get('title')
+        if not title:
+            title = self.name
+        return title
 
     @property
     def geojson(self):
@@ -70,8 +81,8 @@ class Dataset(MetaAbstractModel, GeomAbstractModel):
                 'url':self.url.path,
                 'format':self.format,
                 'name':self.name,
-                'data':json.loads(self.data) if self.data else {},
+                'data':json.loads(self.data) if self.data else None,
             },
         )
+
         return feature
-        # return json.dumps(feature)

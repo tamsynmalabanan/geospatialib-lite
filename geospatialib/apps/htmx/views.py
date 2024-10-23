@@ -142,6 +142,14 @@ def generate_random_username(request):
     
     return render(request, 'base/components/form/field.html', {'field': username_field})
 
+
+
+def search_results(request):
+    dataset_queryset = lib_models.Dataset.objects.all()
+    return render(request, 'library/search/results.html', {'datasets':dataset_queryset})
+
+
+
 @login_required
 def share_dataset(request):
     user = request.user
@@ -181,10 +189,14 @@ def share_dataset(request):
                     form.data.update({'name': name_value})
                     form.full_clean()
 
+            message_template = 'library/share_dataset/message.html'
+            message_tags = 'share-dataset-form message-template'
+
             dataset_handler = cache.get(form.cached_handler_key)
+            url_instance = None
+
             form_is_valid = form.is_valid()
             clean_data = form.cleaned_data
-            url_instance = None
             
             if form_is_valid and dataset_handler:
                 url_instance, created = lib_models.URL.objects.get_or_create(
@@ -199,11 +211,7 @@ def share_dataset(request):
                     )
                     if dataset_queryset.exists():
                         dataset_instance = dataset_queryset.first()
-                        messages.info(
-                            request, 
-                            'This dataset is already on Geospatialib.', 
-                            'share-dataset-form'
-                        )
+                        messages.info(request, message_template, message_tags)
 
             if data.get('submit') is not None and not dataset_instance:
                 if form_is_valid and url_instance:
@@ -216,22 +224,10 @@ def share_dataset(request):
                     if dataset_instance:
                         if created:
                             dataset_handler.populate_dataset(dataset_instance)
-                            messages.success(
-                                request, 
-                                'Thank you for sharing a dataset', 
-                                'share-dataset-form'
-                            )
+                            messages.success(request, message_template, message_tags)
                         else:
-                            messages.info(
-                                request, 
-                                'This dataset is already on Geospatialib.', 
-                                'share-dataset-form'
-                            )
+                            messages.info(request, message_template, message_tags)
                 else:
-                    messages.error(
-                        request, 
-                        'There was an error in saving the dataset your are sharing.', 
-                        'share-dataset-form'
-                    )
+                    messages.info(request, message_template, message_tags)
 
     return render(request, 'library/share_dataset/form.html', {'form':form, 'dataset':dataset_instance})

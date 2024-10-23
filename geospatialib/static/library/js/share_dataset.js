@@ -15,6 +15,7 @@ const resetShareDatasetSubmitBtn = () => {
 }
 
 const handleShareDatasetForm = (dataset) => {
+    sharedDataset = dataset
     disableShareDatasetSubmitBtn()
     clearAllLayers(getShareDatasetMap())
 }
@@ -67,7 +68,7 @@ const renderSharedDatasetLayer = () => {
             )
     
             map.getLayerGroups().client.addLayer(layer)
-            shareDatasetLayerLoadErrorTimeout = setTimeout(shareDatasetLayerLoadError, 10000)
+            shareDatasetLayerLoadErrorTimeout = setTimeout(shareDatasetLayerLoadError, 60000)
         }
     
         if (sharedDataset) {

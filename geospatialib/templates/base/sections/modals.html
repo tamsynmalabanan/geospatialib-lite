@@ -1,5 +1,6 @@
 {% if user.is_authenticated %}
     {% include "main/account/modal.html" %}
+    
     {% include "library/share_dataset/modal.html" %}
     {% include "library/create_map/modal.html" %}
 {% else %}
@@ -8,3 +9,5 @@
 
 {% include "main/terms/modal.html" %}
 {% include "main/about/modal.html" %}
+
+{% include "library/dataset_info/modal.html" %}
