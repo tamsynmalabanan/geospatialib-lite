@@ -1,3 +1,9 @@
+{% load util_tags %}
+
+{% if dataset %}
+    {% var dataset.geojson as geojson %}
+{% endif %}
+
 {% include "base/components/messages/body.html" with dismissible=0 tag='share-dataset-form' hx_swap_oob="true" %}
 
 {% csrf_token %}
@@ -9,7 +15,7 @@
 
 <script>
     if (document.readyState === 'complete') {
-        sharedDatasetExists = {% if dataset %}true{% else %}false{% endif %}
+        sharedDataset = {% if geojson %}{{geojson|safe}}{% else %}undefined{% endif %}
         handleShareDatasetForm("{{dataset}}")
         {% if form.is_valid %}
             renderSharedDatasetLayer()

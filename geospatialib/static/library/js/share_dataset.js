@@ -1,21 +1,29 @@
-let sharedDatasetExists
+let sharedDataset
+let shareDatasetLayerLoadErrorTimeout
 
 const getShareDatasetSubmitBtn = () => document.querySelector('#shareDatasetModal .btn[type="submit"]')
 const getShareDatasetNameField = () => document.querySelector('#shareDatasetModal [name="name"]')
 const getShareDatasetMap = () => mapQuerySelector('#shareDatasetModal .leaflet-container')
 
-const disabledShareDatasetSubmitBtn = () => {
+const disableShareDatasetSubmitBtn = () => {
     getShareDatasetSubmitBtn().setAttribute('disabled', true)
 }
 
+const resetShareDatasetSubmitBtn = () => {
+    clearTimeout(shareDatasetLayerLoadErrorTimeout)
+    disableShareDatasetSubmitBtn()
+}
+
 const handleShareDatasetForm = (dataset) => {
-    disabledShareDatasetSubmitBtn()
+    disableShareDatasetSubmitBtn()
     clearAllLayers(getShareDatasetMap())
 }
 
 const shareDatasetLayerLoaded = (event) => {
+    clearTimeout(shareDatasetLayerLoadErrorTimeout)
+
     const submitButton = getShareDatasetSubmitBtn()
-    if (!sharedDatasetExists) {
+    if (!sharedDataset) {
         submitButton.removeAttribute('disabled')
     }
 
@@ -29,7 +37,7 @@ const shareDatasetLayerLoaded = (event) => {
 }
 
 const shareDatasetLayerLoadError = (event) => {
-    disabledShareDatasetSubmitBtn()
+    disableShareDatasetSubmitBtn()
 
     const nameField = getShareDatasetNameField()
     if (!nameField.classList.contains('is-invalid')) {
@@ -41,24 +49,30 @@ const shareDatasetLayerLoadError = (event) => {
 }
 
 const renderSharedDatasetLayer = () => {
-    const form = document.querySelector('#shareDatasetModal form')
-    const data = {
-        layerPath: form.elements.path.value, 
-        layerFormat: form.elements.format.value,
-        layerName: form.elements.name.value,
-    }
+    const map = getShareDatasetMap()
+    if (map) {
+        const form = document.querySelector('#shareDatasetModal form')
+        const data = {
+            layerPath: form.elements.path.value, 
+            layerFormat: form.elements.format.value,
+            layerName: form.elements.name.value,
+        }
 
-    const layer = createLayerFromURL(data)
-    if (layer) {
-        assignLayerLoadEventHandlers(
-            layer, 
-            shareDatasetLayerLoaded,
-            shareDatasetLayerLoadError,
-        )
-
-        const map = getShareDatasetMap()
-        if (map) {
+        const layer = createLayerFromURL(data)
+        if (layer) {
+            assignLayerLoadEventHandlers(
+                layer, 
+                shareDatasetLayerLoaded,
+                shareDatasetLayerLoadError,
+            )
+    
             map.getLayerGroups().client.addLayer(layer)
+            shareDatasetLayerLoadErrorTimeout = setTimeout(shareDatasetLayerLoadError, 10000)
+        }
+    
+        if (sharedDataset) {
+            const bboxLayer = L.geoJSON(sharedDataset)
+            map.fitBounds(bboxLayer.getBounds())
         }
     }
 }

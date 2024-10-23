@@ -11,6 +11,7 @@ class NewDatasetForm(forms.Form):
         label='URL',
         required=True,
         widget=forms.URLInput(attrs={
+            'type':'search',
             'hx-post':reverse_lazy('htmx:share_dataset'),
             'hx-trigger':'input changed delay:1000ms',
         })
@@ -37,7 +38,7 @@ class NewDatasetForm(forms.Form):
         widget=forms.Select(attrs={
             'hx-post':reverse_lazy('htmx:share_dataset'),
             'hx-trigger':'change delay:1000ms',
-            'onchange':'disabledShareDatasetSubmitBtn()',
+            'onchange':'resetShareDatasetSubmitBtn()',
             'disabled':True,
         })
     )

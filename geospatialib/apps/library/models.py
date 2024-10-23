@@ -3,7 +3,9 @@ from django.utils.text import slugify
 from django.db.models import Q
 
 import shortuuid
+import geojson
 from urllib.parse import urlparse
+import json
 
 from . import choices
 
@@ -51,10 +53,25 @@ class Dataset(MetaAbstractModel, GeomAbstractModel):
     url = models.ForeignKey("library.URL", verbose_name='URL', on_delete=models.CASCADE)
     format = models.CharField('Format', max_length=16, choices=form_helpers.dict_to_choices(choices.DATASET_FORMATS))
     name = models.CharField('Layer', max_length=256)
-    data = models.JSONField('Data', blank=True, null=True)
+    data = models.JSONField('Data', default=dict)
 
     class Meta:
         unique_together = ['url', 'format', 'name']
 
     def __str__(self) -> str:
         return self.name
+
+    @property
+    def geojson(self):
+        geom_json = json.loads(self.bbox.geojson)
+        feature = geojson.Feature(
+            geometry=geom_json,
+            properties={
+                'url':self.url.path,
+                'format':self.format,
+                'name':self.name,
+                'data':json.loads(self.data),
+            },
+        )
+        return feature
+        # return json.dumps(feature)

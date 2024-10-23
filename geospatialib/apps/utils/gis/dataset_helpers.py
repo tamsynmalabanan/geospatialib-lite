@@ -4,6 +4,7 @@ from django.contrib.gis.gdal import SpatialReference
 
 from owslib import wms, wfs
 from urllib.parse import urlparse, urlunparse
+import json
 
 from . import geom_helpers
 from ..general import util_helpers
@@ -72,25 +73,53 @@ class WMSHandler(DatasetHandler):
             else:
                 bbox_srid = 4326
             
+            geom = Polygon(bbox_corners, srid=bbox_srid)
             if bbox_srid == 4326:
-                return Polygon(bbox_corners, srid=bbox_srid)
+                return geom
             else:
                 wgs84_srs = SpatialReference(4326)
-                return Polygon(
-                    bbox_corners, 
-                    srid=bbox_srid
-                ).transform(wgs84_srs, clone=True)
+                return geom.transform(wgs84_srs, clone=True)
         else:
             return geom_helpers.WORLD_GEOM
+
+    def get_data(self, service, layer_name):
+        id = service.identification
+        provider = service.provider
+        layer = service.contents.get(layer_name)
+
+        data = {
+            'id': layer.id,
+            'name': layer.name,
+            'queryable': layer.queryable,
+            'title': layer.title,
+            'abstract': '<br><br>'.join([
+                id.title, 
+                id.abstract, 
+                layer.abstract
+            ]),
+            'keywords': id.keywords + layer.keywords,
+            'accessconstraints': id.accessconstraints,
+            'fees': id.fees,
+            'provider': {
+                'name':provider.name,
+                'url':provider.url,
+                'contact':vars(provider.contact),
+            },
+            'styles': layer.styles,
+            'dataurls': layer.dataUrls,
+            'auth': vars(layer.auth),
+            'crsoptions': layer.crsOptions,
+            'metadataurls': layer.metadataUrls,
+        }
+
+        return json.dumps(data)
 
     def populate_dataset(self, dataset):
         try:
             service = wms.WebMapService(self.path)
-            id = service.identification
-            provider = service.provider
-            layer = service[dataset.name]
             
-            dataset.bbox = self.get_bbox(layer)
+            dataset.bbox = self.get_bbox(service[dataset.name])
+            dataset.data = self.get_data(service, dataset.name)
 
             dataset.save()
         except Exception as e:

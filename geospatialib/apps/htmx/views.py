@@ -170,6 +170,7 @@ def share_dataset(request):
                 if format_is_valid:
                     name_field = form['name']
                     name_field.field.widget.attrs['disabled'] = False
+                    name_field.field.widget.attrs['autofocus'] = True
 
                     layers = [layer[0] for layer in name_field.field.choices]
                     name_value = data.get('name', '')
@@ -217,7 +218,7 @@ def share_dataset(request):
                             dataset_handler.populate_dataset(dataset_instance)
                             messages.success(
                                 request, 
-                                'Thank you for sharing a dataset to Geospatialib.', 
+                                'Thank you for sharing a dataset', 
                                 'share-dataset-form'
                             )
                         else:
