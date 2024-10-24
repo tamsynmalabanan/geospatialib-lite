@@ -51,10 +51,13 @@ class WMSHandler(DatasetHandler):
     def handler(self):
         try:
             service = wms.WebMapService(self.path)
+        except Exception as e:
+            service = None
+            print('ERROR with WMSHandler handler', e)
+
+        if service:
             self.access_url = service.url
             self.layers = self.get_layers(service)
-        except Exception as e:
-            print('ERROR with WMSHandler handler', e)
 
     def get_title(self,):
         pass
@@ -62,11 +65,11 @@ class WMSHandler(DatasetHandler):
     def get_bbox(self, layer):
         bbox = None
         
-        geom_attrs = ['boundingBoxWGS84', 'boundingBox']
-        for attr in geom_attrs:
-            if hasattr(layer, attr) and isinstance(getattr(layer, attr), tuple):
-                bbox = getattr(layer, attr)
-                break
+        if layer:
+            for attr in ['boundingBoxWGS84', 'boundingBox']:
+                if hasattr(layer, attr) and isinstance(getattr(layer, attr), (list, tuple)):
+                    bbox = getattr(layer, attr)
+                    break
         
         if bbox:
             w,s,e,n,*srid = bbox
@@ -85,48 +88,79 @@ class WMSHandler(DatasetHandler):
         else:
             return geom_helpers.WORLD_GEOM
 
-    def get_data(self, service, layer_name):
-        id = service.identification
-        provider = service.provider
-        layer = service[layer_name]
+    def get_data(self, service, layer):
+        id = service.identification if hasattr(service, 'identification') else None
+        provider = service.provider if hasattr(service, 'provider') else None
 
-        data = {
-            'id': layer.id,
-            'name': layer.name,
-            'queryable': layer.queryable,
-            'title': layer.title,
-            'abstract': '<br><br>'.join([
-                id.title, 
-                id.abstract, 
-                layer.abstract
-            ]),
-            'keywords': id.keywords + layer.keywords,
-            'accessconstraints': id.accessconstraints,
-            'fees': id.fees,
-            'provider': {
-                'name':provider.name,
-                'url':provider.url,
-                'contact':vars(provider.contact),
-            },
-            'styles': layer.styles,
-            'dataurls': layer.dataUrls,
-            'auth': vars(layer.auth),
-            'metadataurls': layer.metadataUrls,
-        }
+        data = {}
+        
+        if id:
+            for attr in ['accessconstraints', 'fees']:
+                if hasattr(id, attr):
+                    data[attr] = getattr(id, attr)
+        
+        if layer:
+            for attr in ['queryable', 'styles', 'dataUrls', 'metadataUrls']:
+                if hasattr(layer, attr):
+                    data[attr] = getattr(layer, attr)
+            if hasattr(layer, 'auth') and hasattr(getattr(layer, 'auth'), '__dict__'):
+                data['auth'] = vars(getattr(layer, 'auth'))
+
+        if provider:
+            provider = {}
+            for attr in ['name', 'url']:
+                if hasattr(provider, attr):
+                    provider[attr] = getattr(provider, attr)
+            if hasattr(provider, 'contact') and hasattr(getattr(provider, 'contact'), '__dict__'):
+                provider['contact'] = vars(getattr(provider, 'contact'))
+            data['provider'] = provider
+
+        objects = [obj for obj in [id, layer] if obj is not None]
+
+        titles = []
+        for obj in objects:
+            if hasattr(obj, 'title'):
+                title = obj.title
+                if isinstance(title, str):
+                    titles.append(title)
+        data['title'] = ' - '.join(titles)
+
+        abstracts = []
+        for obj in objects:
+            if hasattr(obj, 'abstract'):
+                abstract = obj.abstract
+                if isinstance(abstract, str):
+                    abstracts.append(abstract)
+        data['abstract'] = '<br><br>'.join(abstracts)
+
+        keywords = []
+        for obj in objects:
+            if hasattr(obj, 'keywords') and isinstance(obj.keywords, (list, tuple)):
+                keywords = keywords + list(obj.keywords)
+        data['keywords'] = list(set(keywords))
 
         return json.dumps(data)
 
     def populate_dataset(self, dataset):
         try:
             service = wms.WebMapService(self.path)
+        except Exception as e:
+            service = None
+
+        if service:
             layer_name = dataset.name
-            dataset.bbox = self.get_bbox(service[layer_name])
-            dataset.data = self.get_data(service, layer_name)
-            dataset.title = service[layer_name].title
+        
+            try:
+                layer = service[layer_name]
+                if hasattr(layer, 'title'):
+                    dataset.title = layer.title
+            except:
+                layer = None
+            
+            dataset.bbox = self.get_bbox(layer)
+            dataset.data = self.get_data(service, layer)
 
             dataset.save()
-        except Exception as e:
-            print('ERROR with WMSHandler populate_dataset', e)
 
 class WFSHandler(DatasetHandler):
 

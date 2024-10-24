@@ -25,5 +25,8 @@
 <script type="text/javascript" src="{% static 'base/js/sidebar.js' %}"></script>
 <script type="text/javascript" src="{% static 'base/js/index.js' %}"></script>
 
-<script type="text/javascript" src="{% static 'library/js/share_dataset.js' %}"></script>
-<script type="text/javascript" src="{% static 'library/js/dataset_info.js' %}"></script>
+<script type="text/javascript" src="{% static 'library/js/search.js' %}"></script>
+
+{% if user.is_authenticated %}
+    <script type="text/javascript" src="{% static 'library/js/share_dataset.js' %}"></script>
+{% endif %}

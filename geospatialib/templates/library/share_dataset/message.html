@@ -1,20 +1,20 @@
-{% if geojson %}
+{% if dataset %}
     <div>
         {% if 'info' in message.tags %}
-            View or share additional information about this dataset:
+            Find this and other related datasets in the library:
         {% elif 'success' in message.tags %}
-            Successfully onboarded! View or share additional information about this dataset:
+            Successfully onboarded! Find this and other related datasets in the library:
         {% endif %}
         <a
             class="text-reset text-decoration-none"
             data-bs-toggle="modal"
-            href="#datasetInfoModal"
+            href="#shareDatasetModal"
             role="button"
-            onclick='showDatasetInfo(sharedDataset)'
+            onclick='searchLibrary("{{dataset.title}} {{dataset.uuid}}")'
         >
             <i class="bi bi-layers-half mx-2"></i>
             <span>
-                {{dataset.title}}
+                {{dataset.label}}
             </span>
         </a>
     </div>

@@ -11,6 +11,7 @@ from . import choices
 
 from ..utils.general import form_helpers
 
+
 class MetaAbstractModel(models.Model):
     uuid = models.SlugField('UUID', unique=True, editable=False, null=True, blank=True, max_length=16)
     added_by = models.ForeignKey("main.User", verbose_name='Added by', editable=False, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='%(class)ss_added')
@@ -54,8 +55,8 @@ class Dataset(MetaAbstractModel, GeomAbstractModel):
     url = models.ForeignKey("library.URL", verbose_name='URL', on_delete=models.CASCADE, related_name='datasets')
     format = models.CharField('Format', max_length=16, choices=form_helpers.dict_to_choices(choices.DATASET_FORMATS))
     name = models.CharField('Layer', max_length=256)
-    data = models.JSONField('Data', blank=True, null=True)
     title = models.CharField('Title', max_length=256, blank=True, null=True)
+    data = models.JSONField('Data', blank=True, null=True)
 
     class Meta:
         unique_together = ['url', 'format', 'name']
@@ -63,15 +64,11 @@ class Dataset(MetaAbstractModel, GeomAbstractModel):
     def __str__(self) -> str:
         return self.name
     
-    # @property
-    # def title(self):
-    #     title = None
-    #     if self.data:
-    #         data = json.loads(self.data)
-    #         title = data.get('title')
-    #     if not title:
-    #         title = self.name
-    #     return title
+    @property
+    def label(self):
+        if self.title:
+            return self.title
+        return self.name
 
     @property
     def geojson(self):
@@ -86,5 +83,13 @@ class Dataset(MetaAbstractModel, GeomAbstractModel):
                 'data':json.loads(self.data) if self.data else None,
             },
         )
+        return feature
 
+    @property
+    def geojson_geom(self):
+        geom_json = json.loads(self.bbox.geojson)
+        feature = geojson.Feature(
+            geometry=geom_json,
+            properties={},
+        )
         return feature

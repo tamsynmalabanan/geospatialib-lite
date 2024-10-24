@@ -71,6 +71,7 @@ const renderSharedDatasetLayer = () => {
             // shareDatasetLayerLoadErrorTimeout = setTimeout(shareDatasetLayerLoadError, 60000)
         }
     
+        
         if (sharedDataset) {
             const bboxLayer = L.geoJSON(sharedDataset)
             map.fitBounds(bboxLayer.getBounds())
