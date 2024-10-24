@@ -12,7 +12,7 @@ User = get_user_model()
 
 class AuthenticationForm(AuthenticationForm):
     username = forms.CharField(label='Email address or username')
-    # captcha = ReCaptchaField(widget=ReCaptchaV2Checkbox())
+    captcha = ReCaptchaField(widget=ReCaptchaV2Checkbox())
 
 class SetPasswordForm(SetPasswordForm):
     new_password1 = forms.CharField(
