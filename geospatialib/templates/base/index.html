@@ -20,7 +20,7 @@
         <div class="container-fluid vh-100">
             <div class="row vh-100">
                 <div 
-                    class="offcanvas-lg offcanvas-start col-lg-4 vh-100 px-3 d-flex flex-column shadow-lg border-end" 
+                    class="offcanvas-lg offcanvas-start col-lg-4 vh-100 px-0 d-flex flex-column shadow-lg border-end" 
                     tabindex="-1" 
                     data-bs-scroll="true" 
                     data-bs-backdrop="false" 
@@ -28,10 +28,13 @@
                     aria-labelledby="{{sidebar_id}}Label"
                 >
                     {% include "base/sections/header.html" %}
-                    <div class="offcanvas-body d-flex flex-column flex-grow-1 overflow-auto pe-3 ps-0">
+                    <div class='px-3'>
+                        {% block offcanvas_nav %}{% endblock offcanvas_nav %}
+                    </div>
+                    <div class="offcanvas-body d-flex flex-column flex-grow-1 overflow-auto px-3">
                         {% block offcanvas_body %}{% endblock offcanvas_body %}
                     </div>
-                    <div class="footer border-top mt-3 d-none d-lg-flex py-2 gap-3 justify-content-center">
+                    <div class="footer border-top d-none d-lg-flex py-2 gap-3 justify-content-center">
                         {% with button_class='btn btn-sm btn-light d-flex gap-2 justify-content-center align-items-center' label_class='text-nowrap d-none d-xl-inline' %}
                             {% if user.is_authenticated %}
                                 {% include "main/menu/dropup.html" with label_class='text-nowrap' %}

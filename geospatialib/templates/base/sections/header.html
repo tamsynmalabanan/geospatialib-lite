@@ -1,22 +1,22 @@
-<div class="offcanvas-header d-flex px-0 mb-3">
-    <h5 class="offcanvas-title flex-grow-1 user-select-none" id="{{sidebar_id}}Label">
+<div class="offcanvas-header d-flex px-0 mb-3 px-3">
+    <h4 class="offcanvas-title flex-grow-1 user-select-none" id="{{sidebar_id}}Label">
         <a class='text-reset text-decoration-none' href="{% url 'library:index' %}">Geospatialib</a>
-    </h5>
+    </h4>
     <button 
         type="button" 
-        class="bi bi-moon-fill " 
+        class="bi bi-moon-fill pe-lg-3" 
         title='Toggle dark mode'
         onclick='toggleDarkMode(event)'
     ></button>    
     <button 
         type="button" 
-        class="bi bi-layout-sidebar-inset d-none d-lg-block" 
+        class="bi bi-layout-sidebar-inset d-none d-lg-block px-0" 
         title='Toggle sidebar'
         onclick='toggleSidebar(event)' 
     ></button>    
     <button 
         type="button" 
-        class="btn-close d-lg-none" 
+        class="btn-close d-lg-none ms-lg-2" 
         data-bs-dismiss="offcanvas" 
         data-bs-target="#{{sidebar_id}}" 
         aria-label="Close"

@@ -21,7 +21,7 @@ class SetPasswordForm(SetPasswordForm):
         required=True,
         widget=forms.PasswordInput(attrs={
             'hx-post': reverse_lazy('htmx:password_validation'),
-            'hx-trigger': 'input changed delay:1000ms',
+            'hx-trigger': 'input changed delay:500ms',
             'hx-target':'#accountPasswordFormValidationFields',
             'hx-swap':'outerHTML',
         })
@@ -47,7 +47,7 @@ class SetPasswordForm(SetPasswordForm):
                 initial=False,
                 required=True,
                 widget=forms.CheckboxInput(attrs={
-                    'class':'focus-ring-none',
+                    'class':'box-shadow-none',
                     'onclick':'return false;',
                     'tabindex':'-1', 
                 }),
@@ -73,7 +73,7 @@ class UserProfileForm(forms.ModelForm):
         required=True,
         widget=forms.TextInput(attrs={
             'hx-post': reverse_lazy('htmx:username_validation'),
-            'hx-trigger': 'input changed delay:1000ms',
+            'hx-trigger': 'input changed delay:500ms',
             'hx-target':'.field-container:has(input[name="username"])',
             'hx-swap':'outerHTML',
         })

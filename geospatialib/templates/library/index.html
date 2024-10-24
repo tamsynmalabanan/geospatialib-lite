@@ -13,8 +13,12 @@
     <i class="bi bi-search"></i>
 {% endblock sidebar_toggle_icon %}
 
+{% block offcanvas_nav %}
+    {% include "library/search/form.html" %}
+{% endblock offcanvas_nav %}
+
 {% block offcanvas_body %}
-    {% include "library/search/sidebar.html" %}
+    {% include "library/search/results.html" %}
 {% endblock offcanvas_body %}
 
 {% if user.is_authenticated %}

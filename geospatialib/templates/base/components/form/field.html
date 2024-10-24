@@ -5,7 +5,9 @@
 {% var field.field.widget as widget %}
 
 <div class="flex-grow-1 field-container">
-    {% if widget|is_captchta_widget %}
+    {% if format == 'default' %}
+        {% render_field field %}
+    {% elif widget|is_captchta_widget %}
         {% render_field field %}
     {% elif widget.input_type == 'hidden' or widget.attrs.hidden %}
         {% render_field field %}

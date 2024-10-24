@@ -14,6 +14,6 @@ urlpatterns = [
     path('generate_random_username/', views.generate_random_username, name='generate_random_username'),
 
 
-    path('search_results/', views.search_results, name='search_results'),
+    path('search/', views.search, name='search'),
     path('share_dataset/', views.share_dataset, name='share_dataset'),
 ]

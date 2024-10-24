@@ -1,7 +1,20 @@
-{% if datasets %}
-    <ul class="list-unstyled">
-        {% for dataset in datasets %}
-            <li>{{dataset.label}}</li>
-        {% endfor %}
-    </ul>
-{% endif %}
+{% load static %}
+
+<div id='searchResults'>
+    {% if datasets %}
+        {% if datasets %}
+            <ul class="list-unstyled">
+                {% for dataset in datasets %}
+                    <li>{{dataset.label}}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% else %}
+        <div
+            hx-get="{% url 'htmx:search' %}?query={{request.GET.query}}&bbox={{request.GET.bbox}}&filter={{request.GET.filter}}"
+            hx-trigger='load'
+            hx-target='#searchResults'
+            hx-swap='outerHTML'
+        ></div>
+    {% endif %}
+</div>

@@ -1,0 +1,18 @@
+{% load static %}
+
+<form
+    class='px-0 mb-3'
+    hx-get="{% url 'htmx:search' %}"
+    hx-trigger='submit'
+    hx-target='#searchResults'
+    hx-swap='outerHTML'
+>   
+    {% csrf_token %}
+    <div class="d-flex gap-1 pb-1">
+        {% include "base/components/form/field.html" with field=form.query format='default' %}
+        <button type="submit" class="btn btn-success htmx-request-hide rounded-circle aspect-ratio-1" title='Search'><i class="bi bi-search"></i></button>
+        <button class="btn btn-success htmx-indicator rounded-circle aspect-ratio-1" title='Searching...' type="button" disabled>
+            <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+        </button>
+    </div>
+</form>

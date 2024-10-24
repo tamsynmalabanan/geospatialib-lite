@@ -6,6 +6,17 @@ from . import models, choices
 from ..utils.general import form_helpers, util_helpers
 from ..utils.gis import dataset_helpers
 
+class SearchForm(forms.Form):
+    query = forms.CharField(
+        label='Search...', 
+        max_length=256, 
+        required=True,
+        widget=forms.TextInput(attrs={
+            'type':'search',
+            'class':'h-100 border-0 rounded-0 focus-underline-success box-shadow-none'
+        })
+    )
+
 class NewDatasetForm(forms.Form):
     path = forms.URLField(
         label='URL',
@@ -13,7 +24,7 @@ class NewDatasetForm(forms.Form):
         widget=forms.URLInput(attrs={
             'type':'search',
             'hx-post':reverse_lazy('htmx:share_dataset'),
-            'hx-trigger':'input changed delay:1000ms',
+            'hx-trigger':'input changed delay:500ms',
         })
     )
     format = forms.ChoiceField(
@@ -25,7 +36,7 @@ class NewDatasetForm(forms.Form):
         },
         widget=forms.Select(attrs={
             'hx-post':reverse_lazy('htmx:share_dataset'),
-            'hx-trigger':'change delay:1000ms',
+            'hx-trigger':'change',
             'disabled': True
         })
     )
@@ -37,7 +48,7 @@ class NewDatasetForm(forms.Form):
         },
         widget=forms.Select(attrs={
             'hx-post':reverse_lazy('htmx:share_dataset'),
-            'hx-trigger':'change delay:1000ms',
+            'hx-trigger':'change',
             'onchange':'resetShareDatasetSubmitBtn()',
             'disabled':True,
         })

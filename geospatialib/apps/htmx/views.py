@@ -156,10 +156,14 @@ def generate_random_username(request):
 
 
 @require_http_methods(['GET'])
-def search_results(request):
-    dataset_queryset = lib_models.Dataset.objects.prefetch_related('url').all()
-    return render(request, 'library/search/results.html', {'datasets':dataset_queryset})
+def search(request):
+    print(request.GET)
+    
+    queryset = None
 
+    if queryset is None:
+        queryset = lib_models.Dataset.objects.prefetch_related('url').all()
+    return render(request, 'library/search/results.html', {'datasets':queryset})
 
 
 @login_required

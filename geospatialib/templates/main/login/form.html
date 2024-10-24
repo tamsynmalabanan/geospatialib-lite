@@ -1,31 +1,29 @@
 {% load static %}
 
-{% with endpoint='htmx:login' %}
-    <form
-        hx-post="{% url endpoint %}"
-        hx-trigger='submit'
-        hx-target='this'
-        hx-swap='outerHTML'
-    >
-        <div class="px-3">
-            {% include "base/components/messages/body.html" with dismissible=1 tag='login-form' %}
-        </div>
-        <div class='d-flex flex-column gap-3 overflow-hidden p-3 pt-0'>
-            {% csrf_token %}
-            {% for field in form %}
-                {% include "base/components/form/field.html" %}
-            {% endfor %}
-            <button
-                type="submit"
-                class="btn btn-lg btn-primary htmx-request-hide"
-            >
-                <i class="bi bi-box-arrow-in-right"></i>
-                <span class='text-nowrap'>Login</span>
-            </button>
-            <button class="btn btn-lg btn-primary htmx-indicator" type="button" disabled>
-                <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
-                <span role="status">Logging in...</span>
-            </button>
-        </div>
-    </form>
-{% endwith %}
+<form
+    hx-post="{% url 'htmx:login' %}"
+    hx-trigger='submit'
+    hx-target='this'
+    hx-swap='outerHTML'
+>
+    <div class="px-3">
+        {% include "base/components/messages/body.html" with dismissible=1 tag='login-form' %}
+    </div>
+    <div class='d-flex flex-column gap-3 overflow-hidden p-3 pt-0'>
+        {% csrf_token %}
+        {% for field in form %}
+            {% include "base/components/form/field.html" %}
+        {% endfor %}
+        <button
+            type="submit"
+            class="btn btn-lg btn-primary htmx-request-hide"
+        >
+            <i class="bi bi-box-arrow-in-right"></i>
+            <span class='text-nowrap'>Login</span>
+        </button>
+        <button class="btn btn-lg btn-primary htmx-indicator" type="button" disabled>
+            <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+            <span role="status">Logging in...</span>
+        </button>
+    </div>
+</form>
