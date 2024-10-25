@@ -3,7 +3,7 @@ from django.urls import path, re_path
 
 from . import views
 
-app_name = 'htmx'
+app_name = 'hx_main'
 
 urlpatterns = [
     path('login/', views.login, name='login'),

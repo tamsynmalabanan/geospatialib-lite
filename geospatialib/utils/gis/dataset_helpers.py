@@ -8,7 +8,7 @@ import json
 
 from . import geom_helpers
 from ..general import util_helpers
-from ...library import choices
+from apps.library import choices
 
 
 

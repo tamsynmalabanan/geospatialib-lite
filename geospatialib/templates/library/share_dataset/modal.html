@@ -1,7 +1,7 @@
 {% load static %}
 {% load leaflet_tags %}
 
-{% with endpoint='htmx:share_dataset' id='shareDatasetModal' %}
+{% with endpoint='hx_main:share_dataset' id='shareDatasetModal' %}
     <div class="modal fade" id="{{id}}" tabindex="-1" role="dialog" aria-labelledby="{{id}}Title" aria-hidden="true" >
         <div class="modal-dialog modal-lg modal-fullscreen-sm-down modal-dialog-scrollable modal-dialog-centered" role="document">
             <form

@@ -9,7 +9,7 @@ import json
 
 from . import choices
 
-from ..utils.general import form_helpers
+from utils.general import form_helpers
 
 
 class MetaAbstractModel(models.Model):

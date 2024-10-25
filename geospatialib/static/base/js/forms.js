@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
   handleCAPTCHAFields(document)
 })
 
-document.addEventListener('htmx:afterSwap', (event) => {
+document.addEventListener('hx_main:afterSwap', (event) => {
   handleCAPTCHAFields(event.target)
 })
 

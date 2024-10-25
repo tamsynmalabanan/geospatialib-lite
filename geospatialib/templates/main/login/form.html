@@ -1,7 +1,7 @@
 {% load static %}
 
 <form
-    hx-post="{% url 'htmx:login' %}"
+    hx-post="{% url 'hx_main:login' %}"
     hx-trigger='submit'
     hx-target='this'
     hx-swap='outerHTML'

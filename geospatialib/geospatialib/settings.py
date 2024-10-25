@@ -88,8 +88,8 @@ INSTALLED_APPS = [
     'django.contrib.gis',
 
     # local apps
-    'apps.utils',
-    'apps.htmx',
+    'utils',
+    'htmx.hx_main',
     'apps.main',
     'apps.library',
 
@@ -142,7 +142,7 @@ MIDDLEWARE = [
 
     # local
     'apps.main.middleware.RedirectCancelledSocialLogin',
-    'apps.htmx.middleware.HTMXDomainRestriction',
+    'htmx.hx_main.middleware.HTMXDomainRestriction',
 ]
 
 ROOT_URLCONF = 'geospatialib.urls'

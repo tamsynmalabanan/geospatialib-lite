@@ -12,14 +12,14 @@ from django.contrib.auth.password_validation import get_default_password_validat
 
 from urllib.parse import urlparse, parse_qs
 
-from ..main import forms as main_forms
-from ..library import (
+from apps.main import forms as main_forms
+from apps.library import (
     forms as lib_forms, 
     choices as lib_choices, 
     models as lib_models
 )
-from ..utils.general import form_helpers, util_helpers
-from ..utils.gis import dataset_helpers
+from utils.general import form_helpers, util_helpers
+from utils.gis import dataset_helpers
 
 User = get_user_model()
 

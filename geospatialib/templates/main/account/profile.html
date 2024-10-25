@@ -1,7 +1,7 @@
 {% include "main/account/header.html" %}
 
 <form 
-    hx-post="{% url 'htmx:user_account' name='profile' %}"
+    hx-post="{% url 'hx_main:user_account' name='profile' %}"
     hx-trigger='submit'
     hx-target='this'
     hx-swap='outerHTML'
@@ -17,7 +17,7 @@
                 type="button" 
                 class="btn btn-outline-primary px-3" 
                 title='Generate a random username'
-                hx-get="{% url 'htmx:generate_random_username' %}"
+                hx-get="{% url 'hx_main:generate_random_username' %}"
                 hx-trigger="click"
                 hx-target=".field-container:has(input[name='username'])"
                 hx-swap='outerHTML'

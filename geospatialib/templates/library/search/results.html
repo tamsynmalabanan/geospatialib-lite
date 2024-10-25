@@ -11,7 +11,7 @@
         {% endif %}
     {% else %}
         <div
-            hx-get="{% url 'htmx:search' %}?query={{request.GET.query}}&bbox={{request.GET.bbox}}&filter={{request.GET.filter}}"
+            hx-get="{% url 'hx_main:search' %}?query={{request.GET.query}}&bbox={{request.GET.bbox}}&filter={{request.GET.filter}}"
             hx-trigger='load'
             hx-target='#searchResults'
             hx-swap='outerHTML'
