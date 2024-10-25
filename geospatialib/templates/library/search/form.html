@@ -7,7 +7,6 @@
     hx-target='#searchResults'
     hx-swap='outerHTML'
 >   
-    {% csrf_token %}
     <div class="d-flex gap-1 pb-1">
         {% include "base/components/form/field.html" with field=form.query format='default' %}
         <button type="submit" class="btn btn-success htmx-request-hide rounded-circle aspect-ratio-1" title='Search'><i class="bi bi-search"></i></button>

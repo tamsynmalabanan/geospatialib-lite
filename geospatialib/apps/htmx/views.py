@@ -158,7 +158,17 @@ def generate_random_username(request):
 @require_http_methods(['GET'])
 def search(request):
     print(request.GET)
-    
+
+    # websearch
+    # SearchQuery(
+    # ...     "'tomato' ('red' OR 'green')", search_type="websearch"
+    # ... )
+    # search params -- query and bounding box (optional)
+    # Results for "query here" (count)
+    # facet filters: resource (map/dataset), format
+    # exclude facet filters with 0 count
+    # filters are highlighted when active
+
     queryset = None
 
     if queryset is None:
