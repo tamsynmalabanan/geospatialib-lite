@@ -24,7 +24,7 @@ const resizeCaptcha = (reCAPTCHA) => {
   
 const handleCAPTCHAFields = (parent) => {
     const captchaFields = parent.querySelectorAll('.g-recaptcha')
-  
+ 
     if (captchaFields.length !== 0) {
         const currentTheme = getPreferredTheme()
         captchaFields.forEach(field => {
@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
   handleCAPTCHAFields(document)
 })
 
-document.addEventListener('hx_main:afterSwap', (event) => {
+document.addEventListener('htmx:afterSwap', (event) => {
   handleCAPTCHAFields(event.target)
 })
 

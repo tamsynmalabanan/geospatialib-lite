@@ -45,6 +45,6 @@ document.addEventListener('setTheme', () => {
     handleAccordionNavTabs(document, init=false)
 })
 
-document.addEventListener('hx_main:afterSwap', (event) => {
+document.addEventListener('htmx:afterSwap', (event) => {
     handleAccordionNavTabs(event.target)
 })

@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setTheme(getPreferredTheme())
 })
 
-document.addEventListener('hx_main:afterSwap', (event) => {
+document.addEventListener('htmx:afterSwap', (event) => {
     const target = event.target
     toggleControlsTheme(getPreferredTheme(), parent=target)
 })
