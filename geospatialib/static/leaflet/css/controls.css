@@ -5,6 +5,7 @@
 }
 
 .leaflet-bar {
+    a.btn-dark.leaflet-disabled,
     a.btn-dark {
         background-color: var(--bs-body-bg);
         color: #fff;

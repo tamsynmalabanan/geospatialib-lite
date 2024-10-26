@@ -23,3 +23,14 @@ const changeURLParamValue = (url, param, value) => {
     urlParts.searchParams.set(param, value);
     return urlParts.toString();
 }
+
+const pushParamsToURL = (params) => {
+    const urlParams = new URLSearchParams(window.location.search);
+  
+    for (const key in params) {
+      urlParams.set(key, params[key]);
+    }
+  
+    const newURL = `${window.location.origin}${window.location.pathname}?${urlParams.toString()}`;
+    window.history.pushState({}, '', newURL);
+}
