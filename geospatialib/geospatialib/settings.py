@@ -90,6 +90,7 @@ INSTALLED_APPS = [
     # local apps
     'utils',
     'htmx.hx_main',
+    'htmx.hx_library',
     'apps.main',
     'apps.library',
 

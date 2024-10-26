@@ -12,8 +12,4 @@ urlpatterns = [
     path('password_validation/', views.password_validation, name='password_validation'),
     path('username_validation/', views.username_validation, name='username_validation'),
     path('generate_random_username/', views.generate_random_username, name='generate_random_username'),
-
-
-    path('search/', views.search, name='search'),
-    path('share_dataset/', views.share_dataset, name='share_dataset'),
 ]

@@ -23,7 +23,7 @@ class NewDatasetForm(forms.Form):
         required=True,
         widget=forms.URLInput(attrs={
             'type':'search',
-            'hx-post':reverse_lazy('hx_main:share_dataset'),
+            'hx-post':reverse_lazy('hx_library:share_dataset'),
             'hx-trigger':'input changed delay:500ms',
         })
     )
@@ -35,7 +35,7 @@ class NewDatasetForm(forms.Form):
             'required': 'Select a format.',
         },
         widget=forms.Select(attrs={
-            'hx-post':reverse_lazy('hx_main:share_dataset'),
+            'hx-post':reverse_lazy('hx_library:share_dataset'),
             'hx-trigger':'change',
             'disabled': True
         })
@@ -47,7 +47,7 @@ class NewDatasetForm(forms.Form):
             'required': 'Select a layer.',
         },
         widget=forms.Select(attrs={
-            'hx-post':reverse_lazy('hx_main:share_dataset'),
+            'hx-post':reverse_lazy('hx_library:share_dataset'),
             'hx-trigger':'change',
             'onchange':'resetShareDatasetSubmitBtn()',
             'disabled':True,

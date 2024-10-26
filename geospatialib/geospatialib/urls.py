@@ -28,7 +28,8 @@ urlpatterns = [
     # social auth paths
     path('accounts/', include('allauth.urls')),
 
-    path('htmx/', include('htmx.hx_main.urls')),
+    path('htmx/main/', include('htmx.hx_main.urls')),
+    path('htmx/library/', include('htmx.hx_library.urls')),
     
     path('', include('apps.main.urls')),
     path('', include('apps.library.urls')),
