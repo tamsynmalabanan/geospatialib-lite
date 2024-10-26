@@ -4,7 +4,7 @@ from . import models
 
 class MetaAbstractAdmin(admin.ModelAdmin):
     readonly_fields = (
-        'uuid',
+        # 'uuid',
         'added_by',
         'updated_by',
         'added_on',
@@ -13,3 +13,4 @@ class MetaAbstractAdmin(admin.ModelAdmin):
 
 admin.site.register(models.URL, MetaAbstractAdmin)
 admin.site.register(models.Dataset, MetaAbstractAdmin)
+admin.site.register(models.Content)

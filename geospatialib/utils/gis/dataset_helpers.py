@@ -35,6 +35,7 @@ class XYZHandler(DatasetHandler):
         self.layers = self.get_layers()
 
     def populate_dataset(self, dataset):
+        dataset.title = urlparse(self.path).netloc
         dataset.bbox = geom_helpers.WORLD_GEOM
         
         dataset.save()
@@ -49,13 +50,15 @@ class WMSHandler(DatasetHandler):
         return layers
 
     def handler(self):
+        clean_path = util_helpers.remove_query_params(self.path)
+        self.access_url = clean_path
+
         try:
-            service = wms.WebMapService(self.path)
+            service = wms.WebMapService(clean_path)
         except Exception as e:
             service = None
 
         if service:
-            self.access_url = service.url
             self.layers = self.get_layers(service)
 
     def get_title(self, layer):
@@ -117,21 +120,8 @@ class WMSHandler(DatasetHandler):
 
         objects = [obj for obj in [id, layer] if obj is not None]
 
-        titles = []
-        for obj in objects:
-            if hasattr(obj, 'title'):
-                title = obj.title
-                if isinstance(title, str):
-                    titles.append(title)
-        data['title'] = ' - '.join(titles)
-
-        abstracts = []
-        for obj in objects:
-            if hasattr(obj, 'abstract'):
-                abstract = obj.abstract
-                if isinstance(abstract, str):
-                    abstracts.append(abstract)
-        data['abstract'] = '<br><br>'.join(abstracts)
+        data['title'] = ' - '.join([obj.title for obj in objects if hasattr(obj, 'title') and isinstance(obj.title, str)])
+        data['abstract'] = '<br><br>'.join([obj.abstract for obj in objects if hasattr(obj, 'abstract') and isinstance(obj.abstract, str)])
 
         keywords = []
         for obj in objects:
@@ -197,13 +187,17 @@ class WFSHandler(DatasetHandler):
         return layers
 
     def handler(self):
+        clean_path = util_helpers.remove_query_params(self.path)
+        self.access_url = clean_path
+
         try:
-            service = wfs.WebFeatureService(self.path)
-            self.access_url = service.url
-            self.layers = self.get_layers(service)
+            service = wfs.WebFeatureService(clean_path)
         except Exception as e:
-            print('ERROR with WFSHandler handler', e)
-   
+            service = None
+        
+        if service:
+            self.layers = self.get_layers(service)
+
 
 def get_dataset_handler(format, **kwargs):
     handler = {

@@ -44,3 +44,9 @@ def get_first_substring_match(value, lst, helpers=None):
                     current_sub = sub
 
     return current_sub
+
+from urllib.parse import urlparse, urlunparse
+
+def remove_query_params(url):
+  parsed_url = urlparse(url)
+  return urlunparse(parsed_url._replace(query=''))

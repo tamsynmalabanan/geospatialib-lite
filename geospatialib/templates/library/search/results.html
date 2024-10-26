@@ -7,9 +7,7 @@
         </div>
         <div>
             <ul class="list-unstyled">
-                {% for dataset in datasets %}
-                    <li>{{dataset.label}}</li>
-                {% endfor %}
+                {% include "library/search/result_items.html" %}
             </ul>
         </div>
     {% else %}

@@ -3,6 +3,7 @@ from django.shortcuts import render, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.contrib import messages
+from django.views.generic.list import ListView
 
 from apps.library import (
     forms as lib_forms, 
@@ -32,6 +33,11 @@ def search(request):
     if queryset is None:
         queryset = lib_models.Dataset.objects.prefetch_related('url').all()
     return render(request, 'library/search/results.html', {'datasets':queryset})
+
+
+class SearchList(ListView):
+    template_name = 'library/search/result_list.html'
+    model = ''
 
 
 @login_required
@@ -108,6 +114,7 @@ def share_dataset(request):
                     if dataset_instance:
                         if created:
                             dataset_handler.populate_dataset(dataset_instance)
+                            lib_models.Content.objects.create(dataset=dataset_instance)
                             messages.success(request, message_template, message_tags)
                         else:
                             messages.info(request, message_template, message_tags)
