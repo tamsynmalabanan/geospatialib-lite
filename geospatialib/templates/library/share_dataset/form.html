@@ -12,7 +12,7 @@
 
 <script>
     if (document.readyState === 'complete') {
-        handleShareDatasetForm({% if dataset %}{{dataset.content_geojson|safe}}{% else %}undefined{% endif %})
+        handleShareDatasetForm({% if dataset %}{{dataset.content.geojson|safe}}{% else %}undefined{% endif %})
         {% if form.is_valid %}
             renderSharedDatasetLayer()
         {% endif %}

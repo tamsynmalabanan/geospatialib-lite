@@ -18,6 +18,10 @@ const observeInnerHTML = (element, callback) => {
     return observer;
 }
 
+const removeURLParams = () => {
+    return window.history.pushState({}, '', window.location.href.split('?')[0]);
+}
+
 const changeURLParamValue = (url, param, value) => {
     const urlParts = new URL(url);
     urlParts.searchParams.set(param, value);

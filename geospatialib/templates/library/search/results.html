@@ -26,7 +26,15 @@
                 hx-trigger='load'
                 hx-target='#searchResults'
                 hx-swap='outerHTML'
+                hx-indicator='.htmx-indicator-search-results-load'
             ></div>
+            <div class="d-flex justify-content-center gap-3">
+                {% for i in '123' %}
+                    <div class="spinner-grow spinner-grow-sm text-primary my-3 htmx-indicator htmx-indicator-search-results-load" role="status"></div>
+                {% endfor %}
+            </div>
+
+    
         {% else %}
             fetch default filters
         {% endif %}

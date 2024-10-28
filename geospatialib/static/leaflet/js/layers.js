@@ -1,5 +1,5 @@
 const createWMSLayer = (data) => {
-    const url = new URL(data.layerPath)
+    const url = new URL(data.layerURL)
     const baseUrl = url.origin + url.pathname
     const options = {
         layers: data.layerName, 
@@ -15,7 +15,7 @@ const createWMSLayer = (data) => {
 }
 
 const createXYZTilesLayer = (data) => {
-    return L.tileLayer(data.layerPath)
+    return L.tileLayer(data.layerURL)
 }
 
 const getCreateLayerHandler = (format) => {

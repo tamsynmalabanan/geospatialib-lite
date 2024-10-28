@@ -7,17 +7,16 @@ from urllib.parse import urlparse, urlunparse
 import json
 
 from . import geom_helpers
-from ..general import util_helpers
-from apps.library import choices
-
+from ..general import util_helpers, model_helpers
+from apps.library import choices, models
 
 
 class DatasetHandler():
     access_url = None
     layers = None
 
-    def __init__(self, path, key):
-        self.path = path
+    def __init__(self, url, key):
+        self.url = url
         self.key = key
         
         self.handler()
@@ -27,21 +26,30 @@ class DatasetHandler():
 class XYZHandler(DatasetHandler):
 
     def get_layers(self):
-        domain = urlparse(self.path).netloc
+        domain = urlparse(self.url).netloc
         return {domain: domain}
     
     def handler(self):
-        self.access_url = self.path
+        self.access_url = self.url
         self.layers = self.get_layers()
 
     def populate_dataset(self, dataset):
-        dataset.title = urlparse(self.path).netloc
-        dataset.bbox = geom_helpers.WORLD_GEOM
-        
-        dataset.save()
+        content = dataset.content
+
+        content.label = urlparse(self.access_url).netloc
+        content.bbox = geom_helpers.WORLD_GEOM
+        content.tags.set(model_helpers.collect_url_tags(self.access_url))
+
+        content.save()
 
 class WMSHandler(DatasetHandler):
     
+    def get_service(self):
+        try:
+            return wms.WebMapService(self.access_url)
+        except:
+            return
+
     def get_layers(self, service):
         contents = service.contents
         layers = {}
@@ -50,20 +58,17 @@ class WMSHandler(DatasetHandler):
         return layers
 
     def handler(self):
-        clean_path = util_helpers.remove_query_params(self.path)
-        self.access_url = clean_path
+        clean_url = util_helpers.remove_query_params(self.url)
+        self.access_url = clean_url
 
-        try:
-            service = wms.WebMapService(clean_path)
-        except Exception as e:
-            service = None
-
+        service = self.get_service()
         if service:
             self.layers = self.get_layers(service)
 
-    def get_title(self, layer):
+    def get_label(self, layer):
         if layer and hasattr(layer, 'title'):
             return layer.title
+        return self.dataset.name
 
     def get_bbox(self, layer):
         bbox = None
@@ -91,78 +96,85 @@ class WMSHandler(DatasetHandler):
         else:
             return geom_helpers.WORLD_GEOM
 
-    def get_data(self, service, layer):
-        id = service.identification if hasattr(service, 'identification') else None
-        provider = service.provider if hasattr(service, 'provider') else None
+    def get_tags(self, id, layer):
+        tag_instances = model_helpers.collect_url_tags(self.access_url)
 
+        keywords = []
+        for obj in [obj for obj in [id, layer] if obj is not None]:
+            if hasattr(obj, 'keywords') and isinstance(obj.keywords, (list, tuple)):
+                keywords = keywords + list(obj.keywords)
+        keywords = list(set(keywords))
+
+        for kw in keywords:
+            tag_instance, created = models.Tag.objects.get_or_create(tag=kw.lower())
+            if tag_instance:
+                tag_instances.append(tag_instance)
+
+        return tag_instances
+
+    def get_abstract(self, id, layer):
+        abstracts = []
+        for obj in [id, layer]:
+            if obj and hasattr(obj, 'abstract'):
+                abstract = obj.abstract
+                if isinstance(abstract, str) and abstract.strip() != '':
+                    abstracts.append(abstract)
+        return '<br><br>'.join(abstracts)
+
+    def get_extra_data(self, id, provider, layer):
         data = {}
         
         if id:
+            id_vars = {}
             for attr in ['accessconstraints', 'fees']:
                 if hasattr(id, attr):
-                    data[attr] = getattr(id, attr)
+                    id_vars[attr] = getattr(id, attr)
+            data['id'] = id_vars
         
         if layer:
+            layer_vars = {}
             for attr in ['queryable', 'styles', 'dataUrls', 'metadataUrls']:
                 if hasattr(layer, attr):
-                    data[attr] = getattr(layer, attr)
+                    layer_vars[attr] = getattr(layer, attr)
             if hasattr(layer, 'auth') and hasattr(getattr(layer, 'auth'), '__dict__'):
-                data['auth'] = vars(getattr(layer, 'auth'))
+                layer_vars['auth'] = vars(getattr(layer, 'auth'))
+            data['layer'] = layer_vars
 
         if provider:
-            provider = {}
+            provider_vars = {}
             for attr in ['name', 'url']:
                 if hasattr(provider, attr):
-                    provider[attr] = getattr(provider, attr)
+                    provider_vars[attr] = getattr(provider, attr)
             if hasattr(provider, 'contact') and hasattr(getattr(provider, 'contact'), '__dict__'):
-                provider['contact'] = vars(getattr(provider, 'contact'))
-            data['provider'] = provider
+                provider_vars['contact'] = vars(getattr(provider, 'contact'))
+            data['provider'] = provider_vars
 
-        objects = [obj for obj in [id, layer] if obj is not None]
-
-        data['title'] = ' - '.join([obj.title for obj in objects if hasattr(obj, 'title') and isinstance(obj.title, str)])
-        data['abstract'] = '<br><br>'.join([obj.abstract for obj in objects if hasattr(obj, 'abstract') and isinstance(obj.abstract, str)])
-
-        keywords = []
-        for obj in objects:
-            if hasattr(obj, 'keywords') and isinstance(obj.keywords, (list, tuple)):
-                keywords = keywords + list(obj.keywords)
-        data['keywords'] = list(set(keywords))
-
-        return json.dumps(data)
+        return data
 
     def populate_dataset(self, dataset):
-        try:
-            service = wms.WebMapService(self.path)
-        except Exception as e:
-            service = None
+        self.dataset = dataset
 
+        service = self.get_service()
         if service:
-            layer_name = dataset.name
-        
-            try:
-                layer = service[layer_name]
-            except:
-                layer = None
-            
-            dataset.title = self.get_title(layer)
-            dataset.bbox = self.get_bbox(layer)
-            dataset.data = self.get_data(service, layer)
+            id = service.identification
+            provider = service.provider
+            layer = service[dataset.name]
 
+            extra_data = self.get_extra_data(id, provider, layer)
+            dataset.extra_data = json.dumps(extra_data)
             dataset.save()
 
-    def test_connection(self, layer_name):
-        try:
-            service = wms.WebMapService(url=url)
-        except:
-            service = None
+            content = dataset.content
+            content.label = self.get_label(layer)
+            content.bbox = self.get_bbox(layer)
+            content.abstract = self.get_abstract(id, layer)
+            content.tags.set(self.get_tags(id, layer))
+            content.save()
 
+    def test_connection(self, layer_name):
+        service = self.get_service()
         if service:
-            try:
-                layer = service[layer_name]
-            except:
-                layer = None
-            
+            layer = service[layer_name]
             if layer:
                 try:
                     response = service.getmap(
@@ -187,11 +199,11 @@ class WFSHandler(DatasetHandler):
         return layers
 
     def handler(self):
-        clean_path = util_helpers.remove_query_params(self.path)
-        self.access_url = clean_path
+        clean_url = util_helpers.remove_query_params(self.url)
+        self.access_url = clean_url
 
         try:
-            service = wfs.WebFeatureService(clean_path)
+            service = wfs.WebFeatureService(clean_url)
         except Exception as e:
             service = None
         

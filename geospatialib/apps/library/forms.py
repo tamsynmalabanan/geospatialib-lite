@@ -9,7 +9,7 @@ from utils.gis import dataset_helpers
 class SearchForm(forms.Form):
     query = forms.CharField(
         label='Search...', 
-        max_length=256, 
+        max_length=255, 
         required=True,
         widget=forms.TextInput(attrs={
             'type':'search',
@@ -19,7 +19,7 @@ class SearchForm(forms.Form):
     )
 
 class NewDatasetForm(forms.Form):
-    path = forms.URLField(
+    url = forms.URLField(
         label='URL',
         required=True,
         widget=forms.URLInput(attrs={
@@ -58,13 +58,13 @@ class NewDatasetForm(forms.Form):
     @property
     def cached_handler_key(self):
         clean_data = self.cleaned_data
-        path = clean_data.get('path')
+        url = clean_data.get('url')
         format = clean_data.get('format')
-        if path and format:
+        if url and format:
             return util_helpers.build_cache_key(
                 'dataset-handler', 
                 format, 
-                path
+                url
             )
         
     def clean_format(self):
@@ -72,14 +72,14 @@ class NewDatasetForm(forms.Form):
         format = clean_data.get('format')
 
         if not self.fields['name'].choices:
-            path = clean_data.get('path')
-            if path and format:
+            url = clean_data.get('url')
+            if url and format:
                 key = self.cached_handler_key
                 handler = cache.get(key)
                 if not handler or not handler.layers:
                     handler = dataset_helpers.get_dataset_handler(
                         format, 
-                        path=path,
+                        url=url,
                         key=key,
                     ) 
                 if handler and handler.layers:

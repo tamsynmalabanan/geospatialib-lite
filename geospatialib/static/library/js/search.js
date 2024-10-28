@@ -17,13 +17,18 @@ document.addEventListener('htmx:configRequest', (event) => {
     const detail = event.detail
     if (detail.path === searchEndpoint && window.location.pathname === '/') {
         const requestParams = detail.parameters
-        pushParamsToURL(requestParams)
 
-        const urlParams = getURLParams()
-        for (const key in urlParams) {
-            if (!Object.keys(requestParams).includes(key)) {
-                requestParams[key] = urlParams[key]
+        if (Object.keys(requestParams).length > 1){
+            const urlParams = getURLParams()
+            for (const key in urlParams) {
+                if (!Object.keys(requestParams).includes(key)) {
+                    requestParams[key] = urlParams[key]
+                }
             }
+        } else {
+            removeURLParams()
         }
+
+        pushParamsToURL(requestParams)
     }
 })

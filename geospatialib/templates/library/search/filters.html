@@ -4,9 +4,9 @@
     {% if page_obj.number %}
         {% with count=page_obj.paginator.count %}
             {% if count > 0 %}
-                {% if filters %}
+                <div class='d-flex gap-3'>
                     <a 
-                        class="text-reset text-decoration-none fs-6 d-flex justify-content-between" 
+                        class="text-reset text-decoration-none fs-6 d-flex justify-content-between flex-grow-1" 
                         data-bs-toggle="collapse" 
                         href="#searchResultsFilters" 
                         role="button" 
@@ -16,36 +16,38 @@
                         <span>Results for "{{request.GET.query}}" ({{count}})</span>
                         <i class="bi bi-funnel ms-2"></i>
                     </a>
-                    <div class="collapse show" id="searchResultsFilters">
-                        <div class="d-flex gap-2 mt-3">
-                            {% for field, queryset in filters.items %}
-                                {% for i in queryset %}
-                                    {% if i.label %}
-                                        {% if request.GET|get:field == i.label %}
+                    <button class='border-0 bg-transparent '>
+                        <i class="bi bi-bounding-box-circles"></i>
+                    </button>
+                </div>
+                <div class="collapse show" id="searchResultsFilters">
+                    <div class="d-flex gap-2 mt-3">
+                        {% for field, queryset in filters.items %}
+                            {% for i in queryset %}
+                                {% var i|get:field as label %}
+                                {% if label %}
+                                    {% if request.GET|get:field == label %}
+                                        <button
+                                            type='submit'
+                                            name="{{field}}"
+                                            value=""
+                                            class="btn btn-sm btn-primary rounded-pill px-3"
+                                        >{{label}} ({{i.count}})</button>
+                                    {% else %}
+                                        {% if i.count != count %}
                                             <button
                                                 type='submit'
                                                 name="{{field}}"
-                                                value=""
-                                                class="btn btn-sm btn-primary rounded-pill px-3"
-                                            >{{i.label}} ({{i.count}})</button>
-                                        {% else %}
-                                            {% if i.count != count %}
-                                                <button
-                                                    type='submit'
-                                                    name="{{field}}"
-                                                    value="{{i.label}}"
-                                                    class="btn btn-sm btn-outline-primary rounded-pill px-3"
-                                                >{{i.label}} ({{i.count}})</button>
-                                            {% endif %}
+                                                value="{{label}}"
+                                                class="btn btn-sm btn-outline-primary rounded-pill px-3"
+                                            >{{label}} ({{i.count}})</button>
                                         {% endif %}
                                     {% endif %}
-                                {% endfor %}
+                                {% endif %}
                             {% endfor %}
-                        </div>
+                        {% endfor %}
                     </div>
-                {% else %}
-                    <span class-'mb-3'>Results for "{{request.GET.query}}" ({{count}})</span>
-                {% endif %}
+                </div>
             {% else %}
                 <span class-'mb-3'>No results found for "{{request.GET.query}}"</span>
             {% endif %}
