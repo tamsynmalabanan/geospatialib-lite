@@ -34,6 +34,10 @@ class SearchList(ListView):
         return self.request.GET.get('query')
 
     @property
+    def filter_none(self):
+        return self.request.GET.get('filter') == 'none'
+
+    @property
     def filter_fields(self):
         return ['type', 'dataset__format']
 
@@ -101,7 +105,7 @@ class SearchList(ListView):
             })
 
             self.queryset = queryset
-            return self.queryset.annotate(rank=Max('rank')).order_by(*['-rank']+self.filter_fields)
+            return self.queryset.annotate(rank=Max('rank')).order_by(*['-rank']+self.filter_fields+['label'])
 
     
     def get_context_data(self, **kwargs):

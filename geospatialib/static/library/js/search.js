@@ -4,10 +4,12 @@ const searchResultsScrollTop = () => {
     document.querySelector('#searchResults').parentElement.scrollTop = 0
 }
 
-const searchLibrary = (query, filters={}) => {
-    console.log(filters)
+const searchLibrary = (query=null) => {
     const form = document.querySelector(`form[hx-get="${searchEndpoint}"]`)
-    form.elements.query.value = query
+    
+    if (query !== null) {
+        form.elements.query.value = query
+    }
     
     const event = new CustomEvent('submit')
     form.dispatchEvent(event)
@@ -30,5 +32,41 @@ document.addEventListener('htmx:configRequest', (event) => {
         }
 
         pushParamsToURL(requestParams)
+    }
+})
+
+const assignBboxFilterValue = (map) => {
+    const bboxFilter = document.querySelector('[name="bbox__bboverlaps"]')
+    if (bboxFilter) {
+        const bounds = loopThroughCoordinates(map.getBounds(), validateCoordinates)
+        const geom = JSON.stringify(L.rectangle(bounds).toGeoJSON().geometry)
+        bboxFilter.value = geom
+    }
+}
+
+let bboxFilterTimeout
+window.addEventListener("map:init", (event) => {
+    const map = event.detail.map
+    if (map.getContainer().id === 'geospatialibMap') {
+        const urlParams = getURLParams()
+        const bbox = urlParams.bbox__bboverlaps
+        if (bbox) {
+            map.fitBounds(L.geoJSON(JSON.parse(bbox)).getBounds())
+        }
+
+        assignBboxFilterValue(map)
+        map.on('resize moveend', (event) => {
+            clearTimeout(bboxFilterTimeout);
+            bboxFilterTimeout = setTimeout(() => {
+                assignBboxFilterValue(map)
+            }, 100)
+        })
+    }
+})
+
+document.addEventListener('htmx:afterSwap', (event) => {
+    if (event.target.id === 'searchResults') {
+        const map = mapQuerySelector('#geospatialibMap')
+        assignBboxFilterValue(map)
     }
 })

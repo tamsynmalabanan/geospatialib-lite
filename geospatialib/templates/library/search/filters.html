@@ -4,9 +4,9 @@
     {% if page_obj.number %}
         {% with count=page_obj.paginator.count %}
             {% if count > 0 %}
-                <div class='d-flex gap-3'>
+                <div class='d-flex gap-3 flex-nowrap'>
                     <a 
-                        class="text-reset text-decoration-none fs-6 d-flex justify-content-between flex-grow-1" 
+                        class="text-reset text-decoration-none fs-6 d-flex flex-nowrap justify-content-between flex-grow-1" 
                         data-bs-toggle="collapse" 
                         href="#searchResultsFilters" 
                         role="button" 
@@ -16,9 +16,8 @@
                         <span>Results for "{{request.GET.query}}" ({{count}})</span>
                         <i class="bi bi-funnel ms-2"></i>
                     </a>
-                    <button class='border-0 bg-transparent '>
-                        <i class="bi bi-bounding-box-circles"></i>
-                    </button>
+                    <button class='border-0 bg-transparent px-0 d-flex align-items-start' type='submit' name='bbox__bboverlaps' title='Seach map extent'><i class="bi bi-bounding-box-circles"></i></button>
+                    <button class='border-0 bg-transparent px-0 d-flex align-items-start' type='submit' title='Clear all filters'><i class="bi bi-trash"></i></button>
                 </div>
                 <div class="collapse show" id="searchResultsFilters">
                     <div class="d-flex gap-2 mt-3">
@@ -49,7 +48,10 @@
                     </div>
                 </div>
             {% else %}
+            <div class="d-flex gap-3 flex-nowrap justify-content-between">
                 <span class-'mb-3'>No results found for "{{request.GET.query}}"</span>
+                <button class='border-0 bg-transparent px-0 d-flex align-items-start' type='submit' title='Clear all filters'><i class="bi bi-trash"></i></button>
+            </div>
             {% endif %}
         {% endwith %}
     {% endif %}
