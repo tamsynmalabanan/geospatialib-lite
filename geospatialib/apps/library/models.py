@@ -1,6 +1,7 @@
 from django.contrib.gis.db import models
 from django.utils.text import slugify
 from django.db.models import Q
+from django.contrib.postgres.search import SearchVectorField
 
 import shortuuid
 import geojson
@@ -9,7 +10,8 @@ import json
 
 from . import choices
 
-from utils.general import form_helpers
+from utils.general import form_helpers, util_helpers
+
 
 
 class MetaAbstractModel(models.Model):
@@ -25,6 +27,7 @@ class ContentAbstractModel(models.Model):
     uuid = models.SlugField('UUID', unique=True, editable=False, null=True, blank=True, max_length=16)
     bbox = models.PolygonField('Bounding box', blank=True, null=True)
     title = models.CharField('Title', max_length=256, blank=True, null=True)
+    tags = models.ManyToManyField("library.Tag", verbose_name='Tags', blank=True)
 
     class Meta:
         abstract = True
@@ -54,8 +57,17 @@ class ContentAbstractModel(models.Model):
         super().save(*args, **kwargs)
 
 
+class Tag(models.Model):
+    tag = models.CharField('Tag', max_length=256)
+
+    def __str__(self) -> str:
+        if self.tag:
+            return self.tag
+        return super().__str__()
+    
 class URL(MetaAbstractModel):
     path = models.URLField('URL', max_length=256, unique=True)
+    tags = models.ManyToManyField("library.Tag", verbose_name='Tags', blank=True)
 
     def __str__(self) -> str:
         return self.path
@@ -63,6 +75,23 @@ class URL(MetaAbstractModel):
     @property
     def domain(self):
         return urlparse(self.path).netloc
+
+    def collect_tags(self):
+        if self.pk and not self.tags.exists():
+            tags = util_helpers.split_by_special_characters(self.path)
+            tag_instances = []
+            for tag in tags:
+                if len(tag) > 3 and 'http' not in tag:
+                    tag_instance, created = Tag.objects.get_or_create(tag=tag)
+                    if tag_instance:
+                        tag_instances.append(tag_instance)
+            self.tags.set(tag_instances)
+            self.save()
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.collect_tags()
+
     
 class Dataset(MetaAbstractModel, ContentAbstractModel):
     url = models.ForeignKey("library.URL", verbose_name='URL', on_delete=models.CASCADE, related_name='datasets')
@@ -86,6 +115,10 @@ class Content(models.Model):
 
     def __str__(self) -> str:
         return getattr(self, self.type).title
+
+    @property
+    def instance(self):
+        return getattr(self, self.type)
 
     def assign_type(self):
         if not self.pk and self.map:

@@ -1,5 +1,6 @@
 import string
 from django.utils.text import slugify
+from urllib.parse import urlparse, urlunparse
 
 def build_cache_key(*args):
     key_parts = [slugify(str(arg)) for arg in args]
@@ -44,8 +45,6 @@ def get_first_substring_match(value, lst, helpers=None):
                     current_sub = sub
 
     return current_sub
-
-from urllib.parse import urlparse, urlunparse
 
 def remove_query_params(url):
   parsed_url = urlparse(url)

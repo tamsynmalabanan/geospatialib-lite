@@ -1,0 +1,54 @@
+{% load util_tags %}
+
+<div id='searchResultsFiltersContainer' hx-swap-oob='true' class='mb-3'>
+    {% if page_obj.number %}
+        {% with count=page_obj.paginator.count %}
+            {% if count > 0 %}
+                {% if filters %}
+                    <a 
+                        class="text-reset text-decoration-none fs-6 d-flex justify-content-between" 
+                        data-bs-toggle="collapse" 
+                        href="#searchResultsFilters" 
+                        role="button" 
+                        aria-expanded="true"
+                        aria-controls="searchResultsFilters"
+                    >
+                        <span>Results for "{{request.GET.query}}" ({{count}})</span>
+                        <i class="bi bi-funnel ms-2"></i>
+                    </a>
+                    <div class="collapse show" id="searchResultsFilters">
+                        <div class="d-flex gap-2 mt-3">
+                            {% for field, queryset in filters.items %}
+                                {% for i in queryset %}
+                                    {% if i.label %}
+                                        {% if request.GET|get:field == i.label %}
+                                            <button
+                                                type='submit'
+                                                name="{{field}}"
+                                                value=""
+                                                class="btn btn-sm btn-primary rounded-pill px-3"
+                                            >{{i.label}} ({{i.count}})</button>
+                                        {% else %}
+                                            {% if i.count != count %}
+                                                <button
+                                                    type='submit'
+                                                    name="{{field}}"
+                                                    value="{{i.label}}"
+                                                    class="btn btn-sm btn-outline-primary rounded-pill px-3"
+                                                >{{i.label}} ({{i.count}})</button>
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% else %}
+                    <span class-'mb-3'>Results for "{{request.GET.query}}" ({{count}})</span>
+                {% endif %}
+            {% else %}
+                <span class-'mb-3'>No results found for "{{request.GET.query}}"</span>
+            {% endif %}
+        {% endwith %}
+    {% endif %}
+</div>

@@ -34,3 +34,8 @@ const pushParamsToURL = (params) => {
     const newURL = `${window.location.origin}${window.location.pathname}?${urlParams.toString()}`;
     window.history.pushState({}, '', newURL);
 }
+
+const getURLParams = () => {
+    const urlParams = new URLSearchParams(window.location.search)
+    return Object.fromEntries(urlParams)
+}

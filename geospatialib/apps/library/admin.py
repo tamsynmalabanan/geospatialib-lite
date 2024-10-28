@@ -12,5 +12,7 @@ class MetaAbstractAdmin(admin.ModelAdmin):
     )
 
 admin.site.register(models.URL, MetaAbstractAdmin)
+admin.site.register(models.Map, MetaAbstractAdmin)
 admin.site.register(models.Dataset, MetaAbstractAdmin)
 admin.site.register(models.Content)
+admin.site.register(models.Tag)

@@ -1,0 +1,34 @@
+{% for content in contents %}
+    {% with instance=content.instance %}
+        <li 
+            class="list-group-item d-flex gap-2 border-0 p-0 pb-3"
+            {% if forloop.last and page_obj.has_next  %}
+                hx-get="{% url 'hx_library:search' %}?page={{page_obj.number|add:1}}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{key}}={{value}}{% endif %}{% endfor %}"
+                hx-trigger="intersect once"
+                hx-swap='afterend'
+                hx-target='this'
+                hx-indicator=".htmx-indicator-{{page_obj.number}}"
+            {% endif %}
+        >
+            <div>
+                <input class="form-check-input me-1" type="checkbox" value="">
+            </div>
+            <div class='d-flex flex-column'>
+                <div>
+                    <label class="form-check-label fw-semibold" >{{content}}</label>
+                </div>
+                <div class='fw-lighter'>
+                    {{content.rank}}
+                    {% lorem 20 w random %}
+                </div>
+            </div>
+        </li>
+        {% if forloop.last and page_obj.has_next %}
+            <div class="d-flex justify-content-center gap-3">
+                {% for i in '123' %}
+                    <div class="spinner-grow spinner-grow-sm text-primary my-3 htmx-indicator htmx-indicator-{{page_obj.number}}" role="status"></div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+{% endfor %}

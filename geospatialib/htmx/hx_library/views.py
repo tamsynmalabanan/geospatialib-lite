@@ -1,9 +1,14 @@
+from django.db.models.query import QuerySet
 from django.views.decorators.http import require_http_methods
 from django.shortcuts import render, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.contrib import messages
 from django.views.generic.list import ListView
+from django.db.models import Count, Sum, F, IntegerField, Value, Q, Case, When, Max, TextField, CharField, FloatField
+from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank, SearchHeadline
+
+import time
 
 from apps.library import (
     forms as lib_forms, 
@@ -13,32 +18,65 @@ from apps.library import (
 from utils.general import form_helpers, util_helpers
 from utils.gis import dataset_helpers
 
-
-@require_http_methods(['GET'])
-def search(request):
-    print(request.GET)
-
-    # websearch
-    # SearchQuery(
-    # ...     "'tomato' ('red' OR 'green')", search_type="websearch"
-    # ... )
-    # search params -- query and bounding box (optional)
-    # Results for "query here" (count)
-    # facet filters: resource (map/dataset), format
-    # exclude facet filters with 0 count
-    # filters are highlighted when active
-
-    queryset = None
-
-    if queryset is None:
-        queryset = lib_models.Dataset.objects.prefetch_related('url').all()
-    return render(request, 'library/search/results.html', {'datasets':queryset})
-
-
 class SearchList(ListView):
-    template_name = 'library/search/result_list.html'
-    model = ''
+    template_name = 'library/search/results.html'
+    model = lib_models.Content
+    context_object_name = 'contents'
+    paginate_by = 10
 
+    def get_queryset(self):
+        if not hasattr(self, 'queryset') or not getattr(self, 'queryset'):
+            queryset = super().get_queryset()        
+
+            queryset = queryset.filter(**{
+                param:value 
+                for param,value in self.request.GET.items() 
+                if param not in ['query', 'page', 'bbox']
+                and value not in ['', None]
+            })
+
+            query = self.request.GET.get('query')
+            if query and query != '':
+                search_query = SearchQuery(query, search_type="websearch")
+
+                search_vector = (
+                    SearchVector('type') + 
+                    SearchVector('dataset__uuid') + 
+                    SearchVector('dataset__url__tags__tag') + 
+                    SearchVector('dataset__format') + 
+                    SearchVector('dataset__name') + 
+                    SearchVector('dataset__title') + 
+                    SearchVector('dataset__data') + 
+                    SearchVector('map__uuid') + 
+                    SearchVector('map__title')
+                )
+
+                queryset = (
+                    queryset
+                    .prefetch_related('dataset', 'map')
+                    .annotate(rank=SearchRank(search_vector, search_query))
+                    .annotate(rank=Max('rank'))
+                    .filter(rank__gte=0.001)
+                    .order_by('-rank')
+                )
+
+            print(queryset.count())
+            self.queryset = queryset
+        return self.queryset
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # context['filters'] = {
+        #     field: (
+        #         self.queryset
+        #         .values(field)
+        #         .annotate(count=Count('id'))
+        #         .annotate(label=F(field))
+        #         .order_by('-count')
+        #     )
+        #     for field in ['type', 'dataset__format']
+        # }
+        return context
 
 @login_required
 def share_dataset(request):

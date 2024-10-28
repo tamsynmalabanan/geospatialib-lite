@@ -23,3 +23,7 @@ def assign_field_attributes(field):
 @register.filter
 def is_captchta_widget(widget):
     return isinstance(widget, ReCaptchaV2Checkbox)
+
+@register.filter
+def get(dict, key):
+    return dict.get(key)

@@ -21,6 +21,12 @@
     border-bottom: var(--bs-border-width) solid #198754 !important;
 }
 
+.focus-underline-primary:active,
+.focus-underline-primary:focus,
+.focus-underline-primary:hover {
+    border-bottom: var(--bs-border-width) solid #0d6efd !important;
+}
+
 .fs-10 {
     font-size: 10px;
 }

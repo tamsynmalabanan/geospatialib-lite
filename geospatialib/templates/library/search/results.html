@@ -1,21 +1,34 @@
 {% load static %}
 
+{% if page_obj.number == 1 %}
+    {% include "library/search/filters.html" %}
+{% endif %}
+
 <div id='searchResults'>
-    {% if datasets %}
-        <div class='border-bottom pb-2 mb-2 sticky-top text-bg-light'>
-            <h6 class='lead fs-6 fw-normal'>Results for "{{request.GET.query}}" ({{datasets.count}})</h6>
-        </div>
-        <div>
-            <ul class="list-unstyled">
-                {% include "library/search/result_items.html" %}
+    {% if page_obj.number %}
+        {% if page_obj.number == 1 %}
+            <ul class="list-group border-top rounded-0 pt-3">
+                {% include "library/search/items.html" %}
             </ul>
-        </div>
+            <script>
+                if (document.readyState === 'complete') {
+                    searchResultsScrollTop()
+                    clearAllLayers(mapQuerySelector('#geospatialibMap'))
+                }
+            </script>
+        {% else %}
+            {% include "library/search/items.html" %}
+        {% endif %}
     {% else %}
-        <div
-            hx-get="{% url 'hx_library:search' %}?query={{request.GET.query}}"
-            hx-trigger='load'
-            hx-target='#searchResults'
-            hx-swap='outerHTML'
-        ></div>
+        {% if request.GET.query %}
+            <div
+                hx-get="{% url 'hx_library:search' %}?{% for key, value in request.GET.items %}{% if key != 'page' %}{{key}}={{value}}&{% endif %}{% endfor %}"
+                hx-trigger='load'
+                hx-target='#searchResults'
+                hx-swap='outerHTML'
+            ></div>
+        {% else %}
+            fetch default filters
+        {% endif %}
     {% endif %}
 </div>

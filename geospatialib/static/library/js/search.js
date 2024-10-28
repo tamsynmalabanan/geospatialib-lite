@@ -1,6 +1,11 @@
 const searchEndpoint = "/htmx/library/search/"
 
-const searchLibrary = (query) => {
+const searchResultsScrollTop = () => {
+    document.querySelector('#searchResults').parentElement.scrollTop = 0
+}
+
+const searchLibrary = (query, filters={}) => {
+    console.log(filters)
     const form = document.querySelector(`form[hx-get="${searchEndpoint}"]`)
     form.elements.query.value = query
     
@@ -11,7 +16,14 @@ const searchLibrary = (query) => {
 document.addEventListener('htmx:configRequest', (event) => {
     const detail = event.detail
     if (detail.path === searchEndpoint && window.location.pathname === '/') {
-        const params = detail.parameters
-        pushParamsToURL(params)
+        const requestParams = detail.parameters
+        pushParamsToURL(requestParams)
+
+        const urlParams = getURLParams()
+        for (const key in urlParams) {
+            if (!Object.keys(requestParams).includes(key)) {
+                requestParams[key] = urlParams[key]
+            }
+        }
     }
 })

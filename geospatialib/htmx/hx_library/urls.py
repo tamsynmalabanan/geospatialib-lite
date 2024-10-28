@@ -6,6 +6,6 @@ from . import views
 app_name = 'hx_library'
 
 urlpatterns = [
-    path('search/', views.search, name='search'),
+    path('search/', views.SearchList.as_view(), name='search'),
     path('share_dataset/', views.share_dataset, name='share_dataset'),
 ]
