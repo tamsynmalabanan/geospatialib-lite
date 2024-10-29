@@ -65,7 +65,6 @@ class SearchList(ListView):
             search_query = SearchQuery(query, search_type="websearch")
 
             search_vector = (
-                SearchVector('id') + 
                 SearchVector('type') +
                 SearchVector('label') +
                 SearchVector('abstract') +
@@ -85,6 +84,7 @@ class SearchList(ListView):
                 .values(*self.filter_fields+[
                     'label', 
                     'bbox', 
+                    'dataset__id', 
                     'dataset__url__url', 
                     'dataset__name', 
                     'dataset__extra_data', 

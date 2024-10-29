@@ -4,22 +4,22 @@
     {% include "library/search/filters.html" %}
 {% endif %}
 
-<div id='searchResults' class='pt-3'>
-    {% if page_obj.number %}
-        {% if page_obj.number == 1 %}
-            <ul class="list-group list-group-flush">
-                {% include "library/search/items.html" %}
-            </ul>
+{% if page_obj.number %}
+    {% if page_obj.number == 1 %}
+        <ul id='searchResults' class="list-group list-group-flush pt-3">
+            {% include "library/search/items.html" %}
             <script>
                 if (document.readyState === 'complete') {
                     searchResultsScrollTop()
                     clearAllLayers(mapQuerySelector('#geospatialibMap'))
                 }
             </script>
-        {% else %}
-            {% include "library/search/items.html" %}
-        {% endif %}
+        </ul>
     {% else %}
+        {% include "library/search/items.html" %}
+    {% endif %}
+{% else %}
+    <div id='searchResults' class='pt-3'>
         {% if request.GET.query %}
             <div
                 hx-get="{% url 'hx_library:search' %}?{% for key, value in request.GET.items %}{% if key != 'page' %}{{key}}={{value}}&{% endif %}{% endfor %}"
@@ -27,16 +27,17 @@
                 hx-target='#searchResults'
                 hx-swap='outerHTML'
                 hx-indicator='.htmx-indicator-search-results-load'
-            ></div>
-            <div class="d-flex justify-content-center gap-3">
-                {% for i in '123' %}
-                    <div class="spinner-grow spinner-grow-sm text-primary my-3 htmx-indicator htmx-indicator-search-results-load" role="status"></div>
-                {% endfor %}
+            >
+                <div class="d-flex justify-content-center gap-3">
+                    {% for i in '123' %}
+                        <div class="spinner-grow spinner-grow-sm text-primary my-3 htmx-indicator htmx-indicator-search-results-load" role="status"></div>
+                    {% endfor %}
+                </div>
             </div>
         {% else %}
             <div class='d-flex mt-3'>
                 fetch default filters
             </div>
         {% endif %}
-    {% endif %}
-</div>
+    </div>
+{% endif %}

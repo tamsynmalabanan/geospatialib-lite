@@ -11,6 +11,18 @@ const mapQuerySelector = (selector) => {
     return map
 }
 
+// const zoomToGeoJSON = (mapSelector, geojson) => {
+//     const map = mapQuerySelector(mapSelector)
+//     if (map) {
+//         if (typeof geojson === 'string') {
+//             geojson = JSON.parse(geojson)
+//         }
+
+//         const layer = L.geoJSON(geojson)
+//         map.fitBounds(layer.getBounds())
+//     }
+// }
+
 const clearAllLayers = (map) => {
     map.eachLayer(layer => {
         if (layer._url === "//tile.openstreetmap.org/{z}/{x}/{y}.png") {return}

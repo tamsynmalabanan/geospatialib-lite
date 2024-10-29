@@ -1,19 +1,98 @@
+const populateLayerDropdownMenu = (toggle, id, mapSelector) => {
+    const dropdown = toggle.nextElementSibling
+    if (dropdown && dropdown.innerHTML.trim() === '') {
+        const map = mapQuerySelector(mapSelector)
+        const layerList = toggle.closest('ul')
+        if (layerList) {
+            const checkbox = layerList.querySelector(`input[type="checkbox"][data-layer-pk="${id}"]`)
+            if (checkbox) {
+                const data = checkbox.dataset
+
+                if (map && data.layerBbox) {
+                    const geojson = JSON.parse(data.layerBbox)
+                    const layer = L.geoJSON(geojson)
+                    const bounds = layer.getBounds()
+                    if (bounds) {
+                        const item = createDropdownMenuListItem('Zoom to layer')
+                        item.addEventListener('click', () => {
+                            map.fitBounds(bounds)
+                        })
+                        dropdown.appendChild(item)
+                    }
+                }
+            }
+        }
+    }
+}
+
+const toggleOffLibraryLayers = (toggle) => {
+    const targetSelector = toggle.getAttribute('data-layer-toggles')
+    const target = document.querySelector(targetSelector)
+    if (target) {
+        const toggles = target.querySelectorAll('input[type="checkbox"]')
+        toggles.forEach(toggle => {
+            if (toggle.checked) {
+                toggle.click()
+            }
+        })
+    }
+}
+
 const toggleLibraryLayer = (event, mapSelector) => {
-    const toggle = event.target
     const map = mapQuerySelector(mapSelector)
     if (map) {
+        const toggle = event.target
+        
+        let toggleAll
+        let toggleLabel
+        let layersCount
+        const layerList = toggle.closest('ul')
+        if (layerList) {
+            toggleAll = document.querySelector(`input[data-layer-toggles="#${layerList.id}"]`)
+            toggleLabel = document.querySelector(`label[for="${toggleAll.id}"]`)
+        }
+        
         const data = toggle.dataset
         if (toggle.checked) {
             const layer = createLayerFromURL(data)
             if (layer) {
                 map.getLayerGroups().client.addLayer(layer)
                 toggle.setAttribute('data-layer-id', layer._leaflet_id)
+
+                if (toggleAll) {
+                    layersCount = parseInt(toggleAll.getAttribute('data-layers-shown'))+1
+                    
+                }
             }
         } else {
             const id = data.layerId
             const layer = map.getLayerGroups().client.getLayer(id)
             if (layer) {
                 map.removeLayer(layer)
+
+                if (toggleAll) {
+                    layersCount = parseInt(toggleAll.getAttribute('data-layers-shown'))-1
+                }
+            }
+        }
+
+        if (toggleAll) {
+            toggleAll.setAttribute('data-layers-shown', layersCount)
+            
+            if (layersCount < 1) {
+                toggleAll.setAttribute('disabled', true)
+                toggleAll.checked = false
+
+                toggleLabel.innerHTML = ''
+            } else {
+                toggleAll.removeAttribute('disabled')
+                toggleAll.checked = true
+
+                if (layersCount > 1) {
+                    toggleLabel.innerHTML = `showing ${layersCount} layers`
+                } else {
+                    toggleLabel.innerHTML = `showing ${layersCount} layer`
+                }
             }
         }
     }
@@ -67,7 +146,6 @@ const createLayerFromURL = (data) => {
                     return bounds
                 }
             }
-
         }
     }
     

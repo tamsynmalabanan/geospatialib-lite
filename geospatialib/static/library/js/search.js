@@ -24,6 +24,10 @@ const assignBboxFilterValue = (map) => {
     }
 }
 
+const handleToggleForAllLayers = () => {
+    
+}
+
 let bboxFilterTimeout
 window.addEventListener("map:init", (event) => {
     const map = event.detail.map
