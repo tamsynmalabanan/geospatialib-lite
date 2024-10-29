@@ -4,10 +4,10 @@
     {% include "library/search/filters.html" %}
 {% endif %}
 
-<div id='searchResults'>
+<div id='searchResults' class='pt-3'>
     {% if page_obj.number %}
         {% if page_obj.number == 1 %}
-            <ul class="list-group border-top rounded-0 pt-3">
+            <ul class="list-group rounded-0">
                 {% include "library/search/items.html" %}
             </ul>
             <script>

@@ -1,12 +1,12 @@
 {% load util_tags %}
 
-<div id='searchResultsFiltersContainer' hx-swap-oob='true' class='mb-3'>
+<div id='searchResultsFiltersContainer' hx-swap-oob='true'>
     {% if page_obj.number %}
         {% with count=page_obj.paginator.count %}
             {% if count > 0 %}
                 <div class='d-flex gap-3 flex-nowrap'>
                     <a 
-                        class="text-reset text-decoration-none fs-6 d-flex flex-nowrap justify-content-between flex-grow-1" 
+                        class="text-reset text-decoration-none fs-6 d-flex flex-nowrap justify-content-between flex-grow-1 gap-3" 
                         data-bs-toggle="collapse" 
                         href="#searchResultsFilters" 
                         role="button" 
@@ -14,7 +14,7 @@
                         aria-controls="searchResultsFilters"
                     >
                         <span>Results for "{{request.GET.query}}" ({{count}})</span>
-                        <i class="bi bi-funnel ms-2"></i>
+                        <i class="bi bi-funnel"></i>
                     </a>
                     <button class='border-0 bg-transparent px-0 d-flex align-items-start' type='submit' name='bbox__bboverlaps' title='Seach map extent'><i class="bi bi-bounding-box-circles"></i></button>
                     <button class='border-0 bg-transparent px-0 d-flex align-items-start' type='submit' title='Clear all filters'><i class="bi bi-trash"></i></button>
