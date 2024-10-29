@@ -1,0 +1,6 @@
+<button 
+    class='border-0 bg-transparent px-0 d-flex align-items-start' 
+    type='submit' 
+    title='Clear all filters'
+    {% if request.GET.keys|length == 1 %}disabled{% endif %}
+><i class="bi bi-trash"></i></button>

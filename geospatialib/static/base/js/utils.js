@@ -43,3 +43,9 @@ const getURLParams = () => {
     const urlParams = new URLSearchParams(window.location.search)
     return Object.fromEntries(urlParams)
 }
+
+const generateShortUUID = () => {
+    const uuid = crypto.randomUUID();
+    const shortenedUUID = uuid.substring(0, 8);
+    return shortenedUUID;
+}

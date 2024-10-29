@@ -54,7 +54,7 @@ const renderSharedDatasetLayer = () => {
     if (map) {
         const form = document.querySelector('#shareDatasetModal form')
         const data = {
-            layerURL: form.elements.url.value, 
+            layerUrl: form.elements.url.value, 
             layerFormat: form.elements.format.value,
             layerName: form.elements.name.value,
         }

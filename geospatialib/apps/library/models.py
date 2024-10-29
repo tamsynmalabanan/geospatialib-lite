@@ -4,7 +4,6 @@ from django.utils.text import slugify
 from django.db.models import Q
 from django.contrib.postgres.search import SearchVectorField
 
-import shortuuid
 import uuid
 import geojson
 from urllib.parse import urlparse

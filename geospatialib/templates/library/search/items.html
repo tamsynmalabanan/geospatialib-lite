@@ -1,35 +1,50 @@
+{% load util_tags %}
+
 {% for content in contents %}
-    {% with instance=content.instance %}
-        <li 
-            class="list-group-item d-flex gap-2 border-0 p-0 pb-3"
-            {% if forloop.last and page_obj.has_next  %}
-                hx-get="{% url 'hx_library:search' %}?page={{page_obj.number|add:1}}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{key}}={{value}}{% endif %}{% endfor %}"
-                hx-trigger="intersect once"
-                hx-swap='afterend'
-                hx-target='this'
-                hx-indicator=".htmx-indicator-{{page_obj.number}}"
-            {% endif %}
-        >
-            <div>
-                <input class="form-check-input me-1" type="checkbox" value="">
-            </div>
-            <div class='d-flex flex-column'>
-                <div>
-                    <label class="form-check-label fw-semibold" >{{content.label}}</label>
-                </div>
-                <div class='fw-lighter'>
-                    {% if content.headline %}
-                        {{content.headline|safe}}
-                    {% endif %}
-                </div>
-            </div>
-        </li>
-        {% if forloop.last and page_obj.has_next %}
-            <div class="d-flex justify-content-center gap-3">
-                {% for i in '123' %}
-                    <div class="spinner-grow spinner-grow-sm text-primary my-3 htmx-indicator htmx-indicator-{{page_obj.number}}" role="status"></div>
-                {% endfor %}
-            </div>
+    <li 
+        class="list-group-item d-flex gap-2 border-0 p-0 pb-3"
+        {% if forloop.last and page_obj.has_next  %}
+            hx-get="{% url 'hx_library:search' %}?page={{page_obj.number|add:1}}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{key}}={{value}}{% endif %}{% endfor %}"
+            hx-trigger="intersect once"
+            hx-swap='afterend'
+            hx-target='this'
+            hx-indicator=".htmx-indicator-{{page_obj.number}}"
         {% endif %}
-    {% endwith %}
+    >
+        <div>
+            <input 
+                class="form-check-input me-1" 
+                type="checkbox" 
+                value=""
+                {% if content.type == 'dataset' %}
+                    onclick="toggleLibraryLayer(event, '#geospatialibMap')"
+                    data-layer-bbox="{{content.bbox.geojson}}"
+                    data-layer-url="{{content.dataset__url__url}}"
+                    data-layer-format="{{content.dataset__format}}"
+                    data-layer-name="{{content.dataset__name}}"
+                    {% if content.dataset__extra_data %}
+                        {% var content.dataset__extra_data|json_loads as extra_data %}
+                        data-layer-styles="{{extra_data.layer.styles|json_dumps}}"
+                    {% endif %}
+                {% endif %}
+            >
+        </div>
+        <div class='d-flex flex-column'>
+            <div>
+                <label class="form-check-label fw-semibold" >{{content.label}}</label>
+            </div>
+            <div class='fw-lighter'>
+                {% if content.headline %}
+                    {{content.headline|safe}}
+                {% endif %}
+            </div>
+        </div>
+    </li>
+    {% if forloop.last and page_obj.has_next %}
+        <div class="d-flex justify-content-center gap-3">
+            {% for i in '123' %}
+                <div class="spinner-grow spinner-grow-sm text-primary my-3 htmx-indicator htmx-indicator-{{page_obj.number}}" role="status"></div>
+            {% endfor %}
+        </div>
+    {% endif %}
 {% endfor %}

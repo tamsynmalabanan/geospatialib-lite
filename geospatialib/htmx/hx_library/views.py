@@ -51,7 +51,11 @@ class SearchList(ListView):
 
     @property
     def cache_key(self):
-        return util_helpers.build_cache_key(self.request.user.pk, self.query)
+        return util_helpers.build_cache_key(
+            'search-queryset', 
+            self.request.user.pk, 
+            self.query
+        )
 
     def perform_full_text_search(self):
         query = self.query
@@ -78,7 +82,13 @@ class SearchList(ListView):
             queryset = (
                 queryset
                 .prefetch_related('dataset', 'map')
-                .values(*self.filter_fields+['id', 'label'])
+                .values(*self.filter_fields+[
+                    'label', 
+                    'bbox', 
+                    'dataset__url__url', 
+                    'dataset__name', 
+                    'dataset__extra_data', 
+                ])
                 .annotate(
                     rank=SearchRank(search_vector, search_query),
                     headline=search_headline,
@@ -87,27 +97,27 @@ class SearchList(ListView):
             )
 
             cache.set(self.cache_key, queryset, timeout=3600)
-
             return queryset
 
     def get_queryset(self):
-        queryset = cache.get(self.cache_key)
+        if not hasattr(self, 'queryset') or getattr(self, 'queryset') is None:
+            queryset = cache.get(self.cache_key)
 
-        if not queryset:
-            queryset = self.perform_full_text_search()
+            if not queryset:
+                queryset = self.perform_full_text_search()
 
-        if queryset:
-            queryset = queryset.filter(**{
-                param:value 
-                for param,value in self.request.GET.items() 
-                if param in self.filters
-                and value not in ['', None]
-            })
+            if queryset:
+                queryset = queryset.filter(**{
+                    param:value 
+                    for param,value in self.request.GET.items() 
+                    if param in self.filters
+                    and value not in ['', None]
+                })
 
             self.queryset = queryset
-            return self.queryset.annotate(rank=Max('rank')).order_by(*['-rank']+self.filter_fields+['label'])
 
-    
+        return self.queryset.annotate(rank=Max('rank')).order_by(*['-rank']+self.filter_fields+['label'])
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.page == 1:

@@ -3,6 +3,10 @@ from django_recaptcha.widgets import ReCaptchaV2Checkbox
 
 from ..general import form_helpers
 
+import json
+import shortuuid
+
+
 register = template.Library()
 
 @register.simple_tag
@@ -27,3 +31,17 @@ def is_captchta_widget(widget):
 @register.filter
 def get(dict, key):
     return dict.get(key)
+
+@register.filter
+def json_loads(string):
+    try:
+        return json.loads(string)
+    except:
+        return
+
+@register.filter
+def json_dumps(string):
+    try:
+        return json.dumps(string)
+    except:
+        return

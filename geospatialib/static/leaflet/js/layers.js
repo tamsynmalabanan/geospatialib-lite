@@ -1,5 +1,26 @@
+const toggleLibraryLayer = (event, mapSelector) => {
+    const toggle = event.target
+    const map = mapQuerySelector(mapSelector)
+    if (map) {
+        const data = toggle.dataset
+        if (toggle.checked) {
+            const layer = createLayerFromURL(data)
+            if (layer) {
+                map.getLayerGroups().client.addLayer(layer)
+                toggle.setAttribute('data-layer-id', layer._leaflet_id)
+            }
+        } else {
+            const id = data.layerId
+            const layer = map.getLayerGroups().client.getLayer(id)
+            if (layer) {
+                map.removeLayer(layer)
+            }
+        }
+    }
+}
+
 const createWMSLayer = (data) => {
-    const url = new URL(data.layerURL)
+    const url = new URL(data.layerUrl)
     const baseUrl = url.origin + url.pathname
     const options = {
         layers: data.layerName, 
@@ -7,15 +28,16 @@ const createWMSLayer = (data) => {
         transparent: true,
     }
 
-    if (data.styleName) {
-        options.styles = data.styleName
+    if (data.layerStyles) {
+        const styles = JSON.parse(data.layerStyles)
+        options.styles = Object.keys(styles)[0]
     }
     
     return L.tileLayer.wms(baseUrl, options)
 }
 
 const createXYZTilesLayer = (data) => {
-    return L.tileLayer(data.layerURL)
+    return L.tileLayer(data.layerUrl)
 }
 
 const getCreateLayerHandler = (format) => {
@@ -35,6 +57,18 @@ const createLayerFromURL = (data) => {
     
     if (layer) {
         layer.data = data
+
+        if (data.layerBbox && !layer.hasOwnProperty('getBounds')) {
+            const geojson = JSON.parse(data.layerBbox)
+            const bbox = L.geoJSON(geojson)
+            const bounds = bbox.getBounds()
+            layer.getBounds = () => {
+                if (bounds) {
+                    return bounds
+                }
+            }
+
+        }
     }
     
     return layer

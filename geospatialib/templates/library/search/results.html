@@ -7,7 +7,7 @@
 <div id='searchResults' class='pt-3'>
     {% if page_obj.number %}
         {% if page_obj.number == 1 %}
-            <ul class="list-group rounded-0">
+            <ul class="list-group list-group-flush">
                 {% include "library/search/items.html" %}
             </ul>
             <script>
@@ -33,10 +33,10 @@
                     <div class="spinner-grow spinner-grow-sm text-primary my-3 htmx-indicator htmx-indicator-search-results-load" role="status"></div>
                 {% endfor %}
             </div>
-
-    
         {% else %}
-            fetch default filters
+            <div class='d-flex mt-3'>
+                fetch default filters
+            </div>
         {% endif %}
     {% endif %}
 </div>
