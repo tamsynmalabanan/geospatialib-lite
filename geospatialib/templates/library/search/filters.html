@@ -21,7 +21,7 @@
                         {% include "library/search/clear_filters.html" %}
                     </div>
                     <div class="collapse show" id="searchResultsFilters">
-                        <div class="d-flex gap-2 mb-3">
+                        <div class="d-flex gap-2 mb-3 flex-wrap overflow-y-auto" style='max-height:100px;'>
                             {% for field, queryset in filters.items %}
                                 {% for i in queryset %}
                                     {% var i|get:field as label %}

@@ -6,7 +6,7 @@
 
 {% if page_obj.number %}
     {% if page_obj.number == 1 %}
-        <ul id='searchResults' class="list-group list-group-flush pt-3">
+        <ul id='searchResults' class="list-group list-group-flush pt-3 w-100">
             {% include "library/search/items.html" %}
             <script>
                 if (document.readyState === 'complete') {

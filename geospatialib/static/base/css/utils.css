@@ -11,6 +11,10 @@
     /* border-radius: 10px; */
 }
 
+.text-wrap {
+    word-wrap:break-word;
+}
+
 .aspect-ratio-1 {
     aspect-ratio: 1/1;
 }
