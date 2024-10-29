@@ -15,26 +15,6 @@ const searchLibrary = (query=null) => {
     form.dispatchEvent(event)
 }
 
-document.addEventListener('htmx:configRequest', (event) => {
-    const detail = event.detail
-    if (detail.path === searchEndpoint && window.location.pathname === '/') {
-        const requestParams = detail.parameters
-
-        if (Object.keys(requestParams).length > 1){
-            const urlParams = getURLParams()
-            for (const key in urlParams) {
-                if (!Object.keys(requestParams).includes(key)) {
-                    requestParams[key] = urlParams[key]
-                }
-            }
-        } else {
-            removeURLParams()
-        }
-
-        pushParamsToURL(requestParams)
-    }
-})
-
 const assignBboxFilterValue = (map) => {
     const bboxFilter = document.querySelector('[name="bbox__bboverlaps"]')
     if (bboxFilter) {
@@ -68,5 +48,25 @@ document.addEventListener('htmx:afterSwap', (event) => {
     if (event.target.id === 'searchResults') {
         const map = mapQuerySelector('#geospatialibMap')
         assignBboxFilterValue(map)
+    }
+})
+
+document.addEventListener('htmx:configRequest', (event) => {
+    const detail = event.detail
+    if (detail.path === searchEndpoint && window.location.pathname === '/') {
+        const requestParams = detail.parameters
+
+        if (Object.keys(requestParams).length > 1){
+            const urlParams = getURLParams()
+            for (const key in urlParams) {
+                if (!Object.keys(requestParams).includes(key)) {
+                    requestParams[key] = urlParams[key]
+                }
+            }
+        } else {
+            removeURLParams()
+        }
+
+        pushParamsToURL(requestParams)
     }
 })
