@@ -19,7 +19,7 @@
     aspect-ratio: 1/1;
 }
 
-.callout-button::after {
+.pointer-bottom::after {
     content: "";
     position: absolute;
     bottom: -5px;
@@ -31,11 +31,11 @@
     z-index: 2;
 }
 
-.btn-dark.callout-button::after {
+.btn-dark.pointer-bottom::after {
     border-top-color: #212529 !important;
 }
 
-.btn-light.callout-button::after {
+.btn-light.pointer-bottom::after {
     border-top-color: #f8f9fa !important;
 }
 

@@ -64,4 +64,3 @@ const labelElement = (element, options={}) => {
 
 
 }
-

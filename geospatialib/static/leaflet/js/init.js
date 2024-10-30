@@ -123,7 +123,7 @@ const handleMapInfoPanels = (map) => {
                 setAsThemedControl(toggle)
                 toggle.classList.add('btn', 'btn-sm', 'position-relative')
                 if (!options.collapsed) {
-                    toggle.classList.add('callout-button')
+                    toggle.classList.add('pointer-bottom')
                 }
                 toggle.classList.remove('accordion-button')
                 labelElement(toggle, {
@@ -135,12 +135,12 @@ const handleMapInfoPanels = (map) => {
 
                 toggle.addEventListener('click', () => {
                     if (toggle.classList.contains('collapsed')) {
-                        toggle.classList.remove('callout-button')
+                        toggle.classList.remove('pointer-bottom')
                     } else {
                         toggle.parentElement
-                        .querySelectorAll('.callout-button')
-                        .forEach(toggle => toggle.classList.remove('callout-button'))
-                        toggle.classList.add('callout-button')
+                        .querySelectorAll('.pointer-bottom')
+                        .forEach(toggle => toggle.classList.remove('pointer-bottom'))
+                        toggle.classList.add('pointer-bottom')
                     }
                 })
                 
@@ -174,6 +174,11 @@ const handleMapInfoPanels = (map) => {
                     resizeInfoPanelTimeout = setTimeout(resizeInfoPanel, 200)
                 })
 
+                const header = document.createElement('h6')
+                header.classList.add('fw-semibold')
+                header.innerText = name
+                body.appendChild(header)
+
                 return body
             }
 
@@ -181,9 +186,8 @@ const handleMapInfoPanels = (map) => {
                 const body = constructInfoPanel('Legend', {
                     toggle_title: 'Toggle legend panel',
                     icon_class: 'bi bi-stack',
-                    collapsed: true,
+                    collapsed: false,
                 })
-                body.innerText = 'legend content here'
             }
             
             if (includedPanels.includes('query')) {
@@ -192,7 +196,6 @@ const handleMapInfoPanels = (map) => {
                     icon_class: 'bi bi-question-circle-fill',
                     collapsed: true
                 })
-                body.innerText = 'query content here'
             }
             
             return container
