@@ -19,6 +19,26 @@
     aspect-ratio: 1/1;
 }
 
+.callout-button::after {
+    content: "";
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 5px 5px 0 5px;
+    border-style: solid;
+    border-color: transparent;
+    z-index: 2;
+}
+
+.btn-dark.callout-button::after {
+    border-top-color: #212529 !important;
+}
+
+.btn-light.callout-button::after {
+    border-top-color: #f8f9fa !important;
+}
+
 .focus-underline-success:active,
 .focus-underline-success:focus,
 .focus-underline-success:hover {

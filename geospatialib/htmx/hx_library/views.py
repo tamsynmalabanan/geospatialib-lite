@@ -81,7 +81,6 @@ class SearchList(ListView):
                 .values(*self.filter_fields+[
                     'label', 
                     'bbox', 
-                    'dataset__id', 
                     'dataset__url__url', 
                     'dataset__name', 
                     'dataset__extra_data', 
