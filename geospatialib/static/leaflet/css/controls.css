@@ -76,8 +76,8 @@
 }
 
 .leaflet-control.info-panel {
-    .accordion-body,
-    button {
+    .accordion,
+    .info-panel-toggles button {
         border: none !important;
         box-shadow: var(--bs-box-shadow) !important;
     }

@@ -97,12 +97,28 @@ const handleMapInfoPanels = (map) => {
                 'gap-2',
             )
             
+            Array('mouseover', 'touchstart').forEach(trigger => {
+                container.addEventListener(trigger, (e) => {
+                    map.scrollWheelZoom.disable()
+                    map.dragging.disable()
+                    
+                    Array('mouseout', 'touchend').forEach(trigger => {
+                        container.addEventListener(trigger, (e) => {
+                            map.scrollWheelZoom.enable()
+                            map.dragging.enable()
+                        })
+                    })
+                })
+            })    
+
             const accordion = document.createElement('div')
+            setAsThemedControl(accordion)
             accordion.id = `${mapId}_infoPanelAccordion`
             accordion.classList.add(
                 'info-panel-accordion',
                 'accordion',
                 'accordion-flush',
+                'rounded',
             )
             
             const toggles = document.createElement('div')
@@ -146,20 +162,25 @@ const handleMapInfoPanels = (map) => {
                 
                 const collapse = createAccordionCollapse(id, accordion.id, options.collapsed)
                 accordion.appendChild(collapse)
-
-                collapse.addEventListener('shown.bs.collapse', () => {
-                    console.log(collapse)
-                })
-
+                
+                const header = document.createElement('h6')
+                header.classList.add('fw-semibold', 'p-3', 'm-0')
+                header.innerText = name
+                collapse.appendChild(header)
+                
                 const body = document.createElement('div')
-                setAsThemedControl(body)
-                body.classList.add('accordion-body', 'd-flex', 'rounded')
+                body.classList.add('accordion-body', 'd-flex', 'flex-column', 'overflow-auto', 'px-3', 'py-0')
                 collapse.appendChild(body)
             
                 const resizeInfoPanel = () => {
                     const mapContainerHeight = mapContainer.clientHeight
                     const mapContainerWidth = mapContainer.clientWidth
-                    body.style.maxHeight = `${mapContainerHeight * 0.8}px`;
+                    
+                    const headerHeight = parseInt(window.getComputedStyle(header).height)
+                    const togglesHeight = parseInt(window.getComputedStyle(toggles).height)
+                    
+                    body.style.maxHeight = `${(mapContainerHeight * 0.9)-20-headerHeight-togglesHeight}px`;
+                    
                     if (mapContainerWidth > 1000) {
                         body.style.maxWidth = `${mapContainerWidth * 0.4}px`;
                     } else {
@@ -167,17 +188,13 @@ const handleMapInfoPanels = (map) => {
                     }
                 }
 
-                resizeInfoPanel()
                 let resizeInfoPanelTimeout
                 map.on('resize', () => {
                     clearTimeout(resizeInfoPanelTimeout)
                     resizeInfoPanelTimeout = setTimeout(resizeInfoPanel, 200)
                 })
 
-                const header = document.createElement('h6')
-                header.classList.add('fw-semibold')
-                header.innerText = name
-                body.appendChild(header)
+                toggle.addEventListener('click', () => map.fire('resize'))
 
                 return body
             }
@@ -187,6 +204,37 @@ const handleMapInfoPanels = (map) => {
                     toggle_title: 'Toggle legend panel',
                     icon_class: 'bi bi-stack',
                     collapsed: false,
+                })
+
+                map.on('layeradd', (event) => {
+                    const layer = event.layer
+                    if (layer.data && layer.data.layerStyles) {
+                        const styles = JSON.parse(layer.data.layerStyles)
+                        const url = styles[Object.keys(styles)[0]].legend
+                        if (url) {
+                            const legendContainer = createButtonAndCollapse(
+                                `${mapId}Legend_${layer._leaflet_id}`, {
+                                    label: layer.data.layerLabel
+                                }
+                            )
+                            legendContainer.classList.add('mb-3')
+                            body.insertBefore(legendContainer, body.firstChild)
+
+                            const legendCollapse = legendContainer.querySelector('.collapse')
+                            legendCollapse.appendChild(createImgElement(url, 'Legend not found.'))
+
+                            const legendToggle = legendContainer.querySelector('button')
+                            legendToggle.classList.add('bg-transparent', 'border-0', 'px-0', 'fs-6', 'text-start')
+                        }
+                    }
+                })
+
+                map.on('layerremove', (event) => {
+                    const id = `${mapId}Legend_${event.layer._leaflet_id}`
+                    const legendToggle = body.querySelector(`#${id}`)
+                    if (legendToggle) {
+                        legendToggle.parentElement.remove()
+                    }
                 })
             }
             
@@ -202,6 +250,7 @@ const handleMapInfoPanels = (map) => {
         }
     
         control.addTo(map)
+        map.fire('resize')
     }
 }
 

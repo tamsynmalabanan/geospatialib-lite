@@ -19,6 +19,7 @@
                 {% if content.type == 'dataset' %}
                     onclick="toggleLibraryLayer(event, '#geospatialibMap')"
                     data-layer-bbox="{{content.bbox.extent}}"
+                    data-layer-label="{{content.label}}"
                     data-layer-url="{{content.dataset__url__url}}"
                     data-layer-format="{{content.dataset__format}}"
                     data-layer-name="{{content.dataset__name}}"

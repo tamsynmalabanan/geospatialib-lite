@@ -64,3 +64,46 @@ const labelElement = (element, options={}) => {
 
 
 }
+
+const createImgElement = (url, alt) => {
+    const img = document.createElement('img')
+    img.setAttribute('src', url)
+    img.setAttribute('alt', alt)
+    return img
+}
+
+const createButtonAndCollapse = (id, options={}) => {
+    const container = document.createElement('div')
+    container.classList.add('d-flex', 'flex-column', 'gap-2')
+
+    const button = document.createElement('button')
+    button.classList.add('fw-medium', 'dropdown-toggle')
+    button.setAttribute('type', 'button')
+    button.setAttribute('data-bs-toggle', 'collapse')
+    button.setAttribute('data-bs-target', `#${id}`)
+    button.setAttribute('aria-controls', id)
+    if (options.collapsed) {
+        button.classList.add('collapsed')
+        button.setAttribute('aria-expanded', 'false')
+    } else {
+        button.setAttribute('aria-expanded', 'true')
+    }
+    if (options.label) {
+        const span = document.createElement('span')
+        span.classList.add('me-2')
+        span.innerText = options.label
+        button.appendChild(span)
+    }
+    setAsThemedControl(button)
+    container.appendChild(button)
+
+    const collapse = document.createElement('div')
+    collapse.id = id
+    collapse.classList.add('collapse')
+    if (!options.collapsed) {
+        collapse.classList.add('show')
+    }
+    container.appendChild(collapse)
+
+    return container
+}
