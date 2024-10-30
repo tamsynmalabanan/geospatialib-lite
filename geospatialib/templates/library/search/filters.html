@@ -8,6 +8,7 @@
                     <div class='d-flex gap-3 flex-nowrap mb-3'>
                         <a 
                             class="text-reset text-decoration-none fs-6 d-flex flex-nowrap justify-content-between flex-grow-1 gap-3" 
+                            tabindex="-1"
                             data-bs-toggle="collapse" 
                             href="#searchResultsFilters" 
                             role="button" 
@@ -17,7 +18,7 @@
                             <span>Results for "{{request.GET.query}}" ({{count}})</span>
                             <i class="bi bi-funnel"></i>
                         </a>
-                        <button class='border-0 bg-transparent px-0 d-flex align-items-start' type='submit' name='bbox__bboverlaps' title='Seach map extent'><i class="bi bi-bounding-box-circles"></i></button>
+                        <button class='border-0 bg-transparent px-0 d-flex align-items-start' tabindex="-1" type='submit' name='bbox__bboverlaps' title='Seach map extent'><i class="bi bi-bounding-box-circles"></i></button>
                         {% include "library/search/clear_filters.html" %}
                     </div>
                     <div class="collapse show" id="searchResultsFilters">
@@ -55,7 +56,7 @@
                         <input id='searchResultsToggleAll' class="form-check-input" type="checkbox" data-layer-toggles="#searchResults" data-layers-shown="0" onclick='toggleOffLibraryLayers(this)' disabled/>
                         <label for="searchResultsToggleAll" class='text-muted'></label>
                     </div>
-                    <button class="border-0 bg-transparent px-0 text-muted" type="button" data-bs-toggle="collapse" data-bs-target=".multi-collapse" aria-expanded="true" aria-controls="searchFormFields searchFormFilters"><i class="bi bi-chevron-expand"></i></button>
+                    <button class="border-0 bg-transparent px-0 text-muted" tabindex="-1" type="button" data-bs-toggle="collapse" data-bs-target=".multi-collapse" aria-expanded="true" aria-controls="searchFormFields searchFormFilters"><i class="bi bi-chevron-expand"></i></button>
                 </div>            
             {% else %}
                 <div class="d-flex gap-3 flex-nowrap justify-content-between">

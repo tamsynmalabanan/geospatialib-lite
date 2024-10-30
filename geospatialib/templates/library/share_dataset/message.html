@@ -1,4 +1,8 @@
+{% load util_tags %}
+
 {% if dataset %}
+    {% var content.label as label %}
+    
     <div>
         {% if 'info' in message.tags %}
             Find this and other related datasets in the library:
@@ -10,11 +14,11 @@
             data-bs-toggle="modal"
             href="#shareDatasetModal"
             role="button"
-            onclick="searchLibrary('{{dataset.content.label}}')"
+            onclick="searchLibrary('{{label}}')"
         >
             <i class="bi bi-layers-half mx-1"></i>
             <span>
-                {{dataset}}
+                {{label}}
             </span>
         </a>
     </div>

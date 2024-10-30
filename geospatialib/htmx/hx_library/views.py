@@ -34,10 +34,6 @@ class SearchList(ListView):
         return self.request.GET.get('query')
 
     @property
-    def filter_none(self):
-        return self.request.GET.get('filter') == 'none'
-
-    @property
     def filter_fields(self):
         return ['type', 'dataset__format']
 
@@ -104,7 +100,7 @@ class SearchList(ListView):
             queryset = cache.get(self.cache_key)
 
             if not queryset:
-                queryset = self.perform_full_text_search()
+                queryset = self.perform_full_text_search()                    
 
             if queryset:
                 queryset = queryset.filter(**{
@@ -214,4 +210,7 @@ def share_dataset(request):
                 else:
                     messages.info(request, message_template, message_tags)
 
-    return render(request, 'library/share_dataset/form.html', {'form':form, 'dataset':dataset_instance})
+    return render(request, 'library/share_dataset/form.html', {
+        'form':form, 
+        'dataset':dataset_instance,
+    })

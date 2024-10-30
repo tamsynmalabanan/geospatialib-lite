@@ -14,8 +14,12 @@ const resetShareDatasetSubmitBtn = () => {
     disableShareDatasetSubmitBtn()
 }
 
-const handleShareDatasetForm = (dataset) => {
-    sharedDataset = dataset
+const handleShareDatasetForm = (geojson) => {
+    if (geojson) {
+        sharedDataset = JSON.parse(geojson)
+    } else {
+        sharedDataset = undefined
+    }
     disableShareDatasetSubmitBtn()
     clearAllLayers(getShareDatasetMap())
 }
@@ -71,7 +75,6 @@ const renderSharedDatasetLayer = () => {
             // shareDatasetLayerLoadErrorTimeout = setTimeout(shareDatasetLayerLoadError, 60000)
         }
     
-        
         if (sharedDataset) {
             const bboxLayer = L.geoJSON(sharedDataset)
             map.fitBounds(bboxLayer.getBounds())
