@@ -19,6 +19,10 @@
     aspect-ratio: 1/1;
 }
 
+img {
+    background-color: transparent; /* Set the background to transparent */
+}
+
 .pointer-bottom::after {
     content: "";
     position: absolute;
