@@ -15,7 +15,7 @@
 
 <script>
     if (document.readyState === 'complete') {
-        handleShareDatasetForm({% if dataset %}'{{content.bbox.geojson|safe}}'{% endif %})
+        handleShareDatasetForm({% if dataset %}'{{content.bbox.extent}}'{% endif %})
         {% if form.is_valid %}
             renderSharedDatasetLayer()
         {% endif %}

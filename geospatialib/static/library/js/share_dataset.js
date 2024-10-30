@@ -1,4 +1,4 @@
-let sharedDataset
+let shareDatasetBounds
 let shareDatasetLayerLoadErrorTimeout
 
 const getShareDatasetSubmitBtn = () => document.querySelector('#shareDatasetModal .btn[type="submit"]')
@@ -14,11 +14,11 @@ const resetShareDatasetSubmitBtn = () => {
     disableShareDatasetSubmitBtn()
 }
 
-const handleShareDatasetForm = (geojson) => {
-    if (geojson) {
-        sharedDataset = JSON.parse(geojson)
+const handleShareDatasetForm = (bounds) => {
+    if (bounds) {
+        shareDatasetBounds = bounds.slice(1, -1).split(',')
     } else {
-        sharedDataset = undefined
+        shareDatasetBounds = undefined
     }
     disableShareDatasetSubmitBtn()
     clearAllLayers(getShareDatasetMap())
@@ -28,7 +28,7 @@ const shareDatasetLayerLoaded = (event) => {
     clearTimeout(shareDatasetLayerLoadErrorTimeout)
 
     const submitButton = getShareDatasetSubmitBtn()
-    if (!sharedDataset) {
+    if (!shareDatasetBounds) {
         submitButton.removeAttribute('disabled')
     }
 
@@ -72,12 +72,16 @@ const renderSharedDatasetLayer = () => {
             )
     
             map.getLayerGroups().client.addLayer(layer)
-            // shareDatasetLayerLoadErrorTimeout = setTimeout(shareDatasetLayerLoadError, 60000)
+            // shareDatasetLayerLoadErrorTimeout = setTimeout(
+            //     shareDatasetLayerLoadError, 
+            //     60000
+            // )
         }
     
-        if (sharedDataset) {
-            const bboxLayer = L.geoJSON(sharedDataset)
-            map.fitBounds(bboxLayer.getBounds())
+        if (shareDatasetBounds) {
+            const [minX, minY, maxX, maxY] = shareDatasetBounds
+            const bounds = L.latLngBounds([[minY, minX], [maxY, maxX]]);
+            map.fitBounds(bounds)
         }
     }
 }

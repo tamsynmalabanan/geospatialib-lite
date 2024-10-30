@@ -76,17 +76,17 @@ class Content(models.Model):
     def instance(self):
         return getattr(self, self.type)
 
-    @property
-    def geojson(self):
-        geom_json = json.loads(self.bbox.geojson)
-        feature = geojson.Feature(
-            geometry=geom_json,
-            properties={
-                'id':str(self.id),
-                'label':self.label,
-            },
-        )
-        return feature
+    # @property
+    # def geojson(self):
+    #     geom_json = json.loads(self.bbox.geojson)
+    #     feature = geojson.Feature(
+    #         geometry=geom_json,
+    #         properties={
+    #             'id':str(self.id),
+    #             'label':self.label,
+    #         },
+    #     )
+    #     return feature
 
     def assign_type(self):
         if not self.id and self.map:

@@ -1,24 +1,18 @@
-const populateLayerDropdownMenu = (toggle, id, mapSelector) => {
+const populateLayerDropdownMenu = (toggle, coords, mapSelector) => {
     const dropdown = toggle.nextElementSibling
     if (dropdown && dropdown.innerHTML.trim() === '') {
         const map = mapQuerySelector(mapSelector)
         const layerList = toggle.closest('ul')
         if (layerList) {
-            const checkbox = layerList.querySelector(`input[type="checkbox"][data-layer-pk="${id}"]`)
-            if (checkbox) {
-                const data = checkbox.dataset
-
-                if (map && data.layerBbox) {
-                    const geojson = JSON.parse(data.layerBbox)
-                    const layer = L.geoJSON(geojson)
-                    const bounds = layer.getBounds()
-                    if (bounds) {
-                        const item = createDropdownMenuListItem('Zoom to layer')
-                        item.addEventListener('click', () => {
-                            map.fitBounds(bounds)
-                        })
-                        dropdown.appendChild(item)
-                    }
+            if (map) {
+                const [minX, minY, maxX, maxY] = coords.slice(1, -1).split(',')
+                const bounds = L.latLngBounds([[minY, minX], [maxY, maxX]]);
+                if (bounds) {
+                    const item = createDropdownMenuListItem('Zoom to layer')
+                    item.addEventListener('click', () => {
+                        map.fitBounds(bounds)
+                    })
+                    dropdown.appendChild(item)
                 }
             }
         }
@@ -138,9 +132,8 @@ const createLayerFromURL = (data) => {
         layer.data = data
 
         if (data.layerBbox && !layer.hasOwnProperty('getBounds')) {
-            const geojson = JSON.parse(data.layerBbox)
-            const bbox = L.geoJSON(geojson)
-            const bounds = bbox.getBounds()
+            const [minX, minY, maxX, maxY] = data.layerBbox.slice(1, -1).split(',')
+            const bounds = L.latLngBounds([[minY, minX], [maxY, maxX]]);
             layer.getBounds = () => {
                 if (bounds) {
                     return bounds

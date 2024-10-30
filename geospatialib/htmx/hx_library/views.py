@@ -8,6 +8,7 @@ from django.views.generic.list import ListView
 from django.db.models import Count, Sum, F, IntegerField, Value, Q, Case, When, Max, TextField, CharField, FloatField
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank, SearchHeadline
 from django.utils.text import slugify
+from django.contrib.gis.geos import Polygon, GEOSGeometry
 
 import time
 
@@ -92,6 +93,7 @@ class SearchList(ListView):
                 .filter(rank__gte=0.001)
             )
 
+
             cache.set(self.cache_key, queryset, timeout=3600)
             return queryset
 
@@ -100,7 +102,7 @@ class SearchList(ListView):
             queryset = cache.get(self.cache_key)
 
             if not queryset:
-                queryset = self.perform_full_text_search()                    
+                queryset = self.perform_full_text_search()  
 
             if queryset:
                 queryset = queryset.filter(**{

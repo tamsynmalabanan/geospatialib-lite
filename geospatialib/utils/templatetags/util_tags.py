@@ -5,6 +5,7 @@ from ..general import form_helpers
 
 import json
 import shortuuid
+from shapely.geometry import shape
 
 
 register = template.Library()
