@@ -99,13 +99,17 @@ const handleMapInfoPanels = (map) => {
             
             Array('mouseover', 'touchstart').forEach(trigger => {
                 container.addEventListener(trigger, (e) => {
-                    map.scrollWheelZoom.disable()
                     map.dragging.disable()
-                    
+                    map.touchZoom.disable()
+                    map.doubleClickZoom.disable()
+                    map.scrollWheelZoom.disable()
+
                     Array('mouseout', 'touchend').forEach(trigger => {
                         container.addEventListener(trigger, (e) => {
-                            map.scrollWheelZoom.enable()
                             map.dragging.enable()
+                            map.touchZoom.enable()
+                            map.doubleClickZoom.enable()
+                            map.scrollWheelZoom.enable()
                         })
                     })
                 })

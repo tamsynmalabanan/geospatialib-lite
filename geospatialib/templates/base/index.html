@@ -35,7 +35,7 @@
                         {% block offcanvas_body %}{% endblock offcanvas_body %}
                     </div>
                     <div class="footer border-top d-none d-lg-flex py-2 gap-3 justify-content-center">
-                        {% with button_class='btn btn-sm btn-light d-flex gap-2 justify-content-center align-items-center' label_class='text-nowrap d-none d-xl-inline' %}
+                        {% with button_class='btn btn-sm btn-light d-flex gap-2 justify-content-center align-items-center' label_class='text-nowrap d-none d-xxl-inline' %}
                             {% if user.is_authenticated %}
                                 {% include "main/menu/dropup.html" with label_class='text-nowrap' %}
                                 {% block offcanvas_footer %}{% endblock offcanvas_footer %}
@@ -78,7 +78,7 @@
                                     {% endwith %}
                                 </div>
                             {% else %}
-                                {% include "main/about/toggle.html" with button_class='btn btn-sm btn-light rounded-end d-flex gap-2' label_class='text-nowrap d-none d-xl-inline' %}
+                                {% include "main/about/toggle.html" with button_class='btn btn-sm btn-light rounded-end d-flex gap-2' label_class='text-nowrap d-none d-xxl-inline' %}
                             {% endif %}
                         </div>
                     </div>
