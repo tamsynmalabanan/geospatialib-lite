@@ -35,7 +35,7 @@ window.addEventListener("map:init", (event) => {
         }
 
         assignBboxFilterValue(map)
-        map.on('resize moveend', (event) => {
+        map.on('resize moveend zoomend', (event) => {
             clearTimeout(bboxFilterTimeout);
             bboxFilterTimeout = setTimeout(() => {
                 assignBboxFilterValue(map)

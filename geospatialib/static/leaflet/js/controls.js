@@ -3,14 +3,15 @@ const getMapControls = () => {
         zoom: zoomBar,
         scale: scaleBar,
         search: searchBar,
+        reset: resetView,
     }
 }
 
 const zoomBar = (map, include=true) => {    
     if (include) {
         const buttons = {
-            _zoomInButton: ['bi', 'bi-plus', 'rounded-top', 'pt-1'],
-            _zoomOutButton: ['bi', 'bi-dash', 'rounded-bottom'],
+            _zoomInButton: ['bi', 'bi-plus', 'rounded-top', 'pt-1', 'rounded-bottom-0'],
+            _zoomOutButton: ['bi', 'bi-dash', 'rounded-bottom', 'rounded-top-0'],
         }
 
         for (let buttonName in buttons) {
@@ -20,6 +21,7 @@ const zoomBar = (map, include=true) => {
                 button.classList.add(className)
             });
         }
+        
     } else {
         map.removeControl(map.zoomControl)
     }
@@ -61,5 +63,18 @@ const searchBar = (map, include=true) => {
         const button = geocoderContainer.querySelector('button')
         button.innerText = ''
         button.classList.add('bi','bi-binoculars-fill')
+    }
+}
+
+const resetView = (map, include) => {
+    if (include) {
+        const container = map.resetviewControl.getContainer()
+        const control = container.querySelector('a')
+        control.classList.add('rounded', 'bi', 'bi-globe-americas', 'fs-6')
+        
+        const defautMapBounds = map.getBounds()
+        map.resetviewControl.getBounds = () => defautMapBounds
+    } else {
+        map.removeControl(map.resetviewControl)
     }
 }

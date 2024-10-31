@@ -36,9 +36,10 @@ const handleMapControls = (map) => {
         mapControls[controlName](map, included && !excluded)
     }
 
+    const container = map.getContainer()
     Array().concat(
-        Array.from(map.getContainer().querySelectorAll('.leaflet-bar a')),
-        Array.from(map.getContainer().querySelectorAll('.leaflet-bar button')),
+        Array.from(container.querySelectorAll('.leaflet-bar a')),
+        Array.from(container.querySelectorAll('.leaflet-bar button')),
     ).forEach(control => {
         control.classList.add(
             'btn', 
@@ -46,9 +47,7 @@ const handleMapControls = (map) => {
             'text-reset',
             'text-decoration-none',
             'border-0',
-            'rounded-0',
         )
-
         setAsThemedControl(control)
     })
 

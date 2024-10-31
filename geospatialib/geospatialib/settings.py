@@ -110,7 +110,7 @@ LEAFLET_CONFIG = {
     'MIN_ZOOM': 1,
     'MAX_ZOOM': 20,
     'DEFAULT_PRECISION': 6,
-    'RESET_VIEW': False,
+    'RESET_VIEW': True,
     'NO_GLOBALS': False,
     'SCALE': None,
     'PLUGINS': {
