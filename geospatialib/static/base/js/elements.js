@@ -124,9 +124,12 @@ const createFormCheck = (id, options={}) => {
     formCheck.appendChild(checkbox)
 
     const label = document.createElement('label')
-    label.className = `${options.labelClass}`
+    label.className = `ms-2 ${options.labelClass}`
     label.setAttribute('for', id)
     formCheck.appendChild(label)
+    if (options.button) {
+        label.classList.add('me-5')
+    }
 
     if (options.label) {
         const span = document.createElement('span')
@@ -137,8 +140,13 @@ const createFormCheck = (id, options={}) => {
     if (options.button) {
         const button = document.createElement('button')
         button.setAttribute('type', 'button')
-        button.setAttribute('title', options.buttonTitle)
-        button.className = `bg-transparent border-0 p-0 ms-auto ${options.buttonClass}`
+        button.className = `ms-auto bg-transparent border-0 p-0 ${options.buttonClass}`
+        if (options.buttonInnerText) {
+            const span = document.createElement('span')
+            span.className = 'ms-2 d-none d-lg-inline'
+            span.innerText = options.buttonInnerText
+            button.appendChild(span)
+        }
         formCheck.appendChild(button)
         if (options.buttonCallback) {
             button.addEventListener('click', options.buttonCallback)

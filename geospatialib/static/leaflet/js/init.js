@@ -264,45 +264,44 @@ const handleMapInfoPanels = (map) => {
             }
             
             if (includedPanels.includes('query')) {
-                map._queryEnabled = false
-
                 const body = constructInfoPanel('Query', {
                     toggleTitle: 'Toggle query panel',
                     iconClass: 'bi bi-question-circle-fill',
                     collapsed: false
                 })
-                
-                const toolbar = createFormCheck('queryResultsToggleAll', {
-                    formCheckClass: 'fs-14 mb-3',
-                    checkboxClass: 'p-0',
-                    checkboxAttrs: {
-                        'data-layers-toggles': '#queryResults',
-                        'data-layers-shown': '0',
-                        'disabled': 'true',
-                        'onclick': 'toggleOffAllLayers(this)',
-                    },
-                    labelClass: 'text-muted',
-                    button: true,
-                    buttonClass: 'bi bi-question-circle-fill gs-14',
-                    buttonTitle: 'Enable query',
-                    buttonCallback: (event) => {
-                        const button = event.target
-                        if (map._queryEnabled === false) {
-                            button.setAttribute('title', 'Disable query')
-                            map._queryEnabled = true
-                            mapContainer.style.cursor = 'pointer'
-                            if (map.getZoom() < 5) {
-                                map.setZoom(5)
-                            }
-                        } else {
-                            button.setAttribute('title', 'Enable query')
-                            map._queryEnabled = false
-                            mapContainer.style.cursor = ''
-                        }
+
+                const queryButton = document.createElement('button')
+                queryButton.className = 'btn border fs-14 bi bi-question-circle-fill mb-3 fit-content'
+                setAsThemedControl(queryButton)
+                body.appendChild(queryButton)
+
+                const span = document.createElement('span')
+                span.className = 'ms-2'
+                span.innerText = 'Run query'
+                queryButton.appendChild(span)
+
+                queryButton.addEventListener('click', (event) => {
+                    if (map.getZoom() >= 5) {
+                        console.log('run query')
+                    } else {
+                        console.log('zoom in to at least 300 km scale to run query')
                     }
                 })
-                
-                body.appendChild(toolbar)                
+
+                // const toolbar = createFormCheck('queryResultsToggleAll', {
+                //     formCheckClass: 'fs-14',
+                //     checkboxAttrs: {
+                //         'data-layers-toggles': '#queryResults',
+                //         'data-layers-shown': '0',
+                //         'disabled': 'true',
+                //         'onclick': 'toggleOffAllLayers(this)',
+                //     },
+                //     labelClass: 'text-muted',
+                //     button: true,
+                //     buttonClass: 'bi bi-chevron-expand'
+                // })
+
+                // body.appendChild(toolbar)
             }
             
             return container
