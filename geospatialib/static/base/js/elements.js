@@ -41,20 +41,20 @@ const createAccordionToggle = (target, collapsed=true) => {
 const labelElement = (element, options={}) => {
     element.classList.add('d-flex', 'flex-nowrap', 'fw-medium')
 
-    if (options.icon_class) {
+    if (options.iconClass) {
         const icon = document.createElement('i')
-        icon.className = options.icon_class
+        icon.className = options.iconClass
         element.appendChild(icon)
     }
 
     if (options.label) {
         const span = document.createElement('span')
 
-        if (options.label_class) {
-            span.className = options.label_class
+        if (options.labelClass) {
+            span.className = options.labelClass
         }
 
-        if (options.icon_class) {
+        if (options.iconClass) {
             span.classList.add('ms-2')
         }
 
@@ -106,4 +106,44 @@ const createButtonAndCollapse = (id, options={}) => {
     container.appendChild(collapse)
 
     return container
+}
+
+const createFormCheck = (id, options={}) => {
+    const formCheck = document.createElement('div')
+    formCheck.className = `form-check d-flex flex-grow-1 ${options.formCheckClass}`
+
+    const checkbox = document.createElement('input')
+    checkbox.id = id
+    checkbox.className = `form-check-input ${options.checkboxClass}`
+    checkbox.setAttribute('type', 'checkbox')
+    if (options.checkboxAttrs) {
+        for (const key in options.checkboxAttrs) {
+            checkbox.setAttribute(key, options.checkboxAttrs[key])
+        }
+    }
+    formCheck.appendChild(checkbox)
+
+    const label = document.createElement('label')
+    label.className = `${options.labelClass}`
+    label.setAttribute('for', id)
+    formCheck.appendChild(label)
+
+    if (options.label) {
+        const span = document.createElement('span')
+        span.innerText = options.label
+        label.appendChild(span)
+    }
+
+    if (options.button) {
+        const button = document.createElement('button')
+        button.setAttribute('type', 'button')
+        button.setAttribute('title', options.buttonTitle)
+        button.className = `bg-transparent border-0 p-0 ms-auto ${options.buttonClass}`
+        formCheck.appendChild(button)
+        if (options.buttonCallback) {
+            button.addEventListener('click', options.buttonCallback)
+        }
+    }
+
+    return formCheck
 }

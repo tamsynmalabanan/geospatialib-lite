@@ -56,6 +56,27 @@ const handleMapControls = (map) => {
 
     map.getContainer().querySelectorAll('.leaflet-control-scale-line')
     .forEach(scale => setAsThemedControl(scale))
+
+    const leafletControls = container.querySelectorAll('.leaflet-control')
+    leafletControls.forEach(control => {
+        Array('mouseover', 'touchstart').forEach(trigger => {
+            control.addEventListener(trigger, (e) => {
+                map.dragging.disable()
+                map.touchZoom.disable()
+                map.doubleClickZoom.disable()
+                map.scrollWheelZoom.disable()
+            })
+        })    
+
+        Array('mouseout', 'touchend').forEach(trigger => {
+            control.addEventListener(trigger, (e) => {
+                map.dragging.enable()
+                map.touchZoom.enable()
+                map.doubleClickZoom.enable()
+                map.scrollWheelZoom.enable()
+            })
+        })
+    })
 }
 
 const handleMapBasemap = (map) => {
@@ -69,6 +90,7 @@ const handleMapLayerGroups = (map) => {
     const layerGroups = {
         client: L.layerGroup(),
         search: L.layerGroup(),
+        query: L.layerGroup(),
     }
 
     for (let group in layerGroups) {
@@ -96,25 +118,7 @@ const handleMapInfoPanels = (map) => {
                 'justify-content-end',
                 'gap-2',
             )
-            
-            Array('mouseover', 'touchstart').forEach(trigger => {
-                container.addEventListener(trigger, (e) => {
-                    map.dragging.disable()
-                    map.touchZoom.disable()
-                    map.doubleClickZoom.disable()
-                    map.scrollWheelZoom.disable()
-
-                    Array('mouseout', 'touchend').forEach(trigger => {
-                        container.addEventListener(trigger, (e) => {
-                            map.dragging.enable()
-                            map.touchZoom.enable()
-                            map.doubleClickZoom.enable()
-                            map.scrollWheelZoom.enable()
-                        })
-                    })
-                })
-            })    
-
+        
             const accordion = document.createElement('div')
             setAsThemedControl(accordion)
             accordion.id = `${mapId}_infoPanelAccordion`
@@ -139,7 +143,7 @@ const handleMapInfoPanels = (map) => {
             const constructInfoPanel = (name, options={}) => {
                 const id = `${mapId}_infoPanel${name.replace(' ', '')}`
                 const toggle = createAccordionToggle(id)
-                toggle.setAttribute('title', options.toggle_title)
+                toggle.setAttribute('title', options.toggleTitle)
                 setAsThemedControl(toggle)
                 toggle.classList.add('btn', 'btn-sm', 'position-relative')
                 if (!options.collapsed) {
@@ -147,9 +151,9 @@ const handleMapInfoPanels = (map) => {
                 }
                 toggle.classList.remove('accordion-button')
                 labelElement(toggle, {
-                    icon_class: options.icon_class,
+                    iconClass: options.iconClass,
                     label: name,
-                    label_class: 'd-none d-lg-inline',
+                    labelClass: 'd-none d-lg-inline',
                 })
                 toggles.appendChild(toggle)
 
@@ -222,8 +226,8 @@ const handleMapInfoPanels = (map) => {
 
             if (includedPanels.includes('legend')) {
                 const body = constructInfoPanel('Legend', {
-                    toggle_title: 'Toggle legend panel',
-                    icon_class: 'bi bi-stack',
+                    toggleTitle: 'Toggle legend panel',
+                    iconClass: 'bi bi-stack',
                     collapsed: true,
                 })
 
@@ -260,38 +264,45 @@ const handleMapInfoPanels = (map) => {
             }
             
             if (includedPanels.includes('query')) {
+                map._queryEnabled = false
+
                 const body = constructInfoPanel('Query', {
-                    toggle_title: 'Toggle query panel',
-                    icon_class: 'bi bi-question-circle-fill',
+                    toggleTitle: 'Toggle query panel',
+                    iconClass: 'bi bi-question-circle-fill',
                     collapsed: false
                 })
                 
-                const toolbar = document.createElement('div')
-                toolbar.classList.add('d-flex', 'justify-content-between', 'mb-3')
-                body.appendChild(toolbar)
-
-                const formCheck = document.createElement('div')
-                formCheck.classList.add('form-check', 'fs-14')
-                toolbar.appendChild(formCheck)
-
-                const toggleAllCheckbox = document.createElement('input')
-                toggleAllCheckbox.id = 'queryResultsToggleAll'
-                toggleAllCheckbox.classList.add('form-check-input', 'p-0')
-                toggleAllCheckbox.setAttribute('type', 'checkbox')
-                toggleAllCheckbox.setAttribute('data-layer-toggles', '#queryResults')
-                toggleAllCheckbox.setAttribute('data-layers-shown', "0")
-                toggleAllCheckbox.setAttribute('disabled', true)
-                toggleAllCheckbox.setAttribute('onclick', "toggleOffAllLayers(this)")
-                formCheck.appendChild(toggleAllCheckbox)
-
-                const toggleAllLabel = document.createElement('label')
-                toggleAllLabel.classList.add('text-muted')
-                toggleAllLabel.setAttribute('for', toggleAllCheckbox.id)
-                formCheck.appendChild(toggleAllLabel)
-
-                const queryButton = document.createElement('button')
-                queryButton.className = 'bi bi-question-circle-fill bg-transparent border-0 p-0 fs-14'
-                toolbar.appendChild(queryButton)
+                const toolbar = createFormCheck('queryResultsToggleAll', {
+                    formCheckClass: 'fs-14 mb-3',
+                    checkboxClass: 'p-0',
+                    checkboxAttrs: {
+                        'data-layers-toggles': '#queryResults',
+                        'data-layers-shown': '0',
+                        'disabled': 'true',
+                        'onclick': 'toggleOffAllLayers(this)',
+                    },
+                    labelClass: 'text-muted',
+                    button: true,
+                    buttonClass: 'bi bi-question-circle-fill gs-14',
+                    buttonTitle: 'Enable query',
+                    buttonCallback: (event) => {
+                        const button = event.target
+                        if (map._queryEnabled === false) {
+                            button.setAttribute('title', 'Disable query')
+                            map._queryEnabled = true
+                            mapContainer.style.cursor = 'pointer'
+                            if (map.getZoom() < 5) {
+                                map.setZoom(5)
+                            }
+                        } else {
+                            button.setAttribute('title', 'Enable query')
+                            map._queryEnabled = false
+                            mapContainer.style.cursor = ''
+                        }
+                    }
+                })
+                
+                body.appendChild(toolbar)                
             }
             
             return container
@@ -308,10 +319,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         handleMapContainer(map)
         handleMapSize(map)
-        handleMapControls(map)
         handleMapBasemap(map)
         handleMapLayerGroups(map)
         handleMapInfoPanels(map)
+        handleMapControls(map) // needs to be after handleMapInfoPanels
 
     })
 })

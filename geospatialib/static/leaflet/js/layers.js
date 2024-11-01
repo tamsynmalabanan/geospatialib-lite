@@ -20,7 +20,7 @@ const populateLayerDropdownMenu = (toggle, coords, mapSelector) => {
 }
 
 const toggleOffAllLayers = (toggle) => {
-    const targetSelector = toggle.getAttribute('data-layer-toggles')
+    const targetSelector = toggle.getAttribute('data-layers-toggles')
     const target = document.querySelector(targetSelector)
     if (target) {
         const toggles = target.querySelectorAll('input[type="checkbox"]')
@@ -42,7 +42,7 @@ const toggleLibraryLayer = (event, mapSelector) => {
         let layersCount
         const layerList = toggle.closest('ul')
         if (layerList) {
-            toggleAll = document.querySelector(`input[data-layer-toggles="#${layerList.id}"]`)
+            toggleAll = document.querySelector(`input[data-layers-toggles="#${layerList.id}"]`)
             toggleLabel = document.querySelector(`label[for="${toggleAll.id}"]`)
         }
         
