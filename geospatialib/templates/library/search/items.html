@@ -31,10 +31,16 @@
             >
         </div>
         <div class='d-flex flex-column flex-grow-1 me-3 w-75'>
-            <label class="form-check-label fw-semibold d-flex justify-content-between">
+            <label class="form-check-label fw-semibold d-flex justify-content-between gap-3">
                 <span>
                     {{content.label}}
                 </span>
+                <div class="dropdown">
+                    <button class="p-0 border-0 bg-transparent text-muted" tabindex="-1" type="button" data-bs-toggle="dropdown" aria-expanded="false" onclick="populateLayerDropdownMenu(this, '{{content.bbox.extent}}', '#geospatialibMap')">
+                        <i class="bi bi-three-dots"></i>
+                    </button>
+                    <ul class="dropdown-menu"></ul>
+                </div>        
             </label>
             <div class="d-flex w-100">
                 <div class='fw-lighter mt-1 small text-wrap w-100'>
@@ -43,12 +49,6 @@
                     {% endif %}
                 </div>
             </div>
-        </div>
-        <div class="dropdown">
-            <button class="p-0 border-0 bg-transparent text-muted" tabindex="-1" type="button" data-bs-toggle="dropdown" aria-expanded="false" onclick="populateLayerDropdownMenu(this, '{{content.bbox.extent}}', '#geospatialibMap')">
-                <i class="bi bi-three-dots"></i>
-            </button>
-            <ul class="dropdown-menu"></ul>
         </div>
     </li>
     {% if forloop.last and page_obj.has_next %}

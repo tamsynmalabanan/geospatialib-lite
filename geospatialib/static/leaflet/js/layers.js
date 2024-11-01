@@ -19,7 +19,7 @@ const populateLayerDropdownMenu = (toggle, coords, mapSelector) => {
     }
 }
 
-const toggleOffLibraryLayers = (toggle) => {
+const toggleOffAllLayers = (toggle) => {
     const targetSelector = toggle.getAttribute('data-layer-toggles')
     const target = document.querySelector(targetSelector)
     if (target) {

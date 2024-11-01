@@ -48,6 +48,7 @@ const handleMapControls = (map) => {
             'text-decoration-none',
             'border-0',
         )
+
         setAsThemedControl(control)
     })
 
@@ -167,9 +168,26 @@ const handleMapInfoPanels = (map) => {
                 accordion.appendChild(collapse)
                 
                 const header = document.createElement('h6')
-                header.classList.add('fw-semibold', 'p-3', 'm-0')
-                header.innerText = name
+                header.classList.add('p-3', 'm-0', 'fw-semibold', 'fs-14', 'd-flex', 'gap-5', 'justify-content-between')
                 collapse.appendChild(header)
+
+                const span = document.createElement('span')
+                span.innerText = name
+                header.appendChild(span)
+
+                const collapseToggle = document.createElement('button')
+                collapseToggle.className = 'border-0 bg-transparent px-0 text-muted bi bi-chevron-up'
+                header.appendChild(collapseToggle)
+                
+                collapseToggle.addEventListener('click', () => {
+                    const collapseElements = collapse.querySelectorAll('.collapse')
+                    collapseElements.forEach(element => {
+                        if (element.classList.contains('show')) {
+                            const bsCollapse = new bootstrap.Collapse(element)
+                            bsCollapse.hide()
+                        }
+                    })
+                })
                 
                 const body = document.createElement('div')
                 body.classList.add('accordion-body', 'd-flex', 'flex-column', 'overflow-auto', 'px-3', 'py-0')
@@ -202,11 +220,11 @@ const handleMapInfoPanels = (map) => {
                 return body
             }
 
-            if (includedPanels.includes('legend')) {                
+            if (includedPanels.includes('legend')) {
                 const body = constructInfoPanel('Legend', {
                     toggle_title: 'Toggle legend panel',
                     icon_class: 'bi bi-stack',
-                    collapsed: false,
+                    collapsed: true,
                 })
 
                 map.on('layeradd', (event) => {
@@ -245,8 +263,35 @@ const handleMapInfoPanels = (map) => {
                 const body = constructInfoPanel('Query', {
                     toggle_title: 'Toggle query panel',
                     icon_class: 'bi bi-question-circle-fill',
-                    collapsed: true
+                    collapsed: false
                 })
+                
+                const toolbar = document.createElement('div')
+                toolbar.classList.add('d-flex', 'justify-content-between', 'mb-3')
+                body.appendChild(toolbar)
+
+                const formCheck = document.createElement('div')
+                formCheck.classList.add('form-check', 'fs-14')
+                toolbar.appendChild(formCheck)
+
+                const toggleAllCheckbox = document.createElement('input')
+                toggleAllCheckbox.id = 'queryResultsToggleAll'
+                toggleAllCheckbox.classList.add('form-check-input', 'p-0')
+                toggleAllCheckbox.setAttribute('type', 'checkbox')
+                toggleAllCheckbox.setAttribute('data-layer-toggles', '#queryResults')
+                toggleAllCheckbox.setAttribute('data-layers-shown', "0")
+                toggleAllCheckbox.setAttribute('disabled', true)
+                toggleAllCheckbox.setAttribute('onclick', "toggleOffAllLayers(this)")
+                formCheck.appendChild(toggleAllCheckbox)
+
+                const toggleAllLabel = document.createElement('label')
+                toggleAllLabel.classList.add('text-muted')
+                toggleAllLabel.setAttribute('for', toggleAllCheckbox.id)
+                formCheck.appendChild(toggleAllLabel)
+
+                const queryButton = document.createElement('button')
+                queryButton.className = 'bi bi-question-circle-fill bg-transparent border-0 p-0 fs-14'
+                toolbar.appendChild(queryButton)
             }
             
             return container

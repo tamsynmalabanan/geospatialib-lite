@@ -39,7 +39,7 @@ const createAccordionToggle = (target, collapsed=true) => {
 }
 
 const labelElement = (element, options={}) => {
-    element.classList.add('d-flex', 'flex-nowrap')
+    element.classList.add('d-flex', 'flex-nowrap', 'fw-medium')
 
     if (options.icon_class) {
         const icon = document.createElement('i')
@@ -62,7 +62,7 @@ const labelElement = (element, options={}) => {
         element.appendChild(span)
     }
 
-
+    
 }
 
 const createImgElement = (url, alt) => {
@@ -90,7 +90,7 @@ const createButtonAndCollapse = (id, options={}) => {
     }
     if (options.label) {
         const span = document.createElement('span')
-        span.classList.add('me-2')
+        span.classList.add('me-2', 'fs-14')
         span.innerText = options.label
         button.appendChild(span)
     }
