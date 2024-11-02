@@ -89,7 +89,7 @@ const handleMapBasemap = (map) => {
 const handleMapLayerGroups = (map) => {
     const layerGroups = {
         client: L.layerGroup(),
-        search: L.layerGroup(),
+        library: L.layerGroup(),
         query: L.layerGroup(),
     }
 
@@ -270,23 +270,97 @@ const handleMapInfoPanels = (map) => {
                     collapsed: false
                 })
 
-                const queryButton = document.createElement('button')
-                queryButton.className = 'btn border fs-14 bi bi-question-circle-fill mb-3 fit-content'
-                setAsThemedControl(queryButton)
-                body.appendChild(queryButton)
-
-                const span = document.createElement('span')
-                span.className = 'ms-2'
-                span.innerText = 'Run query'
-                queryButton.appendChild(span)
-
-                queryButton.addEventListener('click', (event) => {
-                    if (map.getZoom() >= 5) {
-                        console.log('run query')
-                    } else {
-                        console.log('zoom in to at least 300 km scale to run query')
-                    }
+                const queryButton = createButton({
+                    buttonClass: 'border fs-14 bi bi-question-circle-fill mb-3 mx-auto d-flex flex-nowrap',
+                    label: 'Run query',
+                    labelClass: 'text-nowrap',
+                    parent: body,
                 })
+
+                const resultContainer = document.createElement('div')
+                body.appendChild(resultContainer)
+
+                const footer = document.createElement('div')
+                footer.className = 'border-top mb-3 px-2 pt-3 mt-4 font-monospace fs-12'
+                body.appendChild(footer)
+                
+                const toggleQuery = () => {
+                    if (getScale(map, 'km') <= 100) {
+                        queryButton.removeAttribute('disabled')
+                        if (getScale(map, 'km') <= 10) {
+                            footer.innerText = 'Query enabled.'
+                        } else {
+                            footer.innerText = 'Query enabled. Zoom in to at least 10 km to query OSM.'
+                        }
+                    } else {
+                        queryButton.setAttribute('disabled', true)
+                        footer.innerText = 'Zoom in to at least 100 km scale to enable query.'
+                    }
+                }
+
+                mapContainer.addEventListener('mapInitComplete', toggleQuery)
+                map.on('zoomend', toggleQuery)
+
+                const fetchQueryDataError = (msg) => {
+                    const errorMessage = document.createElement('span')
+                    errorMessage.className = 'px-2 font-monospace fs-12'
+                    errorMessage.innerText = msg
+                    resultContainer.innerHTML = errorMessage.outerHTML
+                }
+
+                const fetchQueryData = async (event) => {
+                    const fetchers = {}
+
+                    const bounds = loopThroughCoordinates(
+                        map.getBounds(), 
+                        validateCoordinates
+                    )
+
+                    const bbox = [
+                        bounds.getNorth(),
+                        bounds.getEast(),
+                        bounds.getSouth(),
+                        bounds.getWest(),
+                    ]
+                    
+                    const libraryLayers = map.getLayerGroups().library.getLayers()
+                    if (libraryLayers.length > 0) {
+                        libraryLayers.forEach(layer => {
+                            console.log(layer.data)
+                            // fetchers[layer]
+                        })
+                    }
+
+                    if (getScale(map, 'km') <= 10) {
+                        fetchers['OpenStreetMap'] = fetchOSMData(bbox)
+                    }
+
+                    if (Object.keys(fetchers).length > 0) {
+                        queryButton.setAttribute('disabled', true)
+                        footer.innerText = 'Running query...'
+                        resultContainer.innerHTML = ''
+                        
+                        const data = await Promise.all(Object.values(fetchers)) 
+                        
+                        if (data.every(i => !i)) {
+                            fetchQueryDataError('Query did not return any feature.')
+                        } else {
+                            const fetchedData = {}
+                            for (let i = 0; i <= data.length-1; i++) {
+                                fetchedData[Object.keys(fetchers)[i]] = data[i]
+                            }
+
+                            console.log(fetchedData)
+                        }
+
+                        queryButton.removeAttribute('disabled')
+                        footer.innerText = 'Query complete.'
+                    } else {
+                        fetchQueryDataError("No queryable layers on the map.")
+                    }
+                }
+
+                queryButton.addEventListener('click', fetchQueryData)
 
                 // const toolbar = createFormCheck('queryResultsToggleAll', {
                 //     formCheckClass: 'fs-14',
@@ -316,12 +390,14 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener("map:init", function (event) {
         const map = event.detail.map
 
-        handleMapContainer(map)
-        handleMapSize(map)
         handleMapBasemap(map)
         handleMapLayerGroups(map)
+        handleMapContainer(map)
+        handleMapSize(map)
         handleMapInfoPanels(map)
         handleMapControls(map) // needs to be after handleMapInfoPanels
 
+        const newEvent = new Event('mapInitComplete')
+        map.getContainer().dispatchEvent(newEvent)
     })
 })

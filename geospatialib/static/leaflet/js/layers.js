@@ -50,7 +50,7 @@ const toggleLibraryLayer = (event, mapSelector) => {
         if (toggle.checked) {
             const layer = createLayerFromURL(data)
             if (layer) {
-                map.getLayerGroups().search.addLayer(layer)
+                map.getLayerGroups().library.addLayer(layer)
                 toggle.setAttribute('data-leaflet-id', layer._leaflet_id)
 
                 if (toggleAll) {
@@ -58,9 +58,9 @@ const toggleLibraryLayer = (event, mapSelector) => {
                 }
             }
         } else {
-            const layer = map.getLayerGroups().search.getLayer(data.leafletId)
+            const layer = map.getLayerGroups().library.getLayer(data.leafletId)
             if (layer) {
-                map.removeLayer(layer)
+                map.getLayerGroups().library.removeLayer(layer)
 
                 if (toggleAll) {
                     layersCount = parseInt(toggleAll.getAttribute('data-layers-shown'))-1

@@ -28,18 +28,20 @@ let bboxFilterTimeout
 window.addEventListener("map:init", (event) => {
     const map = event.detail.map
     if (map.getContainer().id === 'geospatialibMap') {
-        const urlParams = getURLParams()
-        const bbox = urlParams.bbox__bboverlaps
-        if (bbox) {
-            map.fitBounds(L.geoJSON(JSON.parse(bbox)).getBounds())
-        }
-
-        assignBboxFilterValue(map)
-        map.on('resize moveend zoomend', (event) => {
-            clearTimeout(bboxFilterTimeout);
-            bboxFilterTimeout = setTimeout(() => {
-                assignBboxFilterValue(map)
-            }, 100)
+        map.getContainer().addEventListener('mapInitComplete', () => {
+            const urlParams = getURLParams()
+            const bbox = urlParams.bbox__bboverlaps
+            if (bbox) {
+                map.fitBounds(L.geoJSON(JSON.parse(bbox)).getBounds())
+            }
+    
+            assignBboxFilterValue(map)
+            map.on('resize moveend zoomend', (event) => {
+                clearTimeout(bboxFilterTimeout);
+                bboxFilterTimeout = setTimeout(() => {
+                    assignBboxFilterValue(map)
+                }, 100)
+            })
         })
     }
 })

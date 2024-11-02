@@ -5,7 +5,7 @@
         {% for name in forms.keys  %}
             <li class="nav-item">
                 <button
-                    class="accordion-button me-2 p-2 ps-3 text-bg-light rounded-top z-3 {% if name != active %}collapsed{% endif %}"
+                    class="accordion-button me-2 p-2 ps-3 text-bg-dark rounded-top z-3 {% if name != active %}collapsed{% endif %}"
                     type="button"
                     data-bs-toggle="collapse"
                     data-bs-target="#{{name}}AccountAccordion"
@@ -18,7 +18,7 @@
         {% endfor %}
     </ul>
 
-    <div class="modal-body p-0 border-top text-bg-light z-2 flex-grow-1 d-flex flex-column" style='margin-top:-1px;'>
+    <div class="modal-body p-0 border-top text-bg-dark z-2 flex-grow-1 d-flex flex-column" style='margin-top:-1px;'>
         {% for name, form in forms.items %}
             <div
                 id="{{name}}AccountAccordion"

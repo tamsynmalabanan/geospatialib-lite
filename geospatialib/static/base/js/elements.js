@@ -155,3 +155,22 @@ const createFormCheck = (id, options={}) => {
 
     return formCheck
 }
+
+const createButton = (options={}) => {
+    const button = document.createElement('button')
+    button.className = `btn ${options.buttonClass}`
+    setAsThemedControl(button)
+
+    if (options.label) {
+        const span = document.createElement('span')
+        span.className = `ms-2 ${options.labelClass}`
+        span.innerText = options.label
+        button.appendChild(span)
+    }
+
+    if (options.parent) {
+        options.parent.appendChild(button)
+    }
+
+    return button
+}

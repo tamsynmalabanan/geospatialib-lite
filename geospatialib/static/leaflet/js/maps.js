@@ -20,3 +20,17 @@ const clearAllLayers = (map) => {
         map.removeLayer(layer);
     });        
 }
+
+const getScale = (map, unit='km') => {
+    let scale_value
+
+    const scales = map.getContainer().querySelectorAll('.leaflet-control-scale-line')
+    scales.forEach(scale => {
+        if (scale.innerText.includes(unit)) {
+            scale_value = parseInt(scale.innerText)
+            return
+        }
+    })
+
+    return scale_value
+}
