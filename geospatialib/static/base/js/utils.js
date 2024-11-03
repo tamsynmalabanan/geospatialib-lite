@@ -49,3 +49,11 @@ const generateShortUUID = () => {
     const shortenedUUID = uuid.substring(0, 8);
     return shortenedUUID;
 }
+
+const validateUrl = (str) => {
+    try {
+      return new URL(str)
+    } catch (error) {
+      return false
+    }
+}
