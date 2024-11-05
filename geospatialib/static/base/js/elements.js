@@ -1,9 +1,15 @@
-const createDropdownMenuListItem = (label) => {
+const createDropdownMenuListItem = (options={}) => {
     const li = document.createElement('li')
 
     const button = document.createElement('button')
-    button.className = 'dropdown-item'
-    button.innerText = label
+    button.className = `dropdown-item ${options.buttonClass}`
+
+    if (options.label) {
+        const span = document.createElement('span')
+        span.className = 'ms-2'
+        span.innerText = options.label
+        button.appendChild(span)
+    }
 
     li.appendChild(button)
 
@@ -151,6 +157,15 @@ const createFormCheck = (id, options={}) => {
         if (options.buttonCallback) {
             button.addEventListener('click', options.buttonCallback)
         }
+        if (options.buttonAttrs) {
+            for (const key in options.buttonAttrs) {
+                button.setAttribute(key, options.buttonAttrs[key])
+            }
+        }    
+    }
+
+    if (options.parent) {
+        options.parent.appendChild(formCheck)
     }
 
     return formCheck

@@ -11,35 +11,33 @@
             hx-indicator=".htmx-indicator-{{page_obj.number}}"
         {% endif %}
     >   
-        <div class='d-flex flex-column gap-2 me-2'>
-            <input 
-                class="form-check-input me-1" 
-                tabindex="-1"
-                type="checkbox" 
-                {% if content.type == 'dataset' %}
-                    onclick="toggleLibraryLayer(event, '#geospatialibMap')"
-                    data-layer-bbox="{{content.bbox.extent}}"
-                    data-layer-label="{{content.label}}"
-                    data-layer-url="{{content.dataset__url__url}}"
-                    data-layer-format="{{content.dataset__format}}"
-                    data-layer-name="{{content.dataset__name}}"
-                    {% if content.dataset__extra_data %}
-                        {% var content.dataset__extra_data|json_loads as extra_data %}
-                        data-layer-styles="{{extra_data.layer.styles|json_dumps}}"
-                    {% endif %}
+        <input 
+            class="form-check-input me-2" 
+            tabindex="-1"
+            type="checkbox" 
+            {% if content.type == 'dataset' %}
+                onclick="toggleLayer(event, {mapSelector:'#geospatialibMap'})"
+                data-layer-bbox="{{content.bbox.extent}}"
+                data-layer-label="{{content.label}}"
+                data-layer-url="{{content.dataset__url__url}}"
+                data-layer-format="{{content.dataset__format}}"
+                data-layer-name="{{content.dataset__name}}"
+                {% if content.dataset__extra_data %}
+                    {% var content.dataset__extra_data|json_loads as extra_data %}
+                    data-layer-styles="{{extra_data.layer.styles|json_dumps}}"
                 {% endif %}
-            >
-        </div>
+            {% endif %}
+        >
         <div class='d-flex flex-column flex-grow-1 w-75'>
             <label class="form-check-label fw-semibold d-flex justify-content-between gap-3">
                 <span>
                     {{content.label}}
                 </span>
                 <div class="dropdown">
-                    <button class="p-0 border-0 bg-transparent text-muted" tabindex="-1" type="button" data-bs-toggle="dropdown" aria-expanded="false" onclick="populateLayerDropdownMenu(this, '{{content.bbox.extent}}', '#geospatialibMap')">
+                    <button class="p-0 border-0 bg-transparent text-muted" tabindex="-1" type="button" data-bs-toggle="dropdown" aria-expanded="false" onclick="populateLayerDropdownMenu(this, {mapSelector:'#geospatialibMap', bboxCoords:'{{content.bbox.extent}}', layerGroup:'library'})">
                         <i class="bi bi-three-dots"></i>
                     </button>
-                    <ul class="dropdown-menu"></ul>
+                    <ul class="dropdown-menu fs-12"></ul>
                 </div>                
             </label>
             <div class="d-flex w-100">

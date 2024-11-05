@@ -21,30 +21,23 @@ const clearAllLayers = (map) => {
     });        
 }
 
-const getScale = (map, unit='km') => {
+const getMeterScale = (map) => {
     let scale_value
 
     const scales = map.getContainer().querySelectorAll('.leaflet-control-scale-line')
     scales.forEach(scale => {
-        if (scale.innerText.includes(unit)) {
-            scale_value = parseInt(scale.innerText)
+        const text = scale.innerText
+        const lastChar = text.charAt(text.length - 1)
+        if (lastChar === 'm') {
+            const value = parseInt(text)
+            if (text.includes('km')) {
+                scale_value = value * 1000
+            } else {
+                scale_value = value
+            }
             return
         }
     })
 
     return scale_value
-}
-
-const getMapBbox = (map) => {
-    const bounds = loopThroughCoordinates(
-        map.getBounds(), 
-        validateCoordinates
-    )
-
-    return [
-        bounds.getNorth(),
-        bounds.getEast(),
-        bounds.getSouth(),
-        bounds.getWest(),
-    ]
 }

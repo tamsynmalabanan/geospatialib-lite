@@ -183,15 +183,7 @@ const handleMapInfoPanels = (map) => {
                 collapseToggle.className = 'border-0 bg-transparent px-0 text-muted bi bi-chevron-up'
                 header.appendChild(collapseToggle)
                 
-                collapseToggle.addEventListener('click', () => {
-                    const collapseElements = collapse.querySelectorAll('.collapse')
-                    collapseElements.forEach(element => {
-                        if (element.classList.contains('show')) {
-                            const bsCollapse = new bootstrap.Collapse(element)
-                            bsCollapse.hide()
-                        }
-                    })
-                })
+                collapseToggle.addEventListener('click', () => hideAllSubCollapse(collapse))
                 
                 const body = document.createElement('div')
                 body.classList.add('accordion-body', 'd-flex', 'flex-column', 'overflow-auto', 'px-3', 'py-0')
@@ -200,16 +192,29 @@ const handleMapInfoPanels = (map) => {
                 const resizeInfoPanel = () => {
                     const mapContainerHeight = mapContainer.clientHeight
                     const mapContainerWidth = mapContainer.clientWidth
-                    
-                    const headerHeight = parseInt(window.getComputedStyle(header).height)
-                    const togglesHeight = parseInt(window.getComputedStyle(toggles).height)
-                    
-                    body.style.maxHeight = `${(mapContainerHeight * 0.9)-20-headerHeight-togglesHeight}px`;
+
+                    const topMargin = Math.floor(
+                        body.getBoundingClientRect().top
+                    ) - Math.floor(
+                        mapContainer.getBoundingClientRect().top
+                    )
+
+                    let siblingsHeight = 0
+                    Array.from(collapse.children).forEach(element => {
+                        if (element != body) {
+                            const height = parseInt(window.getComputedStyle(element).height)
+                            if (height) {
+                                siblingsHeight += height
+                            }
+                        }
+                    })
+
+                    body.style.maxHeight = `${(mapContainerHeight * 0.9)-topMargin-siblingsHeight}px`;
                     
                     if (mapContainerWidth > 1000) {
-                        body.style.maxWidth = `${mapContainerWidth * 0.4}px`;
+                        body.style.maxWidth = `${mapContainerWidth * 0.3}px`;
                     } else {
-                        body.style.maxWidth = `${mapContainerWidth * 0.7}px`;
+                        body.style.maxWidth = `${mapContainerWidth * 0.8}px`;
                     }
                 }
 
@@ -270,18 +275,17 @@ const handleMapInfoPanels = (map) => {
                     collapsed: false
                 })
 
+                const header = body.parentElement.querySelector('h6')
+                header.querySelector('button').remove()
                 const queryButton = createButton({
-                    buttonClass: 'border fs-14 bi bi-question-circle-fill mb-3 ms-auto d-flex flex-nowrap',
+                    buttonClass: 'border fs-14 bi bi-question-circle-fill ms-auto d-flex flex-nowrap',
                     labelClass: 'text-nowrap',
-                    parent: body,
+                    parent: header,
                 })
 
-                const resultContainer = document.createElement('div')
-                body.appendChild(resultContainer)
-
                 const footer = document.createElement('div')
-                footer.className = 'border-top mb-3 px-2 pt-3 mt-4 font-monospace fs-12'
-                body.appendChild(footer)
+                footer.className = 'border-top p-3 font-monospace fs-12'
+                body.parentElement.appendChild(footer)
                 
                 const disableMapQuery = () => {
                     map._queryEnabled = false
@@ -289,17 +293,17 @@ const handleMapInfoPanels = (map) => {
                 }
 
                 const toggleQueryButton = () => {
-                    if (getScale(map, 'km') <= 100) {
-                        queryButton.removeAttribute('disabled')
-                        if (getScale(map, 'km') <= 10) {
+                    if (getMeterScale(map) <= 100000) {
+                        if (!map._querying) {
+                            queryButton.removeAttribute('disabled')
                             footer.innerText = 'Query enabled.'
-                        } else {
-                            footer.innerText = 'Query enabled. Zoom in to at least 10 km to query OSM.'
                         }
                     } else {
                         disableMapQuery()
                         queryButton.setAttribute('disabled', true)
-                        footer.innerText = 'Zoom in to at least 100 km scale to enable query.'
+                        if (!map._querying) {
+                            footer.innerText = 'Zoom in to at least 100 km scale to enable query.'
+                        }
                     }
                 }
 
@@ -321,70 +325,119 @@ const handleMapInfoPanels = (map) => {
 
                 const fetchQueryDataError = (msg) => {
                     const errorMessage = document.createElement('span')
-                    errorMessage.className = 'px-2 font-monospace fs-12'
+                    errorMessage.className = 'font-monospace fs-12'
                     errorMessage.innerText = msg
-                    resultContainer.innerHTML = errorMessage.outerHTML
+                    body.appendChild(errorMessage)
                 }
 
+                const collectFetchers = (event) => {
+                    const fetchers = {}
+                    
+                    const libraryLayers = map.getLayerGroups().library.getLayers()
+                    if (libraryLayers.length > 0) {
+                        libraryLayers.forEach(layer => {
+                            fetchers[layer.data.layerLabel] = fetchData(event, layer)
+                        })
+                    }
+
+                    fetchers['OpenStreetMap'] = fetchOSMData(event)
+
+                    return fetchers
+                }
+
+                map._querying = false
                 const fetchQueryData = async (event) => {
                     if (map._queryEnabled) {
+                        map._querying = true
                         disableMapQuery()
 
-                        const fetchers = {}
+                        map.getLayerGroups().query.clearLayers()
+
+                        queryButton.setAttribute('disabled', true)
+                        footer.innerText = 'Running query...'
+                        body.innerHTML = ''
+
+                        const queryResults = document.createElement('ul')
+                        queryResults.className = 'list-group list-group-flush fs-14'
+                        queryResults.id = 'queryResults'
+
+                        const toolbar = createFormCheck('queryResultsToggleAll', {
+                            formCheckClass: 'fs-14 mb-3 sticky-top',
+                            checkboxAttrs: {
+                                'data-layers-toggles': '#queryResults',
+                                'data-layers-label': 'feature',
+                                'disabled': 'true',
+                                'onclick': 'toggleOffAllLayers(this)',
+                            },
+                            labelClass: 'text-muted',
+                            button: true,
+                            buttonClass: 'bi bi-chevron-expand text-muted',
+                            buttonCallback: () => hideAllSubCollapse(queryResults),
+                            parent: body
+                        })
+                        setAsThemedControl(toolbar)
+                        body.appendChild(queryResults)
                         
-                        const libraryLayers = map.getLayerGroups().library.getLayers()
-                        if (libraryLayers.length > 0) {
-                            libraryLayers.forEach(layer => {
-                                console.log(layer.data)
-                            })
-                        }
+                        const coordsGeoJSON = L.marker(event.latlng).toGeoJSON()
+                        const coordsLayer = L.geoJSON(coordsGeoJSON).getLayers()[0]
+                        coordsLayer.title = `Query location: ${Number(event.latlng.lat.toFixed(6))} ${Number(event.latlng.lng.toFixed(6))}`
+                        assignDefaultLayerStyle(coordsLayer, {color:'hsl(111, 100%, 54%)'})
+                        const [coordsToggle, coordsCollapse] = createLayerToggles(coordsLayer, queryResults, map, 'query')
+                        coordsToggle.classList.add('mb-3')//, 'font-monospace')
+                        coordsToggle.querySelector('input').click()
+
+                        const fetchers = collectFetchers(event)
     
-                        if (getScale(map, 'km') <= 10) {
-                            fetchers['OpenStreetMap'] = fetchOSMData(map)
-                        }
-    
-                        if (Object.keys(fetchers).length > 0) {
-                            queryButton.setAttribute('disabled', true)
-                            footer.innerText = 'Running query...'
-                            resultContainer.innerHTML = ''
-                            
+                        if (Object.keys(fetchers).length > 0) { 
                             const data = await Promise.all(Object.values(fetchers)) 
-                            
+
                             if (data.every(i => !i)) {
                                 fetchQueryDataError('Query did not return any feature.')
                             } else {
-                                const fetchedData = {}
                                 for (let i = 0; i <= data.length-1; i++) {
-                                    fetchedData[Object.keys(fetchers)[i]] = data[i]
+                                    const geojson = data[i]
+                                    if (geojson) {
+                                        const layer = L.geoJSON(geojson)
+                                        layer.title = Object.keys(fetchers)[i]
+                                        layer.eachLayer(feature => {
+                                            feature.title = getLayerTitle(feature)
+                                            if (feature.feature) {
+                                                feature.bindTooltip(feature.title, {sticky:true})
+                                            }                        
+
+                                            if (feature.feature.geometry.type === 'MultiPoint') {
+                                                feature.eachLayer(pt => {
+                                                    assignDefaultLayerStyle(pt, {color:'hsl(111, 100%, 54%)'})
+                                                })
+                                            } else {
+                                                assignDefaultLayerStyle(feature, {
+                                                    color:'hsl(111, 100%, 54%)',
+                                                    fillColor:true,
+                                                })
+                                            }
+                                        })
+                                        createLayerToggles(layer, queryResults, map, 'query', geojson)
+
+                                        const attribution = document.createElement('div')
+                                        attribution.innerHTML = `<pre class='m-0 mb-3 fs-12 text-wrap ps-1'>${geojson.licence}</pre>`
+                                        queryResults.appendChild(attribution)
+                                    }
                                 }
-    
-                                console.log(fetchedData)
                             }
     
-                            queryButton.removeAttribute('disabled')
+                            toggleQueryButton()
                             footer.innerText = 'Query complete.'
                         } else {
                             fetchQueryDataError("No queryable layers on the map.")
                         }
+
+                        map._querying = false
+                        toggleQueryButton()
+                        footer.innerText = 'Query complete.'
                     }
                 }
 
                 map.on('click', fetchQueryData)
-
-                // const toolbar = createFormCheck('queryResultsToggleAll', {
-                //     formCheckClass: 'fs-14',
-                //     checkboxAttrs: {
-                //         'data-layers-toggles': '#queryResults',
-                //         'data-layers-shown': '0',
-                //         'disabled': 'true',
-                //         'onclick': 'toggleOffAllLayers(this)',
-                //     },
-                //     labelClass: 'text-muted',
-                //     button: true,
-                //     buttonClass: 'bi bi-chevron-expand'
-                // })
-
-                // body.appendChild(toolbar)
             }
             
             return container

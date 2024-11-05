@@ -57,3 +57,89 @@ const validateUrl = (str) => {
       return false
     }
 }
+
+const hideAllSubCollapse = (element) => {
+    const collapseElements = element.querySelectorAll('.collapse')
+    collapseElements.forEach(collapse => {
+        if (collapse.classList.contains('show')) {
+            const bsCollapse = new bootstrap.Collapse(collapse)
+            bsCollapse.hide()
+        }
+    })
+}
+
+const pushQueryParamsToURLString = (url, params) => {
+    const url_obj = new URL(url)
+    for (const key in params) {
+        url_obj.searchParams.set(key, params[key])
+    }
+    return url_obj.toString()
+}
+
+const searchByObjectPropertyKeyword = (obj, kw) => {
+    const properties = Object.keys(obj).filter(property => {
+        return property.toLowerCase().includes(kw.toLowerCase()) && !Array(null, undefined, '').includes(obj[property])
+    })
+
+    if (properties.length !== 0) {
+        const property = properties.reduce((shortest, current) => (current.length < shortest.length ? current : shortest))
+        return obj[property]
+    }
+}
+
+const removeQueryParams = (urlString) => {
+    const url = new URL(urlString);
+    url.search = '';
+    return url.toString();
+}
+
+const fetchDataWithTimeout = async (url, timeoutMs=10000, options={}) => {
+    const controller = new AbortController();
+    
+    const params = {signal: controller.signal}
+    if (options.method) {
+        params.method = options.method
+    }
+    if (options.body) {
+        params.body = options.body
+    }
+    
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+    
+    try {
+        const response = await fetch(url, params)
+        clearTimeout(timeoutId)
+        return response
+    } catch (error) {
+        if (error.name === 'AbortError') {
+            console.error('Request timed out');
+        } else {
+            throw error
+        }
+    }
+}
+
+const getDomain = (url) => {
+    const urlObj = new URL(url);
+    const hostname = urlObj.hostname;
+    const domainParts = hostname.split('.');
+    return domainParts.slice(-2).join('.');
+}
+
+const parseNumberFromString = (string) => {
+    const regex = /\d+(\.\d+)?/;
+    const match = string.match(regex);
+    return parsedNumber = parseFloat(match[0]);
+}
+
+const findOuterElement = (selector, reference) => {
+    let element
+    let parent = reference.parentElement
+
+    while (!element && parent) {
+        element = parent.querySelector(selector)
+        parent = parent.parentElement
+    }
+
+    return element
+}

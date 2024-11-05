@@ -31,3 +31,11 @@ const validateCoordinates = (coords, precision=6) => {
         coords[dir] = value
     })
 }
+
+const transformCoordinatesToEPSG4326 = (coordinates, crs_text) => {
+    loopThroughCoordinates(coordinates, (coords) => {
+        const projectedCoord = proj4(crs_text, 'EPSG:4326', [coords[0], coords[1]]);
+        coords[0] = projectedCoord[0]
+        coords[1] = projectedCoord[1]
+    })
+}
