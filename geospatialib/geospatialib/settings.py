@@ -35,7 +35,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     '127.0.0.1',
     '127.0.0.1:8000',
-    # '192.168.1.103', # python manage.py runserver 0.0.0.0:8000
+    '192.168.1.103', '192.168.1.103:8000', # python manage.py runserver 0.0.0.0:8000
     # '192.168.1.6',
     # 'geospatialib.com',
     # 'www.geospatialib.com',

@@ -258,9 +258,9 @@ const handleMapQuery = (map) => {
     })
 
     const footer = document.createElement('div')
-    footer.className = 'border-top p-3 font-monospace fs-12'
+    footer.className = 'border-top p-3 d-flex flex-wrap'
     body.parentElement.appendChild(footer)
-    
+
     const disableMapQuery = () => {
         map._queryEnabled = false
         mapContainer.style.cursor = ''
@@ -270,13 +270,19 @@ const handleMapQuery = (map) => {
         if (getMeterScale(map) <= 100000) {
             if (!map._querying) {
                 queryButton.removeAttribute('disabled')
-                footer.innerText = 'Query enabled.'
+                const span = document.createElement('span')
+                span.className = 'font-monospace fs-12 text-wrap'
+                span.innerText = 'Query enabled.'
+                footer.innerHTML = span.outerHTML
             }
         } else {
             disableMapQuery()
             queryButton.setAttribute('disabled', true)
             if (!map._querying) {
-                footer.innerText = 'Zoom in to at least 100 km scale to enable query.'
+                const span = document.createElement('span')
+                span.className = 'font-monospace fs-12 text-wrap'
+                span.innerText = 'Zoom in to at least 100 km scale to enable query.'
+                footer.innerHTML = span.outerHTML
             }
         }
     }
