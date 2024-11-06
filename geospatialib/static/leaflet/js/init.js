@@ -441,7 +441,6 @@ const handleMapQuery = (map) => {
             })
         }
 
-
         map._querying = false
         toggleQueryButton()
         footer.innerText = 'Query complete.'        
