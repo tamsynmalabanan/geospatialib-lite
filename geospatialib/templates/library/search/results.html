@@ -10,8 +10,7 @@
             {% include "library/search/items.html" %}
             <script>
                 if (document.readyState === 'complete') {
-                    searchResultsScrollTop()
-                    mapQuerySelector('#geospatialibMap').getLayerGroups().library.clearLayers()
+                    resetSearchResults()
                 }
             </script>
         </ul>

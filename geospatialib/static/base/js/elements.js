@@ -11,7 +11,17 @@ const createDropdownMenuListItem = (options={}) => {
         button.appendChild(span)
     }
 
+    if (options.buttonAttrs) {
+        for (const key in options.buttonAttrs) {
+            button.setAttribute(key, options.buttonAttrs[key])
+        }
+    }
+
     li.appendChild(button)
+
+    if (options.parent) {
+        options.parent.appendChild(li)
+    }
 
     return li
 }
@@ -183,9 +193,30 @@ const createButton = (options={}) => {
         button.appendChild(span)
     }
 
+    if (options.buttonAttrs) {
+        for (const key in options.buttonAttrs) {
+            button.setAttribute(key, options.buttonAttrs[key])
+        }
+    }
+
     if (options.parent) {
         options.parent.appendChild(button)
     }
 
     return button
+}
+
+const createSpanElement = (options={}) => {
+    const span = document.createElement('span')
+    span.className = `${options.className}`
+    
+    if (options.label) {
+        span.innerText = options.label
+    }
+
+    if (options.parent) {
+        options.parent.appendChild(span)
+    }
+
+    return span
 }

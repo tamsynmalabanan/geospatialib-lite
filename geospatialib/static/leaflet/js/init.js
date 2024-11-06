@@ -251,10 +251,47 @@ const handleMapQuery = (map) => {
 
     const header = body.parentElement.querySelector('h6')
     header.querySelector('button').remove()
-    const queryButton = createButton({
-        buttonClass: 'border fs-14 bi bi-question-circle-fill ms-auto d-flex flex-nowrap',
+
+    const queryDropdown = document.createElement('div')
+    queryDropdown.className = 'dropdown ms-auto'
+    header.appendChild(queryDropdown)
+
+    const queryToggle = createButton({
+        buttonClass: 'border dropdown-toggle',
+        buttonAttrs: {
+            'type': 'button',
+            'data-bs-toggle': 'dropdown',
+            'aria-expanded': 'false'
+        },
         labelClass: 'text-nowrap',
-        parent: header,
+        parent: queryDropdown,
+    })
+
+    queryToggle.appendChild(createSpanElement({className:'bi bi-question-circle-fill me-1'}))
+
+    const queryMenu = document.createElement('div')
+    queryMenu.className = 'dropdown-menu fs-14'
+    queryDropdown.appendChild(queryMenu)
+
+    const layersQueryBtn = createDropdownMenuListItem({
+        label: 'Layers', 
+        parent: queryMenu,
+        buttonAttrs: {
+            'data-query-osm': 'false'
+        }
+    }).querySelector('button')
+
+    const layersOSMQueryBtn = createDropdownMenuListItem({
+        label: 'Layers & OSM', 
+        parent: queryMenu,
+        buttonAttrs: {
+            'data-query-osm': 'true'
+        }
+    }).querySelector('button')
+
+    const cancelQueryBtn = createDropdownMenuListItem({
+        label: 'Cancel query', 
+        parent: queryMenu,
     })
 
     const footer = document.createElement('div')
@@ -269,7 +306,9 @@ const handleMapQuery = (map) => {
     const toggleQueryButton = () => {
         if (getMeterScale(map) <= 100000) {
             if (!map._querying) {
-                queryButton.removeAttribute('disabled')
+                queryMenu.querySelectorAll('button').forEach(btn => {
+                    btn.removeAttribute('disabled')
+                })
                 const span = document.createElement('span')
                 span.className = 'font-monospace fs-12 text-wrap'
                 span.innerText = 'Query enabled.'
@@ -277,7 +316,11 @@ const handleMapQuery = (map) => {
             }
         } else {
             disableMapQuery()
-            queryButton.setAttribute('disabled', true)
+            
+            queryMenu.querySelectorAll('button').forEach(btn => {
+                btn.setAttribute('disabled', true)
+            })
+
             if (!map._querying) {
                 const span = document.createElement('span')
                 span.className = 'font-monospace fs-12 text-wrap'
@@ -292,22 +335,29 @@ const handleMapQuery = (map) => {
     map.on('resize', toggleQueryButton)
 
     map._queryEnabled = false
-    queryButton.addEventListener('click', (e) => {
-        L.DomEvent.stopPropagation(e);
-        L.DomEvent.preventDefault(e);
-        
-        if (map._queryEnabled === false) {
+    Array(layersQueryBtn, layersOSMQueryBtn).forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            L.DomEvent.stopPropagation(e);
+            L.DomEvent.preventDefault(e);
+            
             map._queryEnabled = true
             mapContainer.style.cursor = 'pointer'
-        } else {
-            disableMapQuery()
-        }
+            map._queryOSM = btn.getAttribute('data-query-osm') === "true"
+        })
     })
+
+    cancelQueryBtn.addEventListener('click', () => {
+        disableMapQuery()
+    })
+
 
     const fetchQueryData = async (event) => {
         map._querying = true
         disableMapQuery()
-        queryButton.setAttribute('disabled', true)
+        queryMenu.querySelectorAll('button').forEach(btn => {
+            btn.setAttribute('disabled', true)
+        })
+
         footer.innerText = 'Running query...'
         
         map.getLayerGroups().query.clearLayers()
@@ -351,32 +401,46 @@ const handleMapQuery = (map) => {
             })
         }
 
-        fetchers['OpenStreetMap'] = fetchOSMData(event, {maximum:100})
-
-        const data = await Promise.all(Object.values(fetchers)) 
-
-        for (let i = 0; i <= data.length-1; i++) {
-            const geojson = data[i]
-            if (geojson) {
-                handleGeoJSON(geojson, coordsGeoJSON.geometry)
-                const geoJSONLayer = L.geoJSON(geojson)
-                geoJSONLayer.title = Object.keys(fetchers)[i]
-                geoJSONLayer.eachLayer(layer => {
-                    layer.title = getLayerTitle(layer)
-                    layer.bindTooltip(layer.title, {sticky:true})
-                    assignDefaultLayerStyle(layer, {
-                        color:'hsl(111, 100%, 54%)',
-                        fillColor:true,
-                    })
-                })
-                createLayerToggles(geoJSONLayer, queryResults, map, 'query', geojson)
-
-                const attribution = document.createElement('div')
-                attribution.innerHTML = `<pre class='m-0 mb-3 fs-12 text-wrap ps-1'>${geojson.licence}</pre>`
-                queryResults.appendChild(attribution)
-
-            }
+        if (map._queryOSM) {
+            fetchers['OpenStreetMap'] = fetchOSMData(event, {maximum:100})
         }
+
+        if (Object.keys(fetchers).length > 0) {
+            const data = await Promise.all(Object.values(fetchers)) 
+    
+            const handler = (geojson, title) => {
+                if (geojson) {
+                    handleGeoJSON(geojson, coordsGeoJSON.geometry)
+                    const geoJSONLayer = L.geoJSON(geojson)
+                    geoJSONLayer.title = title //Object.keys(fetchers)[i]
+                    geoJSONLayer.eachLayer(layer => {
+                        layer.title = getLayerTitle(layer)
+                        layer.bindTooltip(layer.title, {sticky:true})
+                        assignDefaultLayerStyle(layer, {
+                            color:'hsl(111, 100%, 54%)',
+                            fillColor:true,
+                        })
+                    })
+                    createLayerToggles(geoJSONLayer, queryResults, map, 'query', geojson)
+    
+                    const attribution = document.createElement('div')
+                    attribution.innerHTML = `<pre class='m-0 mb-3 fs-12 text-wrap ps-1'>${geojson.licence}</pre>`
+                    queryResults.appendChild(attribution)
+                }
+            }
+    
+            for (let i = 0; i <= data.length-1; i++) {
+                const geojson = data[i]
+                handler(geojson, Object.keys(fetchers)[i])
+            }
+        } else {
+            createSpanElement({
+                label: 'No queryable layers shown on map.',
+                className: 'mb-3',
+                parent: queryResults
+            })
+        }
+
 
         map._querying = false
         toggleQueryButton()

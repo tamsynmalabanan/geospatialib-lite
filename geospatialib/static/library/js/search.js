@@ -1,7 +1,15 @@
 const searchEndpoint = "/htmx/library/search/"
 
-const searchResultsScrollTop = () => {
-    document.querySelector('#searchResults').parentElement.scrollTop = 0
+const resetSearchResults = () => {
+    const searchResults = document.querySelector('#searchResults')
+    if (searchResults) {
+        searchResults.parentElement.scrollTop = 0
+    }
+
+    const map = mapQuerySelector('#geospatialibMap')
+    if (map) {
+        map.getLayerGroups().library.clearLayers()
+    }
 }
 
 const searchLibrary = (query=null) => {
