@@ -257,7 +257,7 @@ const handleMapQuery = (map) => {
     header.appendChild(queryDropdown)
 
     const queryToggle = createButton({
-        buttonClass: 'border dropdown-toggle',
+        buttonClass: 'dropdown-toggle px-2 py-0',
         buttonAttrs: {
             'type': 'button',
             'data-bs-toggle': 'dropdown',
@@ -288,10 +288,13 @@ const handleMapQuery = (map) => {
             'data-query-osm': 'true'
         }
     }).querySelector('button')
-
+    
     const cancelQueryBtn = createDropdownMenuListItem({
         label: 'Cancel query', 
         parent: queryMenu,
+        buttonAttrs: {
+            'disabled': 'true'
+        }
     })
 
     const footer = document.createElement('div')
@@ -301,12 +304,23 @@ const handleMapQuery = (map) => {
     const disableMapQuery = () => {
         map._queryEnabled = false
         mapContainer.style.cursor = ''
+        cancelQueryBtn.setAttribute('disabled', true)
+    }
+
+    const disableQueryBtns = () => {
+        if (queryMenu.classList.contains('show')) {
+            queryToggle.click()
+        }
+
+        queryDropdown.querySelectorAll('button').forEach(btn => {
+            btn.setAttribute('disabled', true)
+        })
     }
 
     const toggleQueryButton = () => {
         if (getMeterScale(map) <= 100000) {
             if (!map._querying) {
-                queryMenu.querySelectorAll('button').forEach(btn => {
+                queryDropdown.querySelectorAll('button').forEach(btn => {
                     btn.removeAttribute('disabled')
                 })
                 const span = document.createElement('span')
@@ -316,10 +330,7 @@ const handleMapQuery = (map) => {
             }
         } else {
             disableMapQuery()
-            
-            queryMenu.querySelectorAll('button').forEach(btn => {
-                btn.setAttribute('disabled', true)
-            })
+            disableQueryBtns()
 
             if (!map._querying) {
                 const span = document.createElement('span')
@@ -343,6 +354,8 @@ const handleMapQuery = (map) => {
             map._queryEnabled = true
             mapContainer.style.cursor = 'pointer'
             map._queryOSM = btn.getAttribute('data-query-osm') === "true"
+
+            cancelQueryBtn.removeAttribute('disabled')
         })
     })
 
@@ -354,9 +367,7 @@ const handleMapQuery = (map) => {
     const fetchQueryData = async (event) => {
         map._querying = true
         disableMapQuery()
-        queryMenu.querySelectorAll('button').forEach(btn => {
-            btn.setAttribute('disabled', true)
-        })
+        disableQueryBtns()
 
         footer.innerText = 'Running query...'
         
