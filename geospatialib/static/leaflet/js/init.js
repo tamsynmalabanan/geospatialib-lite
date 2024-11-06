@@ -299,6 +299,14 @@ const handleMapQuery = (map) => {
     })
 
     const fetchQueryData = async (event) => {
+        map._querying = true
+        disableMapQuery()
+        queryButton.setAttribute('disabled', true)
+        footer.innerText = 'Running query...'
+        
+        map.getLayerGroups().query.clearLayers()
+        body.innerHTML = ''    
+
         const queryResults = document.createElement('ul')
         queryResults.className = 'list-group list-group-flush fs-14'
         queryResults.id = 'queryResults'
@@ -349,48 +357,29 @@ const handleMapQuery = (map) => {
                 geoJSONLayer.eachLayer(layer => {
                     layer.title = getLayerTitle(layer)
                     layer.bindTooltip(layer.title, {sticky:true})
-                    if (layer.feature.geometry.type === 'MultiPoint') {
-                        layer.eachLayer(pt => {
-                            assignDefaultLayerStyle(pt, {color:'hsl(111, 100%, 54%)'})
-                        })
-                    } else {
-                        assignDefaultLayerStyle(layer, {
-                            color:'hsl(111, 100%, 54%)',
-                            fillColor:true,
-                        })
-                    }
+                    assignDefaultLayerStyle(layer, {
+                        color:'hsl(111, 100%, 54%)',
+                        fillColor:true,
+                    })
                 })
                 createLayerToggles(geoJSONLayer, queryResults, map, 'query', geojson)
 
                 const attribution = document.createElement('div')
                 attribution.innerHTML = `<pre class='m-0 mb-3 fs-12 text-wrap ps-1'>${geojson.licence}</pre>`
                 queryResults.appendChild(attribution)
+
             }
         }
-    }
 
-    const preFetchQuery = () => {
-        map._querying = true
-        disableMapQuery()
-        queryButton.setAttribute('disabled', true)
-        footer.innerText = 'Running query...'
-        
-        map.getLayerGroups().query.clearLayers()
-        body.innerHTML = ''    
-    }
-
-    const postFetchQuery = () => {
         map._querying = false
         toggleQueryButton()
-        footer.innerText = 'Query complete.'
+        footer.innerText = 'Query complete.'        
     }
 
     map._querying = false
     map.on('click', (event) => {
         if (map._queryEnabled) {
-            preFetchQuery()
             fetchQueryData(event)
-            postFetchQuery()
         }
     })
 }

@@ -467,24 +467,35 @@ const assignDefaultLayerStyle = (layer, options={}) => {
         color = 'hsl(0, 100%, 50%)'
     }
 
-    if (layer._latlng) {
-        let strokeColor = 'grey'
-        if (color.startsWith('hsl')) {
-            [h,s,l] = color.split(',').map(str => parseNumberFromString(str))
-            l = l / 2
-            strokeColor = `hsl(${h}, ${s}%, ${l}%)`
+    let is_multipoint = layer.feature && layer.feature.geometry.type === 'MultiPoint'
+
+    if (layer._latlng || is_multipoint) {
+        const handler = (layer) => {
+            let strokeColor = 'grey'
+            if (color.startsWith('hsl')) {
+                [h,s,l] = color.split(',').map(str => parseNumberFromString(str))
+                l = l / 2
+                strokeColor = `hsl(${h}, ${s}%, ${l}%)`
+            }
+    
+            const div = document.createElement('div')
+            div.className = 'h-100 w-100 rounded-circle'
+            div.style.backgroundColor = color
+            div.style.border = '1px solid strokeColor'
+    
+            var style = L.divIcon({
+                className: 'bg-transparent',
+                html: div.outerHTML,
+            });
+            
+            layer.setIcon(style)
         }
 
-        const div = document.createElement('div')
-        div.className = 'h-100 w-100 rounded-circle'
-        div.style.backgroundColor = color
-        div.style.border = '1px solid strokeColor'
-
-        var style = L.divIcon({
-            className: 'bg-transparent',
-            html: div.outerHTML,
-        });
-        layer.setIcon(style)
+        if (is_multipoint) {
+            layer.eachLayer(i => handler(i))
+        } else {
+            handler(layer)
+        }
     } else {
         const properties = {
             color: color,
