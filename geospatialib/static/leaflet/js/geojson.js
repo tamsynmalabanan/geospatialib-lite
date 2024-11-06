@@ -8,7 +8,7 @@ const handleGeoJSON = (geojson, default_geom) => {
 
 const handleFeatureId = (geojson) => {
     geojson.features.forEach(feature => {
-        if (feature.id) {
+        if (feature.id && feature.id !== '') {
             feature.properties.feature_id = feature.id
         }
     })

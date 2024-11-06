@@ -14,9 +14,9 @@ const fetchProj4Def = async (crs_int, crs_text) => {
     .catch(error => console.log(error))
 }
 
-const fetchOSMData = async (event) => {
+const fetchOSMData = async (event, options={}) => {
     const data = await Promise.all([
-        fetchOSMDataAroundLatLng(event.latlng),
+        fetchOSMDataAroundLatLng(event.latlng, {maximum:options.maximum}),
         fetchOSMDataFromNominatim(event),
     ])
 
@@ -33,7 +33,7 @@ const fetchOSMData = async (event) => {
         features: features
     }
 
-    return handleGeoJSON(geojson)
+    return geojson
 }
 
 const fetchOSMDataInBbox = async (bbox) => {
@@ -90,7 +90,7 @@ const fetchOSMDataInBbox = async (bbox) => {
     })
 }
 
-const fetchOSMDataAroundLatLng = async (latlng) => {
+const fetchOSMDataAroundLatLng = async (latlng, options={}) => {
 
     const fetchData = async (buffer=10, minimum=1) => {
         const params = `around:${buffer},${latlng.lat},${latlng.lng}`
@@ -131,17 +131,16 @@ const fetchOSMDataAroundLatLng = async (latlng) => {
     const data = await fetchData()
     return {
         type: "FeatureCollection",
-        features:overpassOSMDataToGeoJSON(data)
+        features:overpassOSMDataToGeoJSON(data, {maximum:options.maximum})
     }
 }
 
-const overpassOSMDataToGeoJSON = (data) => {
+const overpassOSMDataToGeoJSON = (data, options={}) => {
     let features = []
     
     if (data && data.elements && data.elements.length > 0) {
         let index = data.elements.length
-        // while (features.length < 100 && index >= 0) {
-        while (index > 0) {
+        while (index > 0 && (!options.maximum || features.length < options.maximum)) {
             index -=1
             
             const element = data.elements[index]
@@ -157,6 +156,7 @@ const overpassOSMDataToGeoJSON = (data) => {
                 const points = []
                 const polygons = []
                 const linestrings = []
+
                 element.members.forEach(member => {
                     const memberType = member.type
                     if (memberType === 'node') {
@@ -351,7 +351,7 @@ const fetchWMSData = async (event, layer) => {
     }).then(data => {
         if (data && data.features && data.features.length > 0) {
             data.licence = `Data © <a href='${cleanURL}' target='_blank'>${getDomain(cleanURL)}</a>`
-            return handleGeoJSON(data)
+            return data
         } else {
             throw new Error('No features returned.')
         }

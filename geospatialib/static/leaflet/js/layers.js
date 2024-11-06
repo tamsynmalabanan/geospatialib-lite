@@ -248,7 +248,7 @@ const createFeaturePropertiesTable = (properties) => {
 const createLayerToggles = (layer, parent, map, layerGroup, geojson) => {
     const mapContainer = map.getContainer()
     
-    const handler = (layer, parent) => {
+    const handler = (layer, parent, geojson) => {
         const formCheck = createFormCheck(`${mapContainer.id}_${layer._leaflet_id}`, {
             formCheckClass: 'fw-medium',
             label: layer.title,
@@ -307,7 +307,7 @@ const createLayerToggles = (layer, parent, map, layerGroup, geojson) => {
         return formCheck
     }
     
-    const mainToggle = handler(layer, parent)
+    const mainToggle = handler(layer, parent, geojson)
     const mainCheckbox = mainToggle.querySelector('input')
     if (layer._layers) {
         const collapse = document.createElement('div')
@@ -355,7 +355,7 @@ const createLayerToggles = (layer, parent, map, layerGroup, geojson) => {
         })
 
         layer.eachLayer(feature => {
-            const layerToggle = handler(feature, collapse)
+            const layerToggle = handler(feature, collapse, feature.feature)
             const layerCheckbox = layerToggle.querySelector('input')
             layerCheckbox.addEventListener('click', (event) => {
                 toggleLayer(event, {

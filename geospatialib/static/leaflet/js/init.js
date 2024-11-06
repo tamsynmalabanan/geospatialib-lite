@@ -345,13 +345,14 @@ const handleMapQuery = (map) => {
             })
         }
 
-        fetchers['OpenStreetMap'] = fetchOSMData(event)
+        fetchers['OpenStreetMap'] = fetchOSMData(event, {maximum:100})
 
         const data = await Promise.all(Object.values(fetchers)) 
 
         for (let i = 0; i <= data.length-1; i++) {
             const geojson = data[i]
             if (geojson) {
+                handleGeoJSON(geojson, coordsGeoJSON.geometry)
                 const geoJSONLayer = L.geoJSON(geojson)
                 geoJSONLayer.title = Object.keys(fetchers)[i]
                 geoJSONLayer.eachLayer(layer => {
