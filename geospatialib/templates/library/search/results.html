@@ -11,7 +11,7 @@
             <script>
                 if (document.readyState === 'complete') {
                     searchResultsScrollTop()
-                    clearAllLayers(mapQuerySelector('#geospatialibMap'))
+                    mapQuerySelector('#geospatialibMap').getLayerGroups().library.clearLayers()
                 }
             </script>
         </ul>
