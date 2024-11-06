@@ -4,6 +4,7 @@ const getMapControls = () => {
         scale: scaleBar,
         search: searchBar,
         reset: resetView,
+        locate: locateUser,
     }
 }
 
@@ -77,4 +78,8 @@ const resetView = (map, include) => {
     } else {
         map.removeControl(map.resetviewControl)
     }
+}
+
+const locateUser = (map, include) => {
+    
 }

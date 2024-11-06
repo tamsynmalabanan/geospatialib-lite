@@ -177,9 +177,9 @@ const constructInfoPanel = (map, name, options={}) => {
         body.style.maxHeight = `${(mapContainerHeight * 0.9)-topMargin-siblingsHeight}px`;
         
         if (mapContainerWidth > 1000) {
-            body.style.maxWidth = `${mapContainerWidth * 0.3}px`;
+            body.parentElement.style.maxWidth = `${mapContainerWidth * 0.3}px`;
         } else {
-            body.style.maxWidth = `${mapContainerWidth * 0.8}px`;
+            body.parentElement.style.maxWidth = `${mapContainerWidth * 0.8}px`;
         }
     }
 
@@ -314,11 +314,11 @@ const handleMapQuery = (map) => {
         body.innerHTML = ''    
 
         const queryResults = document.createElement('ul')
-        queryResults.className = 'list-group list-group-flush fs-14'
+        queryResults.className = 'list-group list-group-flush fs-14 w-100 overflow-auto pe-3'
         queryResults.id = 'queryResults'
 
         const toolbar = createFormCheck('queryResultsToggleAll', {
-            formCheckClass: 'fs-14 mb-3 sticky-top',
+            formCheckClass: 'fs-14 mb-3',
             checkboxAttrs: {
                 'data-layers-toggles': '#queryResults',
                 'data-layers-label': 'feature',
