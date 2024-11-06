@@ -41,3 +41,17 @@ const getMeterScale = (map) => {
 
     return scale_value
 }
+
+const getMapBbox = (map) => {
+    const bounds = loopThroughCoordinates(
+        map.getBounds(), 
+        validateCoordinates
+    )
+
+    return [
+        bounds.getNorth(),
+        bounds.getEast(),
+        bounds.getSouth(),
+        bounds.getWest(),
+    ]
+}
