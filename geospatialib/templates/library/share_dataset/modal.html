@@ -8,7 +8,7 @@
                 class='modal-content d-flex flex-column'
                 hx-post="{% url endpoint %}"
                 hx-trigger='submit'
-                hx-target="[hx-get='{% url endpoint %}'][hx-target='this']"
+                hx-target="#shareDatasetFormFields"
                 hx-swap='innerHTML'
             >
                 <div class="modal-header">
@@ -26,7 +26,9 @@
                             <div class='col-12 col-lg-6' data-leaflet-controls-excluded='all' data-leaflet-map-class='rounded border'>
                                 {% leaflet_map id|add:"Map" %}
                             </div>
-                            <div class="col" hx-get="{% url endpoint %}" hx-trigger='load' hx-target='this' hx-swap='innerHTML' ></div>
+                            <div id='shareDatasetFormFields' class="col">
+                                {% include "library/share_dataset/form.html" with form=share_dataset_form %}
+                            </div>
                         </div>
                     </div>
                 </div>

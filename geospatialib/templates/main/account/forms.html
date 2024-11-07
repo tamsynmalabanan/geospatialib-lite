@@ -5,11 +5,11 @@
         {% for name in forms.keys  %}
             <li class="nav-item">
                 <button
-                    class="accordion-button me-2 p-2 ps-3 text-bg-dark rounded-top z-3 {% if name != active %}collapsed{% endif %}"
+                    class="accordion-button me-2 p-2 ps-3 text-bg-dark rounded-top z-3 {% if name != active_account_form %}collapsed{% endif %}"
                     type="button"
                     data-bs-toggle="collapse"
                     data-bs-target="#{{name}}AccountAccordion"
-                    aria-expanded="{% if name == active %}true{% else %}false{% endif %}"
+                    aria-expanded="{% if name == active_account_form %}true{% else %}false{% endif %}"
                     aria-controls="{{name}}AccountAccordion"
                 >
                     {{name|title}}
@@ -22,7 +22,7 @@
         {% for name, form in forms.items %}
             <div
                 id="{{name}}AccountAccordion"
-                class="accordion-collapse collapse flex-grow-1 {% if name == active %}show fade{% endif %}"
+                class="accordion-collapse collapse flex-grow-1 {% if name == active_account_form %}show fade{% endif %}"
                 data-bs-parent="#accountAccordion"
             >
                 <div class="accordion-body h-100 pt-4">

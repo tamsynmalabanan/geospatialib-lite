@@ -9,6 +9,24 @@ from django_recaptcha.widgets import ReCaptchaV2Checkbox
 
 User = get_user_model()
 
+def get_account_forms(user, data=None, name=None):
+    if data:
+        forms= {
+            'profile': UserProfileForm(instance=user, data=data),
+            'password': SetPasswordForm(user=user, data=data),
+        }
+    else:
+        forms = {
+            'profile': UserProfileForm(instance=user),
+            'password': SetPasswordForm(user=user),
+        }
+
+    if name and name in forms:
+        return forms[name]
+    
+    return forms
+    
+
 
 class AuthenticationForm(AuthenticationForm):
     username = forms.CharField(label='Email address or username')

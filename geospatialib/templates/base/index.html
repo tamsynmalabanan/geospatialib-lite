@@ -34,14 +34,14 @@
                     <div class="offcanvas-body d-flex flex-column flex-grow-1 overflow-x-hidden overflow-y-auto px-3 pt-0">
                         {% block offcanvas_body %}{% endblock offcanvas_body %}
                     </div>
-                    <div class="footer border-top d-none d-lg-flex py-2 gap-3 justify-content-center">
+                    <div class="footer border-top d-none d-lg-flex py-3 gap-3 justify-content-center px-5">
                         {% with button_class='btn btn-sm btn-dark d-flex gap-2 justify-content-center align-items-center' labelClass='text-nowrap d-none d-xxl-inline' %}
                             {% if user.is_authenticated %}
                                 {% include "main/menu/dropup.html" with labelClass='text-nowrap' %}
                                 {% block offcanvas_footer %}{% endblock offcanvas_footer %}
                             {% else %}
                                 {% include "main/about/toggle.html" %}
-                                {% include "main/login/toggle.html" with button_class='btn d-flex gap-2 justify-content-center btn-primary flex-grow-1' %}
+                                {% include "main/login/toggle.html" with button_class='btn btn-sm d-flex gap-2 justify-content-center btn-primary flex-grow-1' %}
                             {% endif %}
                         {% endwith %}
                     </div>
@@ -49,7 +49,7 @@
                 <div class='col vh-100 p-0'>
                     <div class='d-lg-none z-2 position-fixed bottom-0 p-0 m-10 d-flex flex-column gap-2'>
                         {% if not user.is_authenticated %}
-                            {% include "main/login/toggle.html" with button_class='btn d-flex gap-2 justify-content-center btn-primary flex-grow-1' %}
+                            {% include "main/login/toggle.html" with button_class='btn btn-sm d-flex gap-2 justify-content-center btn-primary flex-grow-1' %}
                         {% endif %}
                         <div class="btn-group dropup shadow-lg">
                             <button 

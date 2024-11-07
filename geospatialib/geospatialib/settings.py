@@ -99,7 +99,8 @@ INSTALLED_APPS = [
     'leaflet',
     'django_htmx',
     'debug_toolbar',
-    'django_recaptcha'
+    'django_recaptcha',
+    'corsheaders',
 ]
 
 LEAFLET_CONFIG = {
@@ -140,6 +141,7 @@ MIDDLEWARE = [
     # 3rd party
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django_htmx.middleware.HtmxMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 
     # local
     'apps.main.middleware.RedirectCancelledSocialLogin',
@@ -159,6 +161,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'apps.main.context_processors.forms',
+                'apps.library.context_processors.forms',
             ],
         },
     },
@@ -250,3 +254,6 @@ INTERNAL_IPS = ['127.0.0.1']
 # for captcha
 RECAPTCHA_PUBLIC_KEY = '6LcNimkqAAAAAKstLLJ6qiuIpuHMiwusF7oh9ylF'
 RECAPTCHA_PRIVATE_KEY = '6LcNimkqAAAAALA06RHsr8Gd3u4v55YWlXA5G_eN'
+
+# for cors header
+CORS_ALLOWED_ORIGINS = []

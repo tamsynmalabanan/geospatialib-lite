@@ -18,7 +18,7 @@ class SearchForm(forms.Form):
         })
     )
 
-class NewDatasetForm(forms.Form):
+class ShareDatasetForm(forms.Form):
     url = forms.URLField(
         label='URL',
         required=True,
@@ -26,6 +26,8 @@ class NewDatasetForm(forms.Form):
             'type':'search',
             'hx-post':reverse_lazy('hx_library:share_dataset'),
             'hx-trigger':'input changed delay:500ms',
+            'hx-target':'#shareDatasetFormFields',
+            'hx-swap': 'innerHTML',
         })
     )
     format = forms.ChoiceField(
@@ -38,6 +40,8 @@ class NewDatasetForm(forms.Form):
         widget=forms.Select(attrs={
             'hx-post':reverse_lazy('hx_library:share_dataset'),
             'hx-trigger':'change',
+            'hx-target':'#shareDatasetFormFields',
+            'hx-swap': 'innerHTML',
             'disabled': True
         })
     )
@@ -50,6 +54,8 @@ class NewDatasetForm(forms.Form):
         widget=forms.Select(attrs={
             'hx-post':reverse_lazy('hx_library:share_dataset'),
             'hx-trigger':'change',
+            'hx-target':'#shareDatasetFormFields',
+            'hx-swap': 'innerHTML',
             'onchange':'resetShareDatasetSubmitBtn()',
             'disabled':True,
         })

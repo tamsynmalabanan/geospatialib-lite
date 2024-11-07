@@ -6,7 +6,7 @@
         <div class="modal-dialog modal-fullscreen-sm-down modal-dialog-scrollable modal-dialog-centered" role="document">
             <div class="modal-content">
                 {% include "main/account/header.html" %}
-                <div hx-get="{% url 'hx_main:user_account' name='get' %}" hx-trigger='load' hx-target='this' hx-swap='outerHTML' ></div>
+                {% include "main/account/forms.html" with forms=account_forms %}
                 {% include "main/account/footer.html" %}
             </div>
         </div>

@@ -16,102 +16,83 @@ from utils.general import form_helpers, util_helpers
 
 User = get_user_model()
 
-
+@require_http_methods(['POST'])
 def login(request):
-    if request.method == 'POST':
-        user = request.user
-        form = main_forms.AuthenticationForm(request, request.POST)
-        
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            user = authenticate(request, username=username, password=password)
-        
-        if isinstance(user, User):
-            login_user(request, user)
+    user = request.user
+    form = main_forms.AuthenticationForm(request, request.POST)
+    
+    if form.is_valid():
+        username = form.cleaned_data.get('username')
+        password = form.cleaned_data.get('password')
+        user = authenticate(request, username=username, password=password)
+    
+    if isinstance(user, User):
+        login_user(request, user)
 
-            referer = request.META.get('HTTP_REFERER')
-            if referer:
-                parsed_url = urlparse(referer)
-                next_url = parse_qs(parsed_url.query).get('next')
-                if next_url and next_url != '':
-                    next_url = next_url[0]
-                else:
-                    next_url = referer
+        referer = request.META.get('HTTP_REFERER')
+        if referer:
+            parsed_url = urlparse(referer)
+            next_url = parse_qs(parsed_url.query).get('next')
+            if next_url and next_url != '':
+                next_url = next_url[0]
             else:
-                next_url = reverse_lazy('library:index')
-            response = HttpResponse()
-            response['HX-Redirect'] = next_url
-            return response
+                next_url = referer
         else:
-            if 'captcha' in form.errors:
-                message = list(form.errors['captcha'].data[0])[0]
-                if message == 'This field is required.':
-                    message = 'You must pass the reCAPTCHA test to login. Please try again.'
-            else:
-                message = '<ul class="list-unstyled m-0">'
-                for error in list(form.errors.values()):
-                    clean_error = list(error.data[0])[0]
-                    clean_error = clean_error.replace('Email', 'email or username')
-                    message = message + '<li>' + clean_error + '</li>'
-                message = message + '</ul>'
-            messages.error(request, message, 'login-form')
+            next_url = reverse_lazy('library:index')
+        response = HttpResponse()
+        response['HX-Redirect'] = next_url
+        return response
     else:
-        form = main_forms.AuthenticationForm()
-        messages.info(request, 'main/login/message.html', extra_tags='login-form message-template')
-
+        if 'captcha' in form.errors:
+            message = list(form.errors['captcha'].data[0])[0]
+            if message == 'This field is required.':
+                message = 'You must pass the reCAPTCHA test to login. Please try again.'
+        else:
+            message = '<ul class="list-unstyled m-0">'
+            for error in list(form.errors.values()):
+                clean_error = list(error.data[0])[0]
+                clean_error = clean_error.replace('Email', 'email or username')
+                message = message + '<li>' + clean_error + '</li>'
+            message = message + '</ul>'
+        messages.error(request, message, 'login-form')
     return render(request, 'main/login/form.html', {'form':form})
 
 
+@require_http_methods(['POST'])
 @login_required
 def user_account(request, name):
     user = request.user
-    forms = {
-        'profile': main_forms.UserProfileForm(instance=user),
-        'password': main_forms.SetPasswordForm(user=user),
-    }
 
-    if request.method == 'POST' and name in forms:
-        form_class = forms[name].__class__
-        if name == 'password':
-            form = form_class(user=user, data=request.POST)
-            if form.is_valid():
-                if not user.check_password(form.cleaned_data.get('new_password1')):
-                    user = form.save()
-                    update_session_auth_hash(request, user)
-                    messages.success(request, f'You have successfully updated your password.', extra_tags=f'password-form')
-                else:
-                    messages.info(request, f'No changes made to your password.', extra_tags=f'password-form')
+    form = main_forms.get_account_forms(user, data=request.POST, name=name)
+
+    if name == 'password':
+        if form.is_valid():
+            if not user.check_password(form.cleaned_data.get('new_password1')):
+                user = form.save()
+                update_session_auth_hash(request, user)
+                messages.success(request, f'You have successfully updated your password.', extra_tags=f'password-form')
             else:
-                message = '<ul class="list-unstyled m-0">'
-                for error in list(form.errors.values()):
-                    message = message + '<li>' + list(error.data[0])[0] + '</li>'
-                message = message + '</ul>'
-                messages.error(request, message, 'password-form')
-            form = forms[name]
+                messages.info(request, f'No changes made to your password.', extra_tags=f'password-form')
         else:
-            form = form_class(instance=user, data=request.POST)
-            if form.is_valid():
-                if len(form.changed_data) != 0:
-                    user = form.save()
-                    messages.success(request, f'You have successfully updated your {name}.', extra_tags=f'{name}-form')
-                else:
-                    messages.info(request, f'No changes made to your {name}.', extra_tags=f'{name}-form')
+            message = '<ul class="list-unstyled m-0">'
+            for error in list(form.errors.values()):
+                message = message + '<li>' + list(error.data[0])[0] + '</li>'
+            message = message + '</ul>'
+            messages.error(request, message, 'password-form')
+        form = main_forms.get_account_forms(user, name=name)
+    else:
+        if form.is_valid():
+            if len(form.changed_data) != 0:
+                user = form.save()
+                messages.success(request, f'You have successfully updated your {name}.', extra_tags=f'{name}-form')
             else:
-                messages.error(request, 'Please review the error/s below.', f'{name}-form')
-                for field in form.errors:
-                    form_helpers.validate_field(form[field])
-        return render(request, f'main/account/{name}.html', {'form':form})
+                messages.info(request, f'No changes made to your {name}.', extra_tags=f'{name}-form')
+        else:
+            messages.error(request, 'Please review the error/s below.', f'{name}-form')
+            for field in form.errors:
+                form_helpers.validate_field(form[field])
     
-    if user.has_no_password:
-        messages.info(request, 'Please set a login password for your account.', extra_tags='password-form')
-    if user.has_no_first_name:
-        messages.info(request, 'Please review or update details in your profile.', extra_tags='profile-form')
-
-    return render(request, 'main/account/forms.html', {
-        'forms':forms,
-        'active': 'password' if user.has_no_password else 'profile'
-    })
+    return render(request, f'main/account/{name}.html', {'form':form})
 
 @require_http_methods(['POST'])
 @login_required

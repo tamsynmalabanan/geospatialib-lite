@@ -129,87 +129,88 @@ class SearchList(ListView):
             }
         return context
 
+@require_http_methods(['POST'])
 @login_required
 def share_dataset(request):
     user = request.user
     dataset_instance = None
     
-    form = lib_forms.NewDatasetForm(data={})
-    if request.method == 'POST':
-        data = request.POST.dict()
-        url_value = data.get('url', '')
-        if url_value.strip() != '':
-            url_field = form['url']
-            form.data.update({'url':url_value})
-            url_is_valid = form_helpers.validate_field(url_field)
-            if url_is_valid:
-                format_field = form['format']
-                format_field.field.widget.attrs['disabled'] = False
+    form = lib_forms.ShareDatasetForm(data={})
+    
+    data = request.POST.dict()
+    url_value = data.get('url', '')
+    if url_value.strip() != '':
+        url_field = form['url']
+        form.data.update({'url':url_value})
+        url_is_valid = form_helpers.validate_field(url_field)
+        if url_is_valid:
+            format_field = form['format']
+            format_field.field.widget.attrs['disabled'] = False
 
-                format_value = data.get('format', '')
-                if format_value == '':
-                    format_value = dataset_helpers.get_dataset_format(url_value)
-                if format_value:
-                    form.data.update({'format': format_value})
-                    form.full_clean()
-                
-                format_is_valid = form_helpers.validate_field(format_field)
-                if format_is_valid:
-                    name_field = form['name']
-                    name_field.field.widget.attrs['disabled'] = False
-                    name_field.field.widget.attrs['autofocus'] = True
-
-                    layers = [layer[0] for layer in name_field.field.choices]
-                    name_value = data.get('name', '')
-                    if name_value == '' or name_value not in layers:
-                        name_value = util_helpers.get_first_substring_match(url_value, layers)
-                    if not name_value:
-                        name_value = layers[0]
-                    form.data.update({'name': name_value})
-                    form.full_clean()
-
-            message_template = 'library/share_dataset/message.html'
-            message_tags = 'share-dataset-form message-template'
-
-            dataset_handler = cache.get(form.cached_handler_key)
-            url_instance = None
-
-            form_is_valid = form.is_valid()
-            clean_data = form.cleaned_data
+            format_value = data.get('format', '')
+            if format_value == '':
+                format_value = dataset_helpers.get_dataset_format(url_value)
+            if format_value:
+                form.data.update({'format': format_value})
+                form.full_clean()
             
-            if form_is_valid and dataset_handler:
-                url_instance, created = lib_models.URL.objects.get_or_create(
-                    url=dataset_handler.access_url,
-                )
-                if url_instance:
-                    dataset_queryset = lib_models.Dataset.objects.filter(
-                        url=url_instance,
-                        format=clean_data['format'],
-                        name=clean_data['name'],
-                    )
-                    if dataset_queryset.exists():
-                        dataset_instance = dataset_queryset.first()
-                        messages.info(request, message_template, message_tags)
+            format_is_valid = form_helpers.validate_field(format_field)
+            if format_is_valid:
+                name_field = form['name']
+                name_field.field.widget.attrs['disabled'] = False
+                name_field.field.widget.attrs['autofocus'] = True
 
-            if data.get('submit') is not None and not dataset_instance:
-                if form_is_valid and url_instance:
-                    dataset_instance, created = lib_models.Dataset.objects.get_or_create(
-                        url=url_instance,
-                        format=clean_data['format'],
-                        name=clean_data['name'],
-                    )
-                    if dataset_instance:
-                        if created:
-                            lib_models.Content.objects.create(
-                                added_by=user,
-                                dataset=dataset_instance,
-                            )
-                            dataset_handler.populate_dataset(dataset_instance)
-                            messages.success(request, message_template, message_tags)
-                        else:
-                            messages.info(request, message_template, message_tags)
-                else:
+                layers = [layer[0] for layer in name_field.field.choices]
+                name_value = data.get('name', '')
+                if name_value == '' or name_value not in layers:
+                    name_value = util_helpers.get_first_substring_match(url_value, layers)
+                if not name_value:
+                    name_value = layers[0]
+                form.data.update({'name': name_value})
+                form.full_clean()
+
+        message_template = 'library/share_dataset/message.html'
+        message_tags = 'share-dataset-form message-template'
+
+        dataset_handler = cache.get(form.cached_handler_key)
+        url_instance = None
+
+        form_is_valid = form.is_valid()
+        clean_data = form.cleaned_data
+        
+        if form_is_valid and dataset_handler:
+            url_instance, created = lib_models.URL.objects.get_or_create(
+                url=dataset_handler.access_url,
+            )
+            if url_instance:
+                dataset_queryset = lib_models.Dataset.objects.filter(
+                    url=url_instance,
+                    format=clean_data['format'],
+                    name=clean_data['name'],
+                )
+                if dataset_queryset.exists():
+                    dataset_instance = dataset_queryset.first()
                     messages.info(request, message_template, message_tags)
+
+        if data.get('submit') is not None and not dataset_instance:
+            if form_is_valid and url_instance:
+                dataset_instance, created = lib_models.Dataset.objects.get_or_create(
+                    url=url_instance,
+                    format=clean_data['format'],
+                    name=clean_data['name'],
+                )
+                if dataset_instance:
+                    if created:
+                        lib_models.Content.objects.create(
+                            added_by=user,
+                            dataset=dataset_instance,
+                        )
+                        dataset_handler.populate_dataset(dataset_instance)
+                        messages.success(request, message_template, message_tags)
+                    else:
+                        messages.info(request, message_template, message_tags)
+            else:
+                messages.info(request, message_template, message_tags)
 
     return render(request, 'library/share_dataset/form.html', {
         'form':form, 
