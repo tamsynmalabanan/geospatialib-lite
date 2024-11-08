@@ -2,7 +2,7 @@
 
 {% for content in contents %}
     <li 
-        class="list-group-item d-flex border-0 p-0 pb-3 w-100"
+        class="list-group-item d-flex border-0 p-0 pb-3 w-100 user-select-none gap-3"
         {% if forloop.last and page_obj.has_next  %}
             hx-get="{% url 'hx_library:search' %}?page={{page_obj.number|add:1}}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{key}}={{value}}{% endif %}{% endfor %}"
             hx-trigger="intersect once"
@@ -12,7 +12,7 @@
         {% endif %}
     >   
         <input 
-            class="form-check-input me-2" 
+            class="form-check-input" 
             tabindex="-1"
             type="checkbox" 
             {% if content.type == 'dataset' %}
@@ -33,21 +33,32 @@
                 <span>
                     {{content.label}}
                 </span>
-                <div class="dropdown">
-                    <button class="p-0 border-0 bg-transparent text-muted" tabindex="-1" type="button" data-bs-toggle="dropdown" aria-expanded="false" onclick="populateLayerDropdownMenu(this, {mapSelector:'#geospatialibMap', bboxCoords:'{{content.bbox.extent}}', layerGroup:'library'})">
-                        <i class="bi bi-three-dots"></i>
-                    </button>
-                    <ul class="dropdown-menu fs-12"></ul>
-                </div>                
             </label>
-            <div class="d-flex w-100">
+            <div class="d-flex flex-column gap-1 w-100">
                 <div class='fw-lighter mt-1 small text-wrap w-100 text-justify'>
                     {% if content.headline %}
                         {{content.headline|safe}}
                     {% endif %}
                 </div>
+                <div>
+                    <a class='badge rounded-pill bg-primary-subtle text-reset text-decoration-none font-monospace fw-normal' href="{{content.dataset__url__url}}" target="_blank" rel="noopener noreferrer">
+                        {{content.dataset__url__url|domain}}
+                    </a>
+                    {% comment %} <span class='badge rounded-pill bg-primary-subtle text-reset text-decoration-none font-monospace fw-normal'>
+                        {{content.dataset__format}}
+                    </span>
+                    <span class='badge rounded-pill bg-primary-subtle text-reset text-decoration-none font-monospace fw-normal'>
+                        {{content.dataset__name}}
+                    </span> {% endcomment %}
+                </div>
             </div>
         </div>
+        <div class="dropdown">
+            <button class="p-0 border-0 bg-transparent text-muted" tabindex="-1" type="button" data-bs-toggle="dropdown" aria-expanded="false" onclick="populateLayerDropdownMenu(this, {mapSelector:'#geospatialibMap', bboxCoords:'{{content.bbox.extent}}', layerGroup:'library'})">
+                <i class="bi bi-three-dots"></i>
+            </button>
+            <ul class="dropdown-menu fs-12"></ul>
+        </div>                
     </li>
     {% if forloop.last and page_obj.has_next %}
         <div class="d-flex justify-content-center gap-3">

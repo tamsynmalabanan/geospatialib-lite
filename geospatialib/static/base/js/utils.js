@@ -111,9 +111,12 @@ const fetchDataWithTimeout = async (url, timeoutMs=10000, options={}) => {
         clearTimeout(timeoutId)
         return response
     } catch (error) {
-        if (error.name === 'AbortError') {
-            console.error('Request timed out');
+        if (error.name === 'TypeError' && error.message === 'Failed to fetch') {
+            console.error(error.name, error.message)
+        } else if (error.name === 'AbortError') {
+            console.error(error.name, error.message);
         } else {
+            console.log(error.name, error.message)
             throw error
         }
     }
@@ -142,4 +145,21 @@ const findOuterElement = (selector, reference) => {
     }
 
     return element
+}
+
+const parseXML = (xmlString) => {
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(xmlString, 'text/xml');
+    const rootElement = xmlDoc.documentElement;
+    
+    let namespace
+    const namespaces = rootElement.attributes;
+    for (let i = 0; i < namespaces.length; i++) {
+        const name = namespaces.item(i).name
+        if (name.startsWith('xmlns')) {
+            namespace = namespaces.item(i).value
+        }
+    }
+
+    return [namespace, rootElement]
 }

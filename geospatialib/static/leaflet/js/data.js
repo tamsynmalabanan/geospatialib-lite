@@ -309,9 +309,13 @@ const fetchOSMDataFromNominatim = async (event) => {
 }
 
 const fetchData = (event, layer) => {
-    return {
+    const handler = {
         wms: fetchWMSData,
-    }[layer.data.layerFormat](event, layer)
+    }[layer.data.layerFormat]
+    
+    if (handler) {
+        return handler(event, layer)
+    }
 }
 
 const fetchWMSData = async (event, layer) => {
@@ -323,11 +327,11 @@ const fetchWMSData = async (event, layer) => {
         REQUEST: 'GetFeatureInfo',
         SRS: "EPSG:4326",
         FORMAT: 'application/json',
+        INFO_FORMAT: 'application/json',
         TRANSPARENT: true,
         QUERY_LAYERS: layer.data.layerName,
         LAYERS: layer.data.layerName,
         exceptions: 'application/vnd.ogc.se_inimage',
-        INFO_FORMAT: 'application/json',
         X: Math.floor(event.containerPoint.x),
         Y: Math.floor(event.containerPoint.y),
         CRS: 'EPSG:4326',
@@ -344,18 +348,61 @@ const fetchWMSData = async (event, layer) => {
     const url = pushQueryParamsToURLString(cleanURL, params)
     return fetchDataWithTimeout(url).then(response => {
         if (response.ok || response.status === 200) {
-            return response.json()
+            return response
         } else {
             throw new Error('Response not ok')
         }
-    }).then(data => {
-        if (data && data.features && data.features.length > 0) {
-            data.licence = `Data © <a href='${cleanURL}' target='_blank'>${getDomain(cleanURL)}</a>`
-            return data
-        } else {
-            throw new Error('No features returned.')
+    })
+    .then(response => {
+        const contentType = response.headers.get('Content-Type')
+        if (contentType.includes('json')) {
+            return response.json()
+            .then(data => {
+                if (data && data.features && data.features.length > 0) {
+                    if (!data.licence) {
+                        data.licence = `Data © <a href='${cleanURL}' target='_blank'>${getDomain(cleanURL)}</a>`
+                    }
+                    return data
+                } else {
+                    throw new Error('No features returned.')
+                }
+            })        
+        } else if (contentType.includes('xml')) {
+            return response.text()
+            .then(xmlString => {
+                const features = []
+                const [namespace, rootElement] = parseXML(xmlString)
+                if (namespace) {
+                    if (namespace === 'http://www.esri.com/wms') {
+                        rootElement.childNodes.forEach(child => {
+                            const tagName = child.tagName
+                            if (tagName && tagName.toLowerCase() === 'fields') {
+                                const attributes = Object.values(child.attributes)
+                                if (attributes.length > 0) {
+                                    const feature = {type: "Feature", properties:{}}
+                                    attributes.forEach(attr => {
+                                        feature.properties[attr.name] = attr.value
+                                    })
+                                    features.push(feature)
+                                }
+                            }
+                        })
+                    }
+                }
+
+                if (features.length > 0) {
+                    return {
+                        type: "FeatureCollection",
+                        licence: `Data © <a href='${cleanURL}' target='_blank'>${getDomain(cleanURL)}</a>`,
+                        features: features
+                    }
+                } else {
+                    throw new Error('No features returned.')
+                }
+            })
         }
-    }).catch(error => {
+    })
+    .catch(error => {
         return
     })
 }

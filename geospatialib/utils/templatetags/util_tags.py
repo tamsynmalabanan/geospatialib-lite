@@ -6,6 +6,7 @@ from ..general import form_helpers
 import json
 import shortuuid
 from shapely.geometry import shape
+from urllib.parse import urlparse
 
 
 register = template.Library()
@@ -32,6 +33,10 @@ def is_captchta_widget(widget):
 @register.filter
 def get(dict, key):
     return dict.get(key)
+
+@register.filter
+def domain(url):
+    return urlparse(url).netloc
 
 @register.filter
 def json_loads(string):

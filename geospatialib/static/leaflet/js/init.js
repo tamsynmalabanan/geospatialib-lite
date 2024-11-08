@@ -155,7 +155,7 @@ const constructInfoPanel = (map, name, options={}) => {
     collapseToggle.addEventListener('click', () => hideAllSubCollapse(collapse))
     
     const body = document.createElement('div')
-    body.classList.add('accordion-body', 'd-flex', 'flex-column', 'overflow-auto', 'px-3', 'py-0')
+    body.classList.add('accordion-body', 'd-flex', 'flex-column', 'overflow-auto', 'p-0')
     collapse.appendChild(body)
 
     const resizeInfoPanel = () => {
@@ -217,7 +217,7 @@ const handleMapLegend = (map) => {
                             label: layer.data.layerLabel
                         }
                     )
-                    legendContainer.classList.add('mb-3')
+                    legendContainer.classList.add('mb-3', 'px-3')
                     body.insertBefore(legendContainer, body.firstChild)
 
                     const legendCollapse = legendContainer.querySelector('.collapse')
@@ -375,11 +375,11 @@ const handleMapQuery = (map) => {
         body.innerHTML = ''    
 
         const queryResults = document.createElement('ul')
-        queryResults.className = 'list-group list-group-flush fs-14 w-100 overflow-auto pe-3'
+        queryResults.className = 'list-group list-group-flush fs-14 w-100 overflow-auto px-3'
         queryResults.id = 'queryResults'
 
         const toolbar = createFormCheck('queryResultsToggleAll', {
-            formCheckClass: 'fs-14 mb-3',
+            formCheckClass: 'fs-14 ms-3 mb-3 pe-3',
             checkboxAttrs: {
                 'data-layers-toggles': '#queryResults',
                 'data-layers-label': 'feature',

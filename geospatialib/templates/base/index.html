@@ -20,31 +20,34 @@
         <div class="container-fluid vh-100">
             <div class="row vh-100">
                 <div 
-                    class="offcanvas-lg offcanvas-start col-lg-5 col-xl-4 col-xxl-3 vh-100 px-0 d-flex flex-column shadow-lg border-end" 
+                    class="offcanvas-lg offcanvas-start col-lg-4 vh-100 px-0 shadow-lg d-flex" 
                     tabindex="-1" 
                     data-bs-scroll="true" 
                     data-bs-backdrop="false" 
                     id="{{sidebar_id}}" 
                     aria-labelledby="{{sidebar_id}}Label"
                 >
-                    {% include "base/sections/header.html" %}
-                    <div class='px-3'>
-                        {% block offcanvas_nav %}{% endblock offcanvas_nav %}
+                    <div class='d-flex flex-column w-100'>
+                        {% include "base/sections/header.html" %}
+                        <div class='px-3'>
+                            {% block offcanvas_nav %}{% endblock offcanvas_nav %}
+                        </div>
+                        <div class="offcanvas-body d-flex flex-column flex-grow-1 overflow-x-hidden overflow-y-auto px-3 pt-0">
+                            {% block offcanvas_body %}{% endblock offcanvas_body %}
+                        </div>
+                        <div class="footer border-top d-none d-lg-flex py-3 gap-3 justify-content-center px-5">
+                            {% with button_class='btn btn-sm btn-dark d-flex gap-2 justify-content-center align-items-center' labelClass='text-nowrap d-none d-xxl-inline' %}
+                                {% if user.is_authenticated %}
+                                    {% include "main/menu/dropup.html" with labelClass='text-nowrap' %}
+                                    {% block offcanvas_footer %}{% endblock offcanvas_footer %}
+                                {% else %}
+                                    {% include "main/about/toggle.html" %}
+                                    {% include "main/login/toggle.html" with button_class='btn btn-sm d-flex gap-2 justify-content-center btn-primary flex-grow-1' %}
+                                {% endif %}
+                            {% endwith %}
+                        </div>
                     </div>
-                    <div class="offcanvas-body d-flex flex-column flex-grow-1 overflow-x-hidden overflow-y-auto px-3 pt-0">
-                        {% block offcanvas_body %}{% endblock offcanvas_body %}
-                    </div>
-                    <div class="footer border-top d-none d-lg-flex py-3 gap-3 justify-content-center px-5">
-                        {% with button_class='btn btn-sm btn-dark d-flex gap-2 justify-content-center align-items-center' labelClass='text-nowrap d-none d-xxl-inline' %}
-                            {% if user.is_authenticated %}
-                                {% include "main/menu/dropup.html" with labelClass='text-nowrap' %}
-                                {% block offcanvas_footer %}{% endblock offcanvas_footer %}
-                            {% else %}
-                                {% include "main/about/toggle.html" %}
-                                {% include "main/login/toggle.html" with button_class='btn btn-sm d-flex gap-2 justify-content-center btn-primary flex-grow-1' %}
-                            {% endif %}
-                        {% endwith %}
-                    </div>
+                    <div class="gutter vh-100 p-0 border-end border-3 d-none d-lg-flex" style='cursor:col-resize;'></div>
                 </div>
                 <div class='col vh-100 p-0'>
                     <div class='d-lg-none z-2 position-fixed bottom-0 p-0 m-10 d-flex flex-column gap-2'>
