@@ -158,7 +158,7 @@ const constructInfoPanel = (map, name, options={}) => {
     body.classList.add('accordion-body', 'd-flex', 'flex-column', 'overflow-auto', 'p-0')
     collapse.appendChild(body)
 
-    const resizeInfoPanel = () => {
+    const resizeInfoPanel = () => {console.log('here')
         const mapContainerHeight = mapContainer.clientHeight
         const mapContainerWidth = mapContainer.clientWidth
 
@@ -191,6 +191,7 @@ const constructInfoPanel = (map, name, options={}) => {
 
     map.on('resize', resizeInfoPanelOnTimeout)
     toggle.addEventListener('click', resizeInfoPanel)
+    observeInnerHTML(body, resizeInfoPanel)
 
     return body
 }
@@ -202,7 +203,7 @@ const handleMapLegend = (map) => {
     const body = constructInfoPanel(map, 'Legend', {
         toggleTitle: 'Toggle legend panel',
         iconClass: 'bi bi-stack',
-        collapsed: true,
+        collapsed: false,
     })
 
     map.on('layeradd', (event) => {
@@ -246,7 +247,7 @@ const handleMapQuery = (map) => {
     const body = constructInfoPanel(map, 'Query', {
         toggleTitle: 'Toggle query panel',
         iconClass: 'bi bi-question-circle-fill',
-        collapsed: false
+        collapsed: true,
     })
 
     const header = body.parentElement.querySelector('h6')
