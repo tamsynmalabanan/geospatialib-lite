@@ -93,16 +93,34 @@ const removeQueryParams = (urlString) => {
     return url.toString();
 }
 
-const fetchDataWithTimeout = async (url, timeoutMs=10000, options={}) => {
-    const controller = new AbortController();
+const getCookie = (name) => {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim()
+
+            if (cookie.startsWith(name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue
+}
+
+const fetchDataWithTimeout = async (url, options={}) => {
+    let timeoutMs = options.timeoutMs
+    if (!timeoutMs) {
+        timeoutMs = 10000
+    } else {
+        delete options.timeoutMs
+    }
+
+    const controller = new AbortController()
     
-    const params = {signal: controller.signal}
-    if (options.method) {
-        params.method = options.method
-    }
-    if (options.body) {
-        params.body = options.body
-    }
+    const params = Object.assign({}, options)
+    params.signal = controller.signal
     
     const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
     
@@ -112,9 +130,15 @@ const fetchDataWithTimeout = async (url, timeoutMs=10000, options={}) => {
         return response
     } catch (error) {
         if (error.name === 'TypeError' && error.message === 'Failed to fetch') {
-            console.error(error.name, error.message)
-        } else if (error.name === 'AbortError') {
-            console.error(error.name, error.message);
+            const csrftoken = getCookie('csrftoken')
+            return await fetch(`/htmx/library/cors_proxy/?url=${encodeURIComponent(url)}`, {
+                method: 'POST',
+                body: JSON.stringify(options),
+                headers: {
+                    'HX-Request': 'true',
+                    'X-CSRFToken': csrftoken,
+                }
+            })
         } else {
             console.log(error.name, error.message)
             throw error

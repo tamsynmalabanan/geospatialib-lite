@@ -37,7 +37,8 @@ const fetchOSMData = async (event, options={}) => {
 }
 
 const fetchOSMDataInBbox = async (bbox) => {
-    return fetchDataWithTimeout("http://overpass-api.de/api/interpreter", 5000, {
+    return fetchDataWithTimeout("http://overpass-api.de/api/interpreter", {
+        timeoutMs: 5000,
         method: "POST",
         body: "data="+ encodeURIComponent(`
             [bbox:${bbox[0]},${bbox[1]},${bbox[2]},${bbox[3]}]
@@ -94,7 +95,8 @@ const fetchOSMDataAroundLatLng = async (latlng, options={}) => {
 
     const fetchData = async (buffer=10, minimum=1) => {
         const params = `around:${buffer},${latlng.lat},${latlng.lng}`
-        return fetchDataWithTimeout("http://overpass-api.de/api/interpreter", 5000, {
+        return fetchDataWithTimeout("http://overpass-api.de/api/interpreter", {
+            timeoutMs: 5000,
             method: "POST",
             body: "data="+ encodeURIComponent(`
                 [out:json][timeout:180];

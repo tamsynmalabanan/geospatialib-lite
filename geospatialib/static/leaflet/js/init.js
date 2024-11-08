@@ -177,7 +177,7 @@ const constructInfoPanel = (map, name, options={}) => {
         body.style.maxHeight = `${(mapContainerHeight * 0.9)-topMargin-siblingsHeight}px`;
         
         if (mapContainerWidth > 1000) {
-            body.parentElement.style.maxWidth = `${mapContainerWidth * 0.3}px`;
+            body.parentElement.style.maxWidth = `${mapContainerWidth * 0.4}px`;
         } else {
             body.parentElement.style.maxWidth = `${mapContainerWidth * 0.8}px`;
         }
@@ -274,7 +274,7 @@ const handleMapQuery = (map) => {
     queryDropdown.appendChild(queryMenu)
 
     const layersQueryBtn = createDropdownMenuListItem({
-        label: 'Layers', 
+        label: 'Query layers', 
         parent: queryMenu,
         buttonAttrs: {
             'data-query-osm': 'false'
@@ -282,15 +282,27 @@ const handleMapQuery = (map) => {
     }).querySelector('button')
 
     const layersOSMQueryBtn = createDropdownMenuListItem({
-        label: 'Layers & OSM', 
+        label: 'Query layers & OSM', 
         parent: queryMenu,
         buttonAttrs: {
             'data-query-osm': 'true'
         }
     }).querySelector('button')
     
+    const divider = document.createElement('li')
+    divider.className = 'dropdown-divider'
+    queryMenu.appendChild(divider)
+
     const cancelQueryBtn = createDropdownMenuListItem({
         label: 'Cancel query', 
+        parent: queryMenu,
+        buttonAttrs: {
+            'disabled': 'true'
+        }
+    })
+
+    const clearQueryBtn = createDropdownMenuListItem({
+        label: 'Clear query features', 
         parent: queryMenu,
         buttonAttrs: {
             'disabled': 'true'
@@ -363,16 +375,25 @@ const handleMapQuery = (map) => {
         disableMapQuery()
     })
 
+    const clearQueryResults = () => {
+        map.getLayerGroups().query.clearLayers()
+        body.innerHTML = ''
+        clearQueryBtn.setAttribute('disabled', true)
+    }
+
+    clearQueryBtn.addEventListener('click', () => {
+        clearQueryResults()
+    })
+
 
     const fetchQueryData = async (event) => {
         map._querying = true
         disableMapQuery()
         disableQueryBtns()
+        clearQueryResults()
 
         footer.innerText = 'Running query...'
         
-        map.getLayerGroups().query.clearLayers()
-        body.innerHTML = ''    
 
         const queryResults = document.createElement('ul')
         queryResults.className = 'list-group list-group-flush fs-14 w-100 overflow-auto px-3'
@@ -454,7 +475,8 @@ const handleMapQuery = (map) => {
 
         map._querying = false
         toggleQueryButton()
-        footer.innerText = 'Query complete.'        
+        clearQueryBtn.removeAttribute('disabled')
+        footer.innerText = 'Query complete.'    
     }
 
     map._querying = false

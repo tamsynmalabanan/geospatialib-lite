@@ -9,6 +9,7 @@ from django.db.models import Count, Sum, F, IntegerField, Value, Q, Case, When, 
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank, SearchHeadline
 from django.utils.text import slugify
 from django.contrib.gis.geos import Polygon, GEOSGeometry
+from django.http import JsonResponse
 
 import time
 
@@ -19,6 +20,9 @@ from apps.library import (
 )
 from utils.general import form_helpers, util_helpers
 from utils.gis import dataset_helpers
+import json
+import requests
+
 
 class SearchList(ListView):
     template_name = 'library/search/results.html'
@@ -216,3 +220,22 @@ def share_dataset(request):
         'form':form, 
         'dataset':dataset_instance,
     })
+
+@require_http_methods(['POST'])
+def cors_proxy(request):
+    url = request.GET.get('url')
+
+    try:
+        data = json.loads(request.body.decode('utf-8'))
+        method = str(data.get('method', 'get'))
+        
+        if method.lower() == 'get':
+           response = requests.get(url)
+        elif method == 'post':
+            response = requests.post(url, json=data)
+        else:
+            return JsonResponse({'error': f'Unsupported method: {method}'}, status=400)
+    except (requests.exceptions.RequestException, json.JSONDecodeError) as e:
+        return JsonResponse({'error': f'Error during request: {str(e)}'}, status=500)
+
+    return JsonResponse(response.json())
