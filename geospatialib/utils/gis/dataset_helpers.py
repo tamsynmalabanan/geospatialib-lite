@@ -26,8 +26,8 @@ class DatasetHandler():
 class XYZHandler(DatasetHandler):
 
     def get_layers(self):
-        domain = urlparse(self.url).netloc
-        return {domain: domain}
+        name = util_helpers.get_domain_name(self.url)
+        return {name: name}
     
     def handler(self):
         self.access_url = self.url
@@ -36,7 +36,7 @@ class XYZHandler(DatasetHandler):
     def populate_dataset(self, dataset):
         content = dataset.content
 
-        content.label = urlparse(self.access_url).netloc
+        content.label = dataset.name
         content.bbox = geom_helpers.WORLD_GEOM
         content.tags.set(model_helpers.collect_url_tags(self.access_url))
 

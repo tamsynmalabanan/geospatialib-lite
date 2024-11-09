@@ -35,11 +35,11 @@
                 </span>
             </label>
             <div class="d-flex flex-column gap-1 w-100">
-                <div class='fw-lighter mt-1 small text-wrap w-100 text-justify'>
+                {% comment %} <div class='fw-lighter mt-1 small text-wrap w-100 text-justify'>
                     {% if content.headline %}
                         {{content.headline|safe}}
                     {% endif %}
-                </div>
+                </div> {% endcomment %}
                 <div>
                     <a class='badge rounded-pill bg-primary-subtle text-reset text-decoration-none font-monospace fw-normal' href="{{content.dataset__url__url}}" target="_blank" rel="noopener noreferrer">
                         {{content.dataset__url__url|domain}}

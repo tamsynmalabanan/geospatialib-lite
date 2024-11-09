@@ -77,7 +77,7 @@ class SearchList(ListView):
                 SearchVector('dataset__extra_data')
             )
 
-            search_headline = SearchHeadline('abstract', search_query)
+            # search_headline = SearchHeadline('abstract', search_query)
 
             queryset = (
                 queryset
@@ -91,7 +91,7 @@ class SearchList(ListView):
                 ])
                 .annotate(
                     rank=SearchRank(search_vector, search_query),
-                    headline=search_headline,
+                    # headline=search_headline,
                 )
                 .filter(rank__gte=0.001)
             )

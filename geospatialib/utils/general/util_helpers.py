@@ -2,6 +2,16 @@ import string
 from django.utils.text import slugify
 from urllib.parse import urlparse, urlunparse
 
+def get_domain_name(url):
+    domain = urlparse(url).netloc
+    domain_parts = domain.split('.')
+    if len(domain_parts) == 1:
+        return domain
+    if len(domain_parts) == 2:
+        return domain_parts[0]
+    if len(domain_parts) > 2:
+        return domain_parts[1]
+
 def build_cache_key(*args):
     key_parts = [slugify(str(arg)) for arg in args]
     return ':'.join(key_parts)
