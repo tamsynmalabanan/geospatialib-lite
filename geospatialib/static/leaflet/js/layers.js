@@ -257,7 +257,7 @@ const createLayerToggles = (layer, parent, map, layerGroup, geojson) => {
     if (layer._layers) {
         layerCount = layer.getLayers().length
         if (layerCount > 1) {
-            label = `${layer.title} (${layerCount} features)`
+            label = `${layer.title} (${formatNumberWithCommas(layerCount)} features)`
         }
     }
 
