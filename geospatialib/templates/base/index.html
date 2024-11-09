@@ -27,12 +27,12 @@
                     id="{{sidebar_id}}" 
                     aria-labelledby="{{sidebar_id}}Label"
                 >
-                    <div class='d-flex flex-column w-100'>
+                    <div class='d-flex flex-column w-100 vh-100'>
                         {% include "base/sections/header.html" %}
                         <div class='px-3'>
                             {% block offcanvas_nav %}{% endblock offcanvas_nav %}
                         </div>
-                        <div class="offcanvas-body d-flex flex-column flex-grow-1 overflow-x-hidden overflow-y-auto px-3 pt-0">
+                        <div class="offcanvas-body d-flex flex-column flex-grow-1 overflow-x-hidden px-3 pt-0">
                             {% block offcanvas_body %}{% endblock offcanvas_body %}
                         </div>
                         <div class="footer border-top d-none d-lg-flex py-3 gap-3 justify-content-center px-5">
