@@ -1,3 +1,15 @@
+const getOSMGeoJSON = (features) => {
+    return {
+        type: "FeatureCollection",
+        licence: "Data © <a href='http://osm.org/copyright' target='_blank'>OpenStreetMap contributors, ODbL 1.0.</a>",
+        note:   "If the query results from OSM don't include your target feature, try zooming in and querying along its boundaries;" + " " +
+                "for efficiency, features are grouped when the query results exceed 100 features;" + " " +
+                "layer toggle is disabled when the query results exceed 1,000 features;" + " " +
+                "the geojson containing all features is still downloadable and can be viewed with other applications.",
+        features: features
+    }
+}
+
 const fetchProj4Def = async (crs_int, crs_text) => {
     return fetchDataWithTimeout(`https://spatialreference.org/ref/epsg/${crs_int}/proj4.txt`)
     .then(response => {
@@ -27,18 +39,11 @@ const fetchOSMData = async (event, options={}) => {
         }
     })
 
-    const geojson = {
-        type: "FeatureCollection",
-        licence: "Data © <a href='http://osm.org/copyright' target='_blank'>OpenStreetMap contributors, ODbL 1.0.</a>",
-        features: features
-    }
-
-    return geojson
+    return getOSMGeoJSON(features)
 }
 
 const fetchOSMDataInBbox = async (bbox) => {
     return fetchDataWithTimeout("http://overpass-api.de/api/interpreter", {
-        timeoutMs: 5000,
         method: "POST",
         body: "data="+ encodeURIComponent(`
             [bbox:${bbox[0]},${bbox[1]},${bbox[2]},${bbox[3]}]
@@ -80,10 +85,7 @@ const fetchOSMDataInBbox = async (bbox) => {
     .then(data => {
         const filteredElements = data.elements.filter(element => Object.keys(element).includes('tags'))
         data.elements = filteredElements
-        return {
-            type: "FeatureCollection",
-            features:overpassOSMDataToGeoJSON(data)
-        }
+        return getOSMGeoJSON(overpassOSMDataToGeoJSON(data))
     })
     .catch(error => {
         console.error(error)
@@ -96,7 +98,6 @@ const fetchOSMDataAroundLatLng = async (latlng, options={}) => {
     const fetchData = async (buffer=10, minimum=1) => {
         const params = `around:${buffer},${latlng.lat},${latlng.lng}`
         return fetchDataWithTimeout("http://overpass-api.de/api/interpreter", {
-            timeoutMs: 5000,
             method: "POST",
             body: "data="+ encodeURIComponent(`
                 [out:json][timeout:180];

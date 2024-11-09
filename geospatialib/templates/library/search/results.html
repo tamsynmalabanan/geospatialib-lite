@@ -1,6 +1,7 @@
 {% load static %}
+{% load util_tags %}
 
-{% if page_obj.number == 1 %}
+{% if request.headers|get:'HX-Request' and page_obj.number == 1 %}
     {% include "library/search/filters.html" %}
 {% endif %}
 
@@ -19,24 +20,8 @@
     {% endif %}
 {% else %}
     <div id='searchResults' class='pt-3'>
-        {% if request.GET.query %}
-            <div
-                hx-get="{% url 'hx_library:search' %}?{% for key, value in request.GET.items %}{% if key != 'page' %}{{key}}={{value}}&{% endif %}{% endfor %}"
-                hx-trigger='load'
-                hx-target='#searchResults'
-                hx-swap='outerHTML'
-                hx-indicator='.htmx-indicator-search-results-load'
-            >
-                <div class="d-flex justify-content-center gap-3">
-                    {% for i in '123' %}
-                        <div class="spinner-grow spinner-grow-sm text-primary my-3 htmx-indicator htmx-indicator-search-results-load" role="status"></div>
-                    {% endfor %}
-                </div>
-            </div>
-        {% else %}
-            <div class='d-flex mt-3'>
-                fetch default filters
-            </div>
-        {% endif %}
+        <div class='d-flex mt-3'>
+            fetch default filters
+        </div>
     </div>
 {% endif %}

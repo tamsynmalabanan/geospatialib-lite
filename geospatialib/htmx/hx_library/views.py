@@ -81,7 +81,7 @@ class SearchList(ListView):
 
             queryset = (
                 queryset
-                .prefetch_related('dataset', 'map')
+                .select_related('dataset', 'map')
                 .values(*self.filter_fields+[
                     'label', 
                     'bbox', 
@@ -108,6 +108,7 @@ class SearchList(ListView):
                 queryset = self.perform_full_text_search()  
 
             if queryset:
+                cache.set(self.cache_key, queryset, timeout=3600)
                 queryset = queryset.filter(**{
                     param:value 
                     for param,value in self.request.GET.items() 
@@ -119,18 +120,21 @@ class SearchList(ListView):
 
         return self.queryset.annotate(rank=Max('rank')).order_by(*['-rank']+self.filter_fields+['label'])
 
+    def get_filters(self):
+        return {
+            field: (
+                self.queryset
+                .values(field)
+                .annotate(count=Count('id', distinct=True))
+                .order_by('-count')
+            )
+            for field in self.filter_fields
+        }
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.page == 1:
-            context['filters'] = {
-                field: (
-                    self.queryset
-                    .values(field)
-                    .annotate(count=Count('id', distinct=True))
-                    .order_by('-count')
-                )
-                for field in self.filter_fields
-            }
+            context['filters'] = self.get_filters()
         return context
 
 @require_http_methods(['POST'])

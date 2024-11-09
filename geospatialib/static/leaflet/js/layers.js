@@ -21,11 +21,7 @@ const populateLayerDropdownMenu = (toggle, options={}) => {
                     bounds = L.latLngBounds([[minY, minX], [maxY, maxX]]);
                 } else if (options.layer) {
                     const layer = options.layer
-                    try {
-                        bounds = layer.getBounds()
-                    } catch {
-                        bounds = L.latLngBounds(layer.getLatLng(), layer.getLatLng())
-                    }                
+                    bounds = getLayerBounds(layer)              
                 }
             }
     
@@ -37,7 +33,7 @@ const populateLayerDropdownMenu = (toggle, options={}) => {
                 dropdown.appendChild(zoomBtn)
                 zoomBtn.addEventListener('click', () => {
                     if (bounds.getNorth() === bounds.getSouth() && bounds.getEast() === bounds.getWest()) {
-                        map.setView(bounds.getNorthEast(), 10)
+                        map.setView(bounds.getNorthEast(), 15)
                     } else {
                         map.fitBounds(bounds)
                     }
@@ -109,7 +105,7 @@ const toggleOffAllLayers = (toggle) => {
     toggle.setAttribute('disabled', true)
 }
 
-const toggleLayer = (event, options={}) => {
+const toggleLayer = async (event, options={}) => {
     let map = options.map
     if (!map && options.mapSelector) {
         map = mapQuerySelector(options.mapSelector)
@@ -245,13 +241,30 @@ const createFeaturePropertiesTable = (properties) => {
     return table
 }
 
+const getLayerBounds = (layer) => {
+    try {
+        return layer.getBounds()
+    } catch {
+        return L.latLngBounds(layer.getLatLng(), layer.getLatLng())
+    }
+}
+
 const createLayerToggles = (layer, parent, map, layerGroup, geojson) => {
     const mapContainer = map.getContainer()
-    
-    const handler = (layer, parent, geojson) => {
+
+    let label = layer.title
+    let layerCount = 0
+    if (layer._layers) {
+        layerCount = layer.getLayers().length
+        if (layerCount > 1) {
+            label = `${layer.title} (${layerCount} features)`
+        }
+    }
+
+    const handler = (layer, parent, geojson, label) => {
         const formCheck = createFormCheck(`${mapContainer.id}_${layer._leaflet_id}`, {
             formCheckClass: 'fw-medium',
-            label: layer.title,
+            label: label,
             parent: parent,
             button: true,
             buttonClass: 'bi bi-three-dots',
@@ -264,13 +277,6 @@ const createLayerToggles = (layer, parent, map, layerGroup, geojson) => {
         const dropdown = document.createElement('ul')
         dropdown.className = 'dropdown-menu fs-12'
         formCheck.appendChild(dropdown)
-    
-        let bounds
-        try {
-            bounds = layer.getBounds()
-        } catch {
-            bounds = L.latLngBounds(layer.getLatLng(), layer.getLatLng())
-        }
 
         const toggle = formCheck.querySelector('button')
         toggle.addEventListener('click', () => {
@@ -307,9 +313,10 @@ const createLayerToggles = (layer, parent, map, layerGroup, geojson) => {
         return formCheck
     }
     
-    const mainToggle = handler(layer, parent, geojson)
+    const mainToggle = handler(layer, parent, geojson, label)
     const mainCheckbox = mainToggle.querySelector('input')
-    if (layer._layers) {
+
+    if (layerCount > 0 && layerCount <= 100) {
         const collapse = document.createElement('div')
         collapse.id = `${mapContainer.id}_${layer._leaflet_id}_group`
         collapse.className = 'collapse show ps-3'
@@ -324,7 +331,7 @@ const createLayerToggles = (layer, parent, map, layerGroup, geojson) => {
         collapseToggle.setAttribute('aria-expanded', `true`)
         mainToggle.appendChild(collapseToggle)
 
-        mainCheckbox.addEventListener('click', (event) => {
+        mainCheckbox.addEventListener('click', async (event) => {
             if (mainCheckbox.checked) {
                 collapse.querySelectorAll('input').forEach(checkbox => {
                     if (!checkbox.checked) {
@@ -343,6 +350,7 @@ const createLayerToggles = (layer, parent, map, layerGroup, geojson) => {
         map.on('layeradd', (event) => {
             if (layer.hasLayer(event.layer)) {
                 if (layer.getLayers().every(feature => map.hasLayer(feature))) {
+                    mainCheckbox.removeAttribute('disabled')
                     mainCheckbox.checked = true
                 }
             }
@@ -355,7 +363,7 @@ const createLayerToggles = (layer, parent, map, layerGroup, geojson) => {
         })
 
         layer.eachLayer(feature => {
-            const layerToggle = handler(feature, collapse, feature.feature)
+            const layerToggle = handler(feature, collapse, feature.feature, feature.title)
             const layerCheckbox = layerToggle.querySelector('input')
             layerCheckbox.addEventListener('click', (event) => {
                 toggleLayer(event, {
@@ -368,14 +376,19 @@ const createLayerToggles = (layer, parent, map, layerGroup, geojson) => {
 
         return [mainToggle, collapse]
     } else {
+        if (layerCount > 1000) {
+            mainCheckbox.setAttribute('disabled',true)
+        } else {
+            mainCheckbox.addEventListener('click', (event) => {
+                toggleLayer(event, {
+                    map: map,
+                    layer: layer,
+                    layerGroup: layerGroup,
+                })
+            })    
+        }
+
         mainToggle.classList.add('pe-3')
-        mainCheckbox.addEventListener('click', (event) => {
-            toggleLayer(event, {
-                map: map,
-                layer: layer,
-                layerGroup: layerGroup,
-            })
-        })    
 
         return [mainToggle, undefined]
     }

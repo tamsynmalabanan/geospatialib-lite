@@ -1,10 +1,10 @@
 {% load util_tags %}
 
-{% for content in contents %}
+{% for content in page_obj.object_list %}
     <li 
         class="list-group-item d-flex border-0 p-0 pb-3 w-100 user-select-none gap-3"
         {% if forloop.last and page_obj.has_next  %}
-            hx-get="{% url 'hx_library:search' %}?page={{page_obj.number|add:1}}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{key}}={{value}}{% endif %}{% endfor %}"
+            hx-get="{% url 'hx_library:search' %}{% querystring page=page_obj.number|add:1 %}"
             hx-trigger="intersect once"
             hx-swap='afterend'
             hx-target='this'
@@ -44,12 +44,12 @@
                     <a class='badge rounded-pill bg-primary-subtle text-reset text-decoration-none font-monospace fw-normal' href="{{content.dataset__url__url}}" target="_blank" rel="noopener noreferrer">
                         {{content.dataset__url__url|domain}}
                     </a>
-                    {% comment %} <span class='badge rounded-pill bg-primary-subtle text-reset text-decoration-none font-monospace fw-normal'>
+                    <span class='badge rounded-pill bg-primary-subtle text-reset text-decoration-none font-monospace fw-normal'>
                         {{content.dataset__format}}
                     </span>
                     <span class='badge rounded-pill bg-primary-subtle text-reset text-decoration-none font-monospace fw-normal'>
                         {{content.dataset__name}}
-                    </span> {% endcomment %}
+                    </span>
                 </div>
             </div>
         </div>
