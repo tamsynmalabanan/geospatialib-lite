@@ -28,7 +28,7 @@ class SearchList(ListView):
     template_name = 'library/search/results.html'
     model = lib_models.Content
     context_object_name = 'contents'
-    paginate_by = 10
+    paginate_by = 20
 
     @property
     def page(self):
@@ -83,6 +83,7 @@ class SearchList(ListView):
                 queryset
                 .select_related('dataset', 'map')
                 .values(*self.filter_fields+[
+                    'pk', 
                     'label', 
                     'bbox', 
                     'dataset__url__url', 

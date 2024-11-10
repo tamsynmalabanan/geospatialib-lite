@@ -29,42 +29,47 @@
             {% endif %}
         >
         <div class='d-flex flex-column flex-grow-1 w-75'>
-            <label class="form-check-label fw-semibold d-flex justify-content-between gap-3">
-                <span>
-                    {{content.label}}
-                </span>
+            <label class="form-check-label fw-semibold d-flex justify-content-between gap-2">
+                <span class='me-5'>{{content.label}}</span>
+                <div class="dropdown ms-auto">
+                    <button class="p-0 border-0 bg-transparent" tabindex="-1" type="button" data-bs-toggle="dropdown" aria-expanded="false" onclick="populateLayerDropdownMenu(this, {mapSelector:'#geospatialibMap', bboxCoords:'{{content.bbox.extent}}', layerGroup:'library'})">
+                        <i class="bi bi-three-dots"></i>
+                    </button>
+                    <ul class="dropdown-menu fs-12"></ul>
+                </div>       
+                <button class="bg-transparent border-0 p-0 d-flex align-content-start" type="button" data-bs-toggle="collapse" data-bs-target="#searchResult_{{content.pk}}" aria-expanded="false" aria-controls="searchResult_{{content.pk}}">
+                    <span class='dropdown-toggle'></span>
+                </button>                 
             </label>
-            <div class="d-flex flex-column gap-1 w-100">
-                {% comment %} <div class='fw-lighter mt-1 small text-wrap w-100 text-justify'>
-                    {% if content.headline %}
-                        {{content.headline|safe}}
-                    {% endif %}
-                </div> {% endcomment %}
-                <div>
-                    <a class='badge rounded-pill bg-primary-subtle text-reset text-decoration-none font-monospace fw-normal' href="{{content.dataset__url__url}}" target="_blank" rel="noopener noreferrer">
-                        {{content.dataset__url__url|domain}}
-                    </a>
-                    <span class='badge rounded-pill bg-primary-subtle text-reset text-decoration-none font-monospace fw-normal'>
-                        {{content.dataset__format}}
-                    </span>
-                    <span class='badge rounded-pill bg-primary-subtle text-reset text-decoration-none font-monospace fw-normal'>
-                        {{content.dataset__name}}
-                    </span>
+            <div class="collapse" id="searchResult_{{content.pk}}">
+                <div class="d-flex flex-column gap-1 w-100">
+                    {% comment %} <div class='fw-lighter mt-1 small text-wrap w-100 text-justify'>
+                        {% if content.headline %}
+                            {{content.headline|safe}}
+                        {% endif %}
+                    </div> {% endcomment %}
+                    <div>
+                        <a class='badge rounded-pill bg-primary-subtle text-reset text-decoration-none font-monospace fw-normal' href="{{content.dataset__url__url}}" target="_blank" rel="noopener noreferrer">
+                            {{content.dataset__url__url|domain}}
+                        </a>
+                        <span class='badge rounded-pill bg-primary-subtle text-reset text-decoration-none font-monospace fw-normal'>
+                            {{content.dataset__format}}
+                        </span>
+                        <span class='badge rounded-pill bg-primary-subtle text-reset text-decoration-none font-monospace fw-normal'>
+                            {{content.dataset__name}}
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="dropdown">
-            <button class="p-0 border-0 bg-transparent text-muted" tabindex="-1" type="button" data-bs-toggle="dropdown" aria-expanded="false" onclick="populateLayerDropdownMenu(this, {mapSelector:'#geospatialibMap', bboxCoords:'{{content.bbox.extent}}', layerGroup:'library'})">
-                <i class="bi bi-three-dots"></i>
-            </button>
-            <ul class="dropdown-menu fs-12"></ul>
-        </div>                
     </li>
     {% if forloop.last and page_obj.has_next %}
-        <div class="d-flex justify-content-center gap-3">
-            {% for i in '123' %}
-                <div class="spinner-grow spinner-grow-sm text-primary my-3 htmx-indicator htmx-indicator-{{page_obj.number}}" role="status"></div>
-            {% endfor %}
-        </div>
+        <li class="htmx-indicator htmx-indicator-{{page_obj.number}}">
+            <div class='d-flex justify-content-center gap-3'>
+                {% for i in '123' %}
+                    <div class="spinner-grow spinner-grow-sm text-primary my-3 " role="status"></div>
+                {% endfor %}
+            </div>
+        </li>
     {% endif %}
 {% endfor %}

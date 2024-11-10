@@ -1,7 +1,7 @@
 from django.shortcuts import render, HttpResponse
 from django.core.paginator import Paginator
 
-from . import forms
+from . import forms, models
 from htmx.hx_library.views import SearchList
 
 def index(request):

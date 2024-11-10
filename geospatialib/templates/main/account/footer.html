@@ -6,26 +6,24 @@
                 {{user.email}}
             </span>
         </div>
-        {% with socials=user.socialaccount_set.all %}
-            <div>
-                {% if socials %}
-                    {% for social in socials %}
-                        <div class='d-flex gap-2'>
-                            {% if social.provider == 'google' %}
-                                <i class="bi bi-google"></i>
-                                {% with extra_data=social.extra_data %}
-                                    <a 
-                                        class='text-reset text-decoration-none' 
-                                        target="_blank" 
-                                        href="{{extra_data.iss}}?uuid={{extra_data.sub}}"
-                                    >{{extra_data.name}}</a>
-                                {% endwith %}
-                            {% endif %}
-                        </div>
-                    {% endfor %}
-                {% endif %}
-            </div>
-        {% endwith %}
+        <div>
+            {% if social_accounts %}
+                {% for social in social_accounts %}
+                    <div class='d-flex gap-2'>
+                        {% if social.provider == 'google' %}
+                            <i class="bi bi-google"></i>
+                            {% with extra_data=social.extra_data %}
+                                <a 
+                                    class='text-reset text-decoration-none' 
+                                    target="_blank" 
+                                    href="{{extra_data.iss}}?uuid={{extra_data.sub}}"
+                                >{{extra_data.name}}</a>
+                            {% endwith %}
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
     </div>
     <div class='col d-flex flex-lg-column justify-content-between'>
         <div class='d-flex ms-lg-auto'>

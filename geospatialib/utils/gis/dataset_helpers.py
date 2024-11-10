@@ -36,7 +36,7 @@ class XYZHandler(DatasetHandler):
     def populate_dataset(self, dataset):
         content = dataset.content
 
-        content.label = dataset.name
+        content.label = dataset.name.replace('_', ' ')
         content.bbox = geom_helpers.WORLD_GEOM
         content.tags.set(model_helpers.collect_url_tags(self.access_url))
 
@@ -67,7 +67,7 @@ class WMSHandler(DatasetHandler):
 
     def get_label(self, layer):
         if layer and hasattr(layer, 'title'):
-            return layer.title
+            return layer.title.replace('_', ' ')
         return self.dataset.name
 
     def get_bbox(self, layer):

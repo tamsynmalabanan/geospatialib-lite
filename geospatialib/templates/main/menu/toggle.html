@@ -7,13 +7,10 @@
     aria-haspopup="true"
     aria-expanded="false"
 >
-    {% with social_account=user.socialaccount_set.all %}
-        {% var social_account.0.extra_data.picture as picture %}
-        {% if social_account and picture %}
-            <img src="{{ picture }}" alt="{{ user.username }}" width="20" height="20" class='rounded-circle'> {% comment %} class="rounded-circle"> {% endcomment %}
-        {% else %}
-            <i class="bi bi-person-fill"></i>
-        {% endif %}
-    {% endwith %}
+    {% if profile_picture %}
+        <img src="{{ profile_picture }}" alt="{{ user.username }}" width="20" height="20" class='rounded-circle'> {% comment %} class="rounded-circle"> {% endcomment %}
+    {% else %}
+        <i class="bi bi-person-fill"></i>
+    {% endif %}
     <i class="bi bi-three-dots"></i>
 </button>
