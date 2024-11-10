@@ -11,7 +11,7 @@ def index(request):
         search_list = SearchList(request=request)
         queryset = search_list.get_queryset()
         context['filters'] = search_list.get_filters()
-
+        
         paginator = Paginator(queryset, search_list.paginate_by)
         context['page_obj'] = paginator.get_page(1)
 

@@ -22,15 +22,19 @@ def forms(request):
     return {}
 
 def social(request):
+    context = {}
+
     user = request.user
     if user.is_authenticated and user.socialaccount_set.exists():
         social_accounts = user.socialaccount_set.all()
-        for i in social_accounts:
-            profile_picture = i.extra_data.get('picture')
-            if profile_picture:
-                break
-        print(profile_picture)
-        return {
-            'social_accounts': social_accounts,
-            'profile_picture': profile_picture,
-        }
+        context['social_accounts'] = social_accounts
+
+        if not request.headers.get('HX-Request'):
+            for i in social_accounts:
+                if i.extra_data:
+                    profile_picture = i.extra_data.get('picture')
+                    if profile_picture:
+                        context['profile_picture'] = profile_picture
+                        break
+
+    return context
