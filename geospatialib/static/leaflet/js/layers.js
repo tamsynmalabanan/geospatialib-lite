@@ -403,11 +403,6 @@ const createWMSLayer = (data) => {
         transparent: true,
     }
 
-    // if (data.layerStyles) {
-    //     const styles = JSON.parse(data.layerStyles)
-    //     options.styles = Object.keys(styles)[0]
-    // }
-    
     return L.tileLayer.wms(baseUrl, options)
 }
 

@@ -343,9 +343,8 @@ const fetchWMSData = async (event, layer) => {
         BBOX: map.getBounds().toBBoxString(),
     }
 
-    if (layer.data.layerStyles) {
-        const styles = JSON.parse(layer.data.layerStyles)
-        params.STYLES = Object.keys(styles)[0]
+    if (layer.data.layerStyle) {
+        params.STYLES = layer.data.layerStyle
     }
 
     const url = pushQueryParamsToURLString(cleanURL, params)

@@ -23,7 +23,7 @@ from utils.gis import dataset_helpers
 import json
 import requests
 
-
+# https://medium.com/@mikyrola8/understanding-lazy-fetching-in-django-a-deep-dive-8159c4822cd4
 class SearchList(ListView):
     template_name = 'library/search/results.html'
     model = lib_models.Content
@@ -66,29 +66,29 @@ class SearchList(ListView):
             search_query = SearchQuery(query, search_type="websearch")
 
             search_vector = (
-                SearchVector('type') +
-                SearchVector('label') +
-                SearchVector('abstract') +
-                SearchVector('tags__tag') +
+                SearchVector('type')
+                + SearchVector('label')
+                + SearchVector('abstract')
+                + SearchVector('tags__tag')
 
-                SearchVector('dataset__url__url') + 
-                SearchVector('dataset__format') + 
-                SearchVector('dataset__name') + 
-                SearchVector('dataset__extra_data')
+                + SearchVector('dataset__format') 
+                + SearchVector('dataset__name') 
             )
 
             # search_headline = SearchHeadline('abstract', search_query)
 
             queryset = (
                 queryset
-                .select_related('dataset', 'map')
+                .select_related('dataset', 'dataset__url', 'dataset__default_legend', 'map')
+                .prefetch_related('tags')
                 .values(*self.filter_fields+[
                     'pk', 
                     'label', 
-                    'bbox', 
+                    'bbox',     
                     'dataset__url__url', 
                     'dataset__name', 
-                    'dataset__extra_data', 
+                    'dataset__default_style', 
+                    'dataset__default_legend__url', 
                 ])
                 .annotate(
                     rank=SearchRank(search_vector, search_query),
@@ -96,7 +96,6 @@ class SearchList(ListView):
                 )
                 .filter(rank__gte=0.001)
             )
-
 
             cache.set(self.cache_key, queryset, timeout=3600)
             return queryset
@@ -110,6 +109,7 @@ class SearchList(ListView):
 
             if queryset:
                 cache.set(self.cache_key, queryset, timeout=3600)
+                
                 queryset = queryset.filter(**{
                     param:value 
                     for param,value in self.request.GET.items() 

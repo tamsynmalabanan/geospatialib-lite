@@ -208,26 +208,20 @@ const handleMapLegend = (map) => {
 
     map.on('layeradd', (event) => {
         const layer = event.layer
-        if (layer.data && layer.data.layerStyles) {
-            const styles = JSON.parse(layer.data.layerStyles)
-            if (Object.keys(styles).length !== 0) {
-                const url = styles[Object.keys(styles)[0]].legend
-                if (url) {
-                    const legendContainer = createButtonAndCollapse(
-                        `${mapId}Legend_${layer._leaflet_id}`, {
-                            label: layer.data.layerLabel
-                        }
-                    )
-                    legendContainer.classList.add('mb-3', 'px-3')
-                    body.insertBefore(legendContainer, body.firstChild)
-
-                    const legendCollapse = legendContainer.querySelector('.collapse')
-                    legendCollapse.appendChild(createImgElement(url, 'Legend not found.'))
-
-                    const legendToggle = legendContainer.querySelector('button')
-                    legendToggle.classList.add('bg-transparent', 'border-0', 'px-0', 'fs-6', 'text-start')
+        if (layer.data && layer.data.layerLegend) {
+            const legendContainer = createButtonAndCollapse(
+                `${mapId}Legend_${layer._leaflet_id}`, {
+                    label: layer.data.layerLabel
                 }
-            } 
+            )
+            legendContainer.classList.add('mb-3', 'px-3')
+            body.insertBefore(legendContainer, body.firstChild)
+
+            const legendCollapse = legendContainer.querySelector('.collapse')
+            legendCollapse.appendChild(createImgElement(layer.data.layerLegend, 'Legend not found.'))
+
+            const legendToggle = legendContainer.querySelector('button')
+            legendToggle.classList.add('bg-transparent', 'border-0', 'px-0', 'fs-6', 'text-start')
         }
     })
 

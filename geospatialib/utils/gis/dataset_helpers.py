@@ -23,6 +23,9 @@ class DatasetHandler():
 
         cache.set(key, self, timeout=3600)
 
+    def handler(self):
+        pass
+
 class XYZHandler(DatasetHandler):
 
     def get_layers(self):
@@ -38,7 +41,11 @@ class XYZHandler(DatasetHandler):
 
         content.label = dataset.name.replace('_', ' ')
         content.bbox = geom_helpers.WORLD_GEOM
-        content.tags.set(model_helpers.collect_url_tags(self.access_url))
+        content.tags.set(
+            model_helpers.collect_url_tags(
+                util_helpers.remove_query_params(self.access_url)
+            )
+        )
 
         content.save()
 
@@ -67,8 +74,10 @@ class WMSHandler(DatasetHandler):
 
     def get_label(self, layer):
         if layer and hasattr(layer, 'title'):
-            return layer.title.replace('_', ' ')
-        return self.dataset.name
+            label = layer.title
+        else:
+            label = self.dataset.name
+        return label.replace('_', ' ')
 
     def get_bbox(self, layer):
         bbox = None
@@ -100,8 +109,8 @@ class WMSHandler(DatasetHandler):
         tag_instances = model_helpers.collect_url_tags(self.access_url)
 
         keywords = []
-        for obj in [obj for obj in [id, layer] if obj is not None]:
-            if hasattr(obj, 'keywords') and isinstance(obj.keywords, (list, tuple)):
+        for obj in [id, layer]:
+            if obj and hasattr(obj, 'keywords') and isinstance(obj.keywords, (list, tuple)):
                 keywords = keywords + list(obj.keywords)
         keywords = list(set(keywords))
 
@@ -162,6 +171,17 @@ class WMSHandler(DatasetHandler):
 
             extra_data = self.get_extra_data(id, provider, layer)
             dataset.extra_data = json.dumps(extra_data)
+            
+            styles = extra_data.get('layer', {}).get('styles', {})
+            if styles:
+                name = list(styles.keys())[0]
+                dataset.default_style_name = name
+                
+                url = styles[name].get('legend')
+                url_instance, created = models.URL.objects.get_or_create(url=url)
+                if url_instance:
+                    dataset.default_style_url = url_instance
+            
             dataset.save()
 
             content = dataset.content

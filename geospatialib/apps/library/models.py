@@ -40,6 +40,9 @@ class Dataset(models.Model):
     name = models.CharField('Layer', max_length=255)
     extra_data = models.JSONField('Data', blank=True, null=True)
 
+    default_style = models.CharField('Default style name', max_length=255, blank=True, null=True)
+    default_legend = models.ForeignKey("library.URL", verbose_name='Default style url', on_delete=models.SET_NULL, blank=True, null=True)
+
     class Meta:
         unique_together = ['url', 'format', 'name']
 

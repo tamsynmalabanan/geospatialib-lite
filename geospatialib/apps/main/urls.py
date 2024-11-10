@@ -7,5 +7,5 @@ app_name = 'main'
 urlpatterns = [
     path('logout/', LogoutView.as_view(), name='logout'),
     
-    # path('init/', init, name='init'),
+    path('init/', init, name='init'),
 ]
