@@ -140,7 +140,7 @@ const createFormCheck = (id, options={}) => {
     formCheck.appendChild(checkbox)
 
     const label = document.createElement('label')
-    label.className = `ms-2 ${options.labelClass}`
+    label.className = `ms-2 text-wrap w-75 ${options.labelClass}`
     label.setAttribute('for', id)
     formCheck.appendChild(label)
     if (options.button) {
