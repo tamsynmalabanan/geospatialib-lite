@@ -314,6 +314,7 @@ const fetchOSMDataFromNominatim = async (event) => {
 const fetchData = (event, layer) => {
     const handler = {
         wms: fetchWMSData,
+        wfs: fetchWFSData,
     }[layer.data.layerFormat]
     
     if (handler) {
@@ -407,4 +408,61 @@ const fetchWMSData = async (event, layer) => {
     .catch(error => {
         return
     })
+}
+
+const fetchWFSData = async (event, layer) => {
+    const cleanURL = removeQueryParams(layer.data.layerUrl)
+    const params = {
+        service: 'wfs',
+        version: '2.0.0',
+        request: 'GetFeature',
+        typeNames: layer.data.layerName,
+        srsname: 'EPSG:4326',
+        outputFormat: 'json',
+    }
+
+    if (event.type === 'add') {
+        const map = event.target._map
+        if (map) {
+            const mapBbox = getMapBbox(map, {swFirst:true})
+            params.bbox = mapBbox
+        }
+    } else if (event.type === 'click') {
+        const xy = event.latlng
+        params.bbox = [xy.lat, xy.lng, xy.lat, xy.lng]
+    } else {
+        params.count = 1
+    }
+
+    const url = pushQueryParamsToURLString(cleanURL, params)
+    const data = await fetchDataWithTimeout(url).then(response => {
+        if (response.ok || response.status === 200) {
+            return response
+        } else {
+            throw new Error('Response not ok')
+        }
+    }).then(response => {
+        const contentType = response.headers.get('Content-Type')
+        if (contentType.includes('json')) {
+            return response.json()
+        } else {
+            throw new Error('Unsupported format')
+        }
+    }).then(data => {
+        if (data && !data.licence) {
+            data.licence = `Data © <a href='${cleanURL}' target='_blank'>${getDomain(cleanURL)}</a>`
+        }
+
+        return data
+    }).catch(error => {
+        return
+    })
+
+    if (data && data.features) {
+        layer.fire('fetch_ok')
+    } else {
+        layer.fire('fetch_error')
+    }
+
+    return data
 }

@@ -463,7 +463,7 @@ const handleMapQuery = (map) => {
         
         const defaultLayer = L.geoJSON(defaultGeoJSON).getLayers()[0]
         defaultLayer.title = `Query location`//: ${Number(event.latlng.lat.toFixed(6))} ${Number(event.latlng.lng.toFixed(6))}`
-        assignDefaultLayerStyle(defaultLayer, {color:'hsl(111, 100%, 54%)'})
+        assignDefaultLayerStyle(defaultLayer, {color:'hsl(111, 100%, 50%)'})
         const [coordsToggle, coordsCollapse] = createLayerToggles(defaultLayer, queryResults, map, 'query')
         coordsToggle.classList.add('mb-3')
         coordsToggle.querySelector('input').click()
@@ -473,7 +473,11 @@ const handleMapQuery = (map) => {
     
             const handler = (geojson, title) => {
                 defautGeom = defaultGeoJSON.geometry
-                handleGeoJSON(geojson, defautGeom)
+                handleGeoJSON(geojson, {
+                    defautGeom:defautGeom,
+                    sort:true,
+                    featureId:true,
+                })
                 const geoJSONLayer = L.geoJSON(geojson)
 
                 geoJSONLayer.title = title
@@ -481,7 +485,7 @@ const handleMapQuery = (map) => {
                     layer.title = getLayerTitle(layer)
                     layer.bindTooltip(layer.title, {sticky:true})
                     assignDefaultLayerStyle(layer, {
-                        color:'hsl(111, 100%, 54%)',
+                        color:'hsl(111, 100%, 50%)',
                         fillColor:true,
                     })
                 })

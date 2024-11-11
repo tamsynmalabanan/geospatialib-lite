@@ -406,6 +406,49 @@ const createWMSLayer = (data) => {
     return L.tileLayer.wms(baseUrl, options)
 }
 
+const createWFSLayer = (data) => {
+    const layer = L.geoJSON({
+        type: "FeatureCollection",
+        features: []
+    })
+
+    layer.data = data
+    layer.color = `hsl(${Math.floor(Math.random() * 361)}, 100%, 50%)`
+    
+    layer.on('add', (event) => {
+        const map = event.target._map
+        const fetchData = () => {
+            fetchWFSData(event, layer)
+            .then(geojson => {
+                if (geojson) {
+                    const mapScale = getMeterScale(map)
+                    const featureCount = geojson.features.length
+                    if (mapScale > 10000 && featureCount > 100) {
+                        geojson.features = geojson.features.slice(0, 100)
+                    }
+
+                    geojson = handleGeoJSON(geojson)
+                    
+                    layer.clearLayers()
+                    layer.addData(geojson)
+                    layer.eachLayer(feature => {
+                        assignDefaultLayerStyle(feature, {color:layer.color})
+                    })
+                }
+            })
+        }
+
+        fetchData()
+
+        map.on('moveend', fetchData)
+        layer.on('remove', () => {
+            map.off('moveend', fetchData)
+        })
+    })
+
+    return layer
+}
+
 const createXYZTilesLayer = (data) => {
     return L.tileLayer(data.layerUrl)
 }
@@ -413,6 +456,7 @@ const createXYZTilesLayer = (data) => {
 const getCreateLayerHandler = (format) => {
     return {
         wms:createWMSLayer,
+        wfs:createWFSLayer,
         xyz:createXYZTilesLayer,
     }[format]
 }
@@ -445,6 +489,7 @@ const createLayerFromURL = (data) => {
 const getLayerLoadEvents = (format) => {
     return {
         wms: {load: 'tileload', error: 'tileerror'},
+        wfs: {load: 'fetch_ok', error: 'fetch_error'},
         xyz: {load: 'tileload', error: 'tileerror'},
     }[format]
 }

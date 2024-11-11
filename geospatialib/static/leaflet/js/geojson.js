@@ -1,7 +1,15 @@
-const handleGeoJSON = (geojson, defaultGeom) => {
-    handleFeatureId(geojson)
-    handleGeoJSONGeometry(geojson, defaultGeom)
-    sortGeoJSONFeatures(geojson)
+const handleGeoJSON = (geojson, options={}) => {
+    handleGeoJSONGeometry(geojson, {
+      defaultGeom:options.defaultGeom
+    })
+
+    if (options.featureId) {
+      handleFeatureId(geojson)
+    }
+    
+    if (options.sort) {
+      sortGeoJSONFeatures(geojson)
+    }
 
     return geojson
 }
@@ -14,12 +22,12 @@ const handleFeatureId = (geojson) => {
     })
 }
 
-const handleGeoJSONGeometry = (geojson, defaultGeom) => {
+const handleGeoJSONGeometry = (geojson, options={}) => {
     let geom_assigned = false
-    if (defaultGeom) {
+    if (options.defaultGeom) {
       geojson.features.forEach(feature => {
           if (!feature.geometry) {
-              feature.geometry = defaultGeom
+              feature.geometry = options.defaultGeom
               if (!geom_assigned) {geom_assigned = true}
           }
       })
