@@ -429,7 +429,7 @@ const fetchWFSData = async (event, layer) => {
         }
     } else if (event.type === 'click') {
         const xy = event.latlng
-        params.bbox = [xy.lat, xy.lng, xy.lat, xy.lng]
+        params.bbox = [xy.lat-0.0005, xy.lng-0.0005, xy.lat+0.0005, xy.lng+0.0005]
     } else {
         params.count = 1
     }

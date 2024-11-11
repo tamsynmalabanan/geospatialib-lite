@@ -506,7 +506,7 @@ const handleMapQuery = (map) => {
             }
     
             for (let i = 0; i <= data.length-1; i++) {
-                if (data[i]) {
+                if (data[i] && data[i].features && data[i].features.length > 0) {
                     handler(data[i], Object.keys(fetchers)[i])
                 }
             }
