@@ -80,6 +80,16 @@ const getThemedControls = (parent=document) => {
                 dark: ['bg-dark'],
             }
         },
+        {
+            elements: Array().concat(
+                Array.from(parent.querySelectorAll(`.table-light`)),
+                Array.from(parent.querySelectorAll(`.table-dark`))
+            ),
+            classes: {
+                light: ['table-light'],
+                dark: ['table-dark'],
+            }
+        },
     ]
 }
 
@@ -129,6 +139,11 @@ document.addEventListener('DOMContentLoaded', () => {
 })
 
 document.addEventListener('htmx:afterSwap', (event) => {
-    const target = event.target
+    let target = event.target
+    
+    if (target.parentElement) {
+        target = target.parentElement
+    }
+    
     toggleControlsTheme(getPreferredTheme(), parent=target)
 })

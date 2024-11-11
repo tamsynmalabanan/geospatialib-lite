@@ -2,7 +2,7 @@
 
 {% for content in page_obj.object_list %}
     <li 
-        class="list-group-item d-flex border-0 p-0 pb-3 w-100 user-select-none gap-3"
+        class="list-group-item d-flex border-0 p-0 pb-3 w-100 gap-3"
         {% if forloop.last and page_obj.has_next  %}
             hx-get="{% url 'hx_library:search' %}{% querystring page=page_obj.number|add:1 %}"
             hx-trigger="intersect once"
@@ -22,45 +22,40 @@
                 data-layer-url="{{content.dataset__url__url}}"
                 data-layer-format="{{content.dataset__format}}"
                 data-layer-name="{{content.dataset__name}}"
-                data-layer-style="{{content.dataset__default_style}}"
                 {% if content.dataset__default_legend__url %}
+                    data-layer-style="{{content.dataset__default_style}}"
                     data-layer-legend="{{content.dataset__default_legend__url}}"
                 {% endif %}
             {% endif %}
         >
-        <div class='d-flex flex-column flex-grow-1 w-75'>
-            <label class="form-check-label fw-semibold d-flex justify-content-between gap-2">
-                <span class='me-5'>{{content.label}}</span>
-                <div class="dropdown ms-auto">
+        <div class='d-flex flex-column flex-grow-1'>
+            <label class="form-check-label d-flex justify-content-between gap-5">
+                <h6>
+                    {% var 'badge font-monospace fs-10 fw-normal align-middle' as badge_class %}
+                    {% if content.type == 'map' %}
+                        <span class="{{badge_class}} bg-info">{{content.type}}</span>
+                    {% else %}
+                        {% var content.dataset__format as format %}
+                        {% if content.dataset__format == 'wms' %}
+                            <span class="{{badge_class}} bg-success">{{format}}</span>
+                        {% elif content.dataset__format == 'xyz' %}
+                            <span class="{{badge_class}} bg-danger">{{format}}</span>
+                        {% else %}
+                            <span class="{{badge_class}} bg-warning">{{format}}</span>
+                        {% endif %}
+                    {% endif %}
+                    <span class="align-middle mx-1 text-capitalize lh-base fw-normal">
+                        {{content.label}}
+                    </span>
+                    <a class="text-decoration-none text-muted bi bi-box-arrow-up-right fs-10 align-middle" href="{{content.dataset__url__url}}" target="_blank" rel="noopener noreferrer" title="Go to {{content.dataset__url__url}}"></a>
+                </h6>
+                <div class="dropdown">
                     <button class="p-0 border-0 bg-transparent" tabindex="-1" type="button" data-bs-toggle="dropdown" aria-expanded="false" onclick="populateLayerDropdownMenu(this, {mapSelector:'#geospatialibMap', bboxCoords:'{{content.bbox.extent}}', layerGroup:'library'})">
                         <i class="bi bi-three-dots"></i>
                     </button>
                     <ul class="dropdown-menu fs-12"></ul>
-                </div>       
-                <button class="bg-transparent border-0 p-0 d-flex align-content-start" type="button" data-bs-toggle="collapse" data-bs-target="#searchResult_{{content.pk}}" aria-expanded="false" aria-controls="searchResult_{{content.pk}}">
-                    <span class='dropdown-toggle'></span>
-                </button>                 
-            </label>
-            <div class="collapse" id="searchResult_{{content.pk}}">
-                <div class="d-flex flex-column gap-1 w-100">
-                    {% comment %} <div class='fw-lighter mt-1 small text-wrap w-100 text-justify'>
-                        {% if content.headline %}
-                            {{content.headline|safe}}
-                        {% endif %}
-                    </div> {% endcomment %}
-                    <div>
-                        <a class='badge rounded-pill bg-primary-subtle text-reset text-decoration-none font-monospace fw-normal' href="{{content.dataset__url__url}}" target="_blank" rel="noopener noreferrer">
-                            {{content.dataset__url__url|domain}}
-                        </a>
-                        <span class='badge rounded-pill bg-primary-subtle text-reset text-decoration-none font-monospace fw-normal'>
-                            {{content.dataset__format}}
-                        </span>
-                        <span class='badge rounded-pill bg-primary-subtle text-reset text-decoration-none font-monospace fw-normal'>
-                            {{content.dataset__name}}
-                        </span>
-                    </div>
                 </div>
-            </div>
+            </label>
         </div>
     </li>
     {% if forloop.last and page_obj.has_next %}
