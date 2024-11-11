@@ -26,6 +26,7 @@
                             {% for field, queryset in filters.items %}
                                 {% for i in queryset %}
                                     {% var i|get:field as label %}
+                                    {% var i.count as icount %}
                                     {% if label %}
                                         {% var 'btn btn-sm rounded-pill font-monospace fs-12' as button_class %}
                                         {% if request.GET|get:field == label %}
@@ -34,15 +35,15 @@
                                                 name="{{field}}"
                                                 value=""
                                                 class="{{button_class}} btn-primary"
-                                            >{{label|upper}} ({{i.count}})</button>
+                                            >{{label|upper}} ({{icount}})</button>
                                         {% else %}
-                                            {% if i.count != count %}
+                                            {% if icount != count %}
                                                 <button
                                                     type='submit'
                                                     name="{{field}}"
                                                     value="{{label}}"
                                                     class="{{button_class}} btn-outline-primary"
-                                                >{{label|upper}} ({{i.count}})</button>
+                                                >{{label|upper}} ({{icount}})</button>
                                             {% endif %}
                                         {% endif %}
                                     {% endif %}
