@@ -446,7 +446,11 @@ const fetchWFSData = async (event, layer) => {
     }).then(response => {
         const contentType = response.headers.get('Content-Type')
         if (contentType.includes('json')) {
-            return response.json()
+            try {
+                return parseChunkedResponseToJSON(response)
+            } catch {
+                throw new Error('Failed to parse JSON.')
+            }
         } else {
             throw new Error('Unsupported format')
         }
@@ -454,9 +458,9 @@ const fetchWFSData = async (event, layer) => {
         if (data && !data.licence) {
             data.licence = `Data © <a href='${cleanURL}' target='_blank'>${getDomain(cleanURL)}</a>`
         }
-
         return data
     }).catch(error => {
+        console.log(error)
         return
     })
 

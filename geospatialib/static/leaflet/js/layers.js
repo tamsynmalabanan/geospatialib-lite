@@ -1,3 +1,5 @@
+L.Icon.Default.prototype.options = {}
+
 const populateLayerDropdownMenu = (toggle, options={}) => {
     const dropdown = toggle.nextElementSibling
     if (dropdown && dropdown.innerHTML.trim() === '') {
@@ -407,54 +409,80 @@ const createWMSLayer = (data) => {
 }
 
 const createWFSLayer = (data) => {
-    const layer = L.geoJSON({
-        type: "FeatureCollection",
-        features: []
-    })
-
+    const layer = L.geoJSON({type: "FeatureCollection", features: []})
     layer.data = data
     layer.data.layerLegendObj = '{}'
     
     const color = `hsla(${Math.floor(Math.random() * 361)}, 100%, 50%, 1)`
-    
     layer.on('add', (event) => {
         const map = event.target._map
 
         const fetchData = () => {
             fetchWFSData(event, layer)
             .then(geojson => {
+                let prefix
+                let suffix
+
                 if (geojson) {
                     const mapScale = getMeterScale(map)
                     const featureCount = geojson.features.length
-
-                    if (mapScale > 10000 && featureCount > 1000) {
-                        geojson.features = [L.rectangle(L.geoJSON(geojson).getBounds()).toGeoJSON()]
+    
+                    if (mapScale > 10000) {
+                        if (featureCount > 1000) {
+                            geojson.features = [turf.bboxPolygon(turf.bbox(geojson))]
+                            prefix = 'Bounding'
+                            suffix = '(features in map)'
+                        } else {
+                            geojson = turf.simplify(geojson, { tolerance: 0.01 })
+                            prefix = 'Simplified'
+                        }
+                    }    
+                } else {
+                    if (layer.data && layer.data.layerBbox) {
+                        geojson = {
+                            type: 'FeatureCollection',
+                            features: [turf.bboxPolygon(layer.data.layerBbox.slice(1, -1).split(','))]
+                        }
+        
+                        prefix = 'Bounding'
+                        suffix = '(all features)'
                     }
+                }
 
+                if (geojson) {
                     geojson = handleGeoJSON(geojson)
                     
                     layer.clearLayers()
                     layer.addData(geojson)
 
-                    const legend = {}
+                    let newLegend = {}
+                    const currentLegend = JSON.parse(layer.data.layerLegendObj)
                     layer.eachLayer(feature => {
                         const type = feature.feature.geometry.type.replace('Multi', '')
-                        if (Object.keys(legend).includes(type)) {
-                            const style = legend[type].style
+                        const label = Array(prefix, type, suffix).filter(part => part).join(' ')
+                        if (Object.keys(currentLegend).includes(label)) {
+                            const style = currentLegend[label]
                             if (type === 'Point') {
-                                feature.setIcon(style)
+                                feature.setIcon(L.divIcon(style.style.options))
                             } else {
-                                feature.setStyle(style)
+                                feature.setStyle(style.style)
+                            }
+
+                            if (!Object.keys(newLegend).includes(label)) {
+                                newLegend[label] = style
                             }
                         } else {
-                            legend[type] = {
+                            const style = {
                                 type: type,
                                 style: assignDefaultLayerStyle(feature, {color:color})
                             }
+
+                            currentLegend[label] = style
+                            newLegend[label] = style
                         }
                     })
-
-                    layer.data.layerLegendObj = JSON.stringify(legend)
+    
+                    layer.data.layerLegendObj = JSON.stringify(newLegend)
                     layer.fire('styled')
                 }
             })
@@ -463,11 +491,11 @@ const createWFSLayer = (data) => {
         let fetchWFSDataTimeout
         const fetchDataOnTimeout = () => {
             clearTimeout(fetchWFSDataTimeout)
-            fetchWFSDataTimeout = setTimeout(fetchData, 1000)
+            fetchWFSDataTimeout = setTimeout(fetchData, 2000)
         }
 
-        fetchData()
-        map.on('moveend', fetchDataOnTimeout)
+        fetchDataOnTimeout()
+        map.on('moveend zoomend', fetchDataOnTimeout)
         layer.on('remove', () => {
             map.off('moveend', fetchDataOnTimeout)
         })
@@ -549,47 +577,62 @@ const isPointLayer = (layer) => {
     return layer._latlng || isMultiPointLayer(layer)
 }
 
-const assignDefaultLayerStyle = (layer, options={}) => {
-    let style
-
+const getDefaultLayerStyle = (type, options={}) => {
     let color = options.color
     if (!color) {
         color = 'hsla(0, 100%, 50%, 1)'
     }
 
-    if (isPointLayer(layer)) {
-        let strokeColor = 'grey'
-        if (color.startsWith('hsla')) {
-            [h,s,l,a] = color.split(',').map(str => parseNumberFromString(str))
-            l = l / 2
-            strokeColor = `hsla(${h}, ${s}%, ${l}%, ${a})`
+    let strokeWidth = options.strokeWidth
+    let weight = options.weight
+
+    if (!strokeWidth) {
+        if (weight) {
+            strokeWidth = weight
+        } else {
+            strokeWidth = 1
+        }
+    }
+
+    if (!weight) {
+        weight = strokeWidth
+    }
+
+    if (type.toLowerCase() === 'point') {
+        let strokeColor = options.strokeColor
+        if (!strokeColor) {
+            if (color.startsWith('hsla')) {
+                [h,s,l,a] = color.split(',').map(str => parseNumberFromString(str))
+                l = l / 2
+                strokeColor = `hsla(${h}, ${s}%, ${l}%, ${a})`
+            } else {
+                strokeColor = 'grey'
+            }
         }
 
         const div = document.createElement('div')
         div.className = 'h-100 w-100 rounded-circle'
         div.style.backgroundColor = color
-        div.style.border = `1px solid ${strokeColor}`
+        div.style.border = `${strokeWidth}px solid ${strokeColor}`
 
-        style = L.divIcon({
+        return L.divIcon({
             className: 'bg-transparent',
             html: div.outerHTML,
         });
-
-        if (isMultiPointLayer(layer)) {
-            layer.eachLayer(i => i.setIcon(style))
-        } else {
-            layer.setIcon(style)
-        }
     } else {
+        let opacity = options.opacity
+        if (!opacity) {
+            opacity = 1
+        }
+
         const properties = {
             color: color,
-            opacity: 1,
-            fillOpacity: 0,
-            weight:1,
+            weight: weight,
+            opacity: opacity
         }
 
-        if (options.fillColor) {
-            let fillColor = options.fillColor
+        let fillColor = options.fillColor
+        if (fillColor) {
             if (typeof fillColor === 'boolean') {
                 if (color.startsWith('hsla')) {
                     [h,s,l,a] = color.split(',').map(str => parseNumberFromString(str))
@@ -600,11 +643,33 @@ const assignDefaultLayerStyle = (layer, options={}) => {
                 }
             }
 
+            let fillOpacity = options.fillOpacity
+            if (!fillOpacity) {
+                fillOpacity = 0.25
+            }
+                
+            properties.fillOpacity = fillOpacity
             properties.fillColor = fillColor
-            properties.fillOpacity = 0.25
+        } else {
+            properties.fillOpacity = 0
         }
 
-        style = properties
+        return properties
+    }
+}
+
+const assignDefaultLayerStyle = (layer, options={}) => {
+    let style
+
+    if (isPointLayer(layer)) {
+        style = getDefaultLayerStyle('point', options)
+        if (isMultiPointLayer(layer)) {
+            layer.eachLayer(i => i.setIcon(style))
+        } else {
+            layer.setIcon(style)
+        }
+    } else {
+        style = getDefaultLayerStyle('other', options)
         layer.setStyle(style)
     }
 
