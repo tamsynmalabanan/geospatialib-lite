@@ -95,7 +95,18 @@ const handleMapLayerGroups = (map) => {
 
     for (let group in layerGroups) {
         const layerGroup = layerGroups[group]
-        layerGroup.show = () => map.addLayer(layerGroup)
+        layerGroup.show = () => {
+            if (group === 'query') {
+                const queryPane = map.createPane('queryPane')
+                queryPane.style.zIndex = 625
+                map.addLayer(layerGroup, {
+                    pane:'queryPane'
+                })
+            } else {
+                map.addLayer(layerGroup)
+            }
+
+        }
         layerGroup.hide = () => map.removeLayer(layerGroup)
         layerGroup.show()
     }
@@ -208,9 +219,11 @@ const handleMapLegend = (map) => {
 
     map.on('layeradd', (event) => {
         const layer = event.layer
-        if (layer.data && layer.data.layerLegend) {
+        if (layer.data) {
+            const containerId = `${mapId}Legend_${layer._leaflet_id}`
+
             const legendContainer = createButtonAndCollapse(
-                `${mapId}Legend_${layer._leaflet_id}`, {
+                containerId, {
                     label: layer.data.layerLabel
                 }
             )
@@ -218,7 +231,84 @@ const handleMapLegend = (map) => {
             body.insertBefore(legendContainer, body.firstChild)
 
             const legendCollapse = legendContainer.querySelector('.collapse')
-            legendCollapse.appendChild(createImgElement(layer.data.layerLegend, 'Legend not found.'))
+            
+            if (layer.data.layerLegendUrl) {
+                legendCollapse.appendChild(createImgElement(layer.data.layerLegendUrl, 'Legend not found.'))
+            }
+            
+            if (layer.data.layerLegendObj) {
+                layer.on('styled', () => {
+                    legendCollapse.innerHTML = ''
+                    
+                    const styles = JSON.parse(layer.data.layerLegendObj)
+                    Object.keys(styles).forEach(name => {
+                        const container = document.createElement('div')
+                        container.className = 'd-flex gap-2'
+                        legendCollapse.appendChild(container)
+
+                        const icon = document.createElement('div')
+                        icon.className = 'align-self-center'
+                        icon.style.height = '10px'
+                        container.appendChild(icon)
+
+                        const label = document.createElement('div')
+                        label.innerText = name
+                        container.appendChild(label)
+
+                        const style = styles[name]
+                        const styleDef = style.style
+
+                        if (style.type === 'Point') {
+                            icon.style.width = '10px'
+                            icon.innerHTML = styleDef.options.html
+                        } else {
+                            icon.style.width = '15px'
+                            
+                            let color = styleDef.color
+                            if (!color) {
+                                color = 'hsla(0, 100%, 50%, 1)'
+                            }
+
+                            const [h,s,l,a] = color.split(',').map(str => parseNumberFromString(str))
+                            
+                            let opacity = styleDef.opacity
+                            if (!opacity) {
+                                opacity = 1
+                            }
+                            
+                            let weight = styleDef.weight
+                            if (!weight) {
+                                weight = 1
+                            }
+                            
+                            const box = document.createElement('div')
+                            icon.appendChild(box)
+                            box.style.border = `${weight}px solid hsla(${h}, ${s}%, ${l}%, ${opacity})`
+
+                            if (style.type === 'LineString') {
+                                icon.style.height = '0px'
+                                box.className = 'h-0 w-100'
+                            }
+                            
+                            if (style.type === 'Polygon') {
+                                box.className = 'h-100 w-100'
+
+                                const fillColor = styleDef.fillColor
+                                const fillOpacity = styleDef.fillOpacity
+                                
+                                if (fillColor && fillOpacity) {
+                                    const [fillh,fills,filll,filla] = fillColor.split(',').map(str => parseNumberFromString(str))
+                                    box.style.backgroundColor = `hsla(${fillh}, ${fills}%, ${filll}%, ${fillOpacity})`
+                                }
+
+                            }
+                        }
+
+                    })
+
+                    
+                })
+            }
 
             const legendToggle = legendContainer.querySelector('button')
             legendToggle.classList.add('bg-transparent', 'border-0', 'px-0', 'fs-6', 'text-start')
@@ -462,8 +552,9 @@ const handleMapQuery = (map) => {
         body.appendChild(queryResults)
         
         const defaultLayer = L.geoJSON(defaultGeoJSON).getLayers()[0]
-        defaultLayer.title = `Query location`//: ${Number(event.latlng.lat.toFixed(6))} ${Number(event.latlng.lng.toFixed(6))}`
-        assignDefaultLayerStyle(defaultLayer, {color:'hsl(111, 100%, 50%)'})
+        defaultLayer.options.pane = 'queryPane'
+        defaultLayer.title = `Query location`
+        assignDefaultLayerStyle(defaultLayer, {color:'hsla(111, 100%, 50%, 1)'})
         const [coordsToggle, coordsCollapse] = createLayerToggles(defaultLayer, queryResults, map, 'query')
         coordsToggle.classList.add('mb-3')
         coordsToggle.querySelector('input').click()
@@ -478,14 +569,15 @@ const handleMapQuery = (map) => {
                     sort:true,
                     featureId:true,
                 })
+                
                 const geoJSONLayer = L.geoJSON(geojson)
-
                 geoJSONLayer.title = title
                 geoJSONLayer.eachLayer(layer => {
+                    layer.options.pane = 'queryPane'
                     layer.title = getLayerTitle(layer)
                     layer.bindTooltip(layer.title, {sticky:true})
                     assignDefaultLayerStyle(layer, {
-                        color:'hsl(111, 100%, 50%)',
+                        color:'hsla(111, 100%, 50%, 1)',
                         fillColor:true,
                     })
                 })

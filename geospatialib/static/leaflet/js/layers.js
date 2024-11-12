@@ -413,36 +413,63 @@ const createWFSLayer = (data) => {
     })
 
     layer.data = data
-    layer.color = `hsl(${Math.floor(Math.random() * 361)}, 100%, 50%)`
+    layer.data.layerLegendObj = '{}'
+    
+    const color = `hsla(${Math.floor(Math.random() * 361)}, 100%, 50%, 1)`
     
     layer.on('add', (event) => {
         const map = event.target._map
+
         const fetchData = () => {
             fetchWFSData(event, layer)
             .then(geojson => {
                 if (geojson) {
                     const mapScale = getMeterScale(map)
                     const featureCount = geojson.features.length
-                    if (mapScale > 10000 && featureCount > 100) {
-                        geojson.features = geojson.features.slice(0, 100)
+
+                    if (mapScale > 10000 && featureCount > 1000) {
+                        geojson.features = [L.rectangle(L.geoJSON(geojson).getBounds()).toGeoJSON()]
                     }
 
                     geojson = handleGeoJSON(geojson)
                     
                     layer.clearLayers()
                     layer.addData(geojson)
+
+                    const legend = {}
                     layer.eachLayer(feature => {
-                        assignDefaultLayerStyle(feature, {color:layer.color})
+                        const type = feature.feature.geometry.type.replace('Multi', '')
+                        if (Object.keys(legend).includes(type)) {
+                            const style = legend[type].style
+                            if (type === 'Point') {
+                                feature.setIcon(style)
+                            } else {
+                                feature.setStyle(style)
+                            }
+                        } else {
+                            legend[type] = {
+                                type: type,
+                                style: assignDefaultLayerStyle(feature, {color:color})
+                            }
+                        }
                     })
+
+                    layer.data.layerLegendObj = JSON.stringify(legend)
+                    layer.fire('styled')
                 }
             })
         }
 
-        fetchData()
+        let fetchWFSDataTimeout
+        const fetchDataOnTimeout = () => {
+            clearTimeout(fetchWFSDataTimeout)
+            fetchWFSDataTimeout = setTimeout(fetchData, 1000)
+        }
 
-        map.on('moveend', fetchData)
+        fetchData()
+        map.on('moveend', fetchDataOnTimeout)
         layer.on('remove', () => {
-            map.off('moveend', fetchData)
+            map.off('moveend', fetchDataOnTimeout)
         })
     })
 
@@ -489,7 +516,7 @@ const createLayerFromURL = (data) => {
 const getLayerLoadEvents = (format) => {
     return {
         wms: {load: 'tileload', error: 'tileerror'},
-        wfs: {load: 'fetch_ok', error: 'fetch_error'},
+        wfs: {load: 'fetched', error: 'error'},
         xyz: {load: 'tileload', error: 'tileerror'},
     }[format]
 }
@@ -512,42 +539,46 @@ const assignLayerLoadEventHandlers = (layer, onload=null, onerror=null) => {
     if (onerror) {
         layer.addEventListener(e.error, onerror)
     }
-};
+}
+
+const isMultiPointLayer = (layer) => {
+    return layer.feature && layer.feature.geometry.type === 'MultiPoint'
+}
+
+const isPointLayer = (layer) => {
+    return layer._latlng || isMultiPointLayer(layer)
+}
 
 const assignDefaultLayerStyle = (layer, options={}) => {
+    let style
+
     let color = options.color
     if (!color) {
-        color = 'hsl(0, 100%, 50%)'
+        color = 'hsla(0, 100%, 50%, 1)'
     }
 
-    let is_multipoint = layer.feature && layer.feature.geometry.type === 'MultiPoint'
-
-    if (layer._latlng || is_multipoint) {
-        const handler = (layer) => {
-            let strokeColor = 'grey'
-            if (color.startsWith('hsl')) {
-                [h,s,l] = color.split(',').map(str => parseNumberFromString(str))
-                l = l / 2
-                strokeColor = `hsl(${h}, ${s}%, ${l}%)`
-            }
-    
-            const div = document.createElement('div')
-            div.className = 'h-100 w-100 rounded-circle'
-            div.style.backgroundColor = color
-            div.style.border = '1px solid strokeColor'
-    
-            var style = L.divIcon({
-                className: 'bg-transparent',
-                html: div.outerHTML,
-            });
-            
-            layer.setIcon(style)
+    if (isPointLayer(layer)) {
+        let strokeColor = 'grey'
+        if (color.startsWith('hsla')) {
+            [h,s,l,a] = color.split(',').map(str => parseNumberFromString(str))
+            l = l / 2
+            strokeColor = `hsla(${h}, ${s}%, ${l}%, ${a})`
         }
 
-        if (is_multipoint) {
-            layer.eachLayer(i => handler(i))
+        const div = document.createElement('div')
+        div.className = 'h-100 w-100 rounded-circle'
+        div.style.backgroundColor = color
+        div.style.border = `1px solid ${strokeColor}`
+
+        style = L.divIcon({
+            className: 'bg-transparent',
+            html: div.outerHTML,
+        });
+
+        if (isMultiPointLayer(layer)) {
+            layer.eachLayer(i => i.setIcon(style))
         } else {
-            handler(layer)
+            layer.setIcon(style)
         }
     } else {
         const properties = {
@@ -558,18 +589,24 @@ const assignDefaultLayerStyle = (layer, options={}) => {
         }
 
         if (options.fillColor) {
-            let fillColor = 'white'
-            if (color.startsWith('hsl')) {
-                [h,s,l] = color.split(',').map(str => parseNumberFromString(str))
-                l = (l / 2 * 3)
-                fillColor = `hsl(${h}, ${s}%, ${l > 100 ? 100 : l}%)`
+            let fillColor = options.fillColor
+            if (typeof fillColor === 'boolean') {
+                if (color.startsWith('hsla')) {
+                    [h,s,l,a] = color.split(',').map(str => parseNumberFromString(str))
+                    l = (l / 2 * 3)
+                    fillColor = `hsla(${h}, ${s}%, ${l > 100 ? 100 : l}%, ${a})`
+                } else {
+                    fillColor = white
+                }
             }
 
             properties.fillColor = fillColor
             properties.fillOpacity = 0.25
         }
 
-        const style = properties
+        style = properties
         layer.setStyle(style)
     }
+
+    return style
 }

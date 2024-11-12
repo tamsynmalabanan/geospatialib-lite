@@ -122,7 +122,10 @@ const fetchDataWithTimeout = async (url, options={}) => {
     const params = Object.assign({}, options)
     params.signal = controller.signal
     
-    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+    const abortController = () => controller.abort()
+
+    const timeoutId = setTimeout(abortController, timeoutMs);
     
     try {
         const response = await fetch(url, params)

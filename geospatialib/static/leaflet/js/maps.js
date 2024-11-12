@@ -42,24 +42,16 @@ const getMeterScale = (map) => {
     return scale_value
 }
 
-const getMapBbox = (map, options={}) => {
+const getMapBbox = (map) => {
     const bounds = loopThroughCoordinates(
         map.getBounds(), 
         validateCoordinates
     )
-    if (options.swFirst) {
-        return [
-            bounds.getSouth(),
-            bounds.getWest(),
-            bounds.getNorth(),
-            bounds.getEast(),
-        ]
-    } else {
-        return [
-            bounds.getNorth(),
-            bounds.getEast(),
-            bounds.getSouth(),
-            bounds.getWest(),
-        ]
-    }
+    
+    return [
+        bounds.getNorth(),
+        bounds.getEast(),
+        bounds.getSouth(),
+        bounds.getWest(),
+    ]
 }

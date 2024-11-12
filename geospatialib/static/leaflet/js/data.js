@@ -421,21 +421,23 @@ const fetchWFSData = async (event, layer) => {
         outputFormat: 'json',
     }
 
+    let map
     if (event.type === 'add') {
-        const map = event.target._map
+        map = event.target._map
         if (map) {
-            const mapBbox = getMapBbox(map, {swFirst:true})
-            params.bbox = mapBbox
+            const [n,e,s,w] = getMapBbox(map)
+            params.bbox = [s,w,n,e]
         }
-    } else if (event.type === 'click') {
+    }
+
+    if (event.type === 'click') {
+        map = event.target
         const xy = event.latlng
         params.bbox = [xy.lat-0.0005, xy.lng-0.0005, xy.lat+0.0005, xy.lng+0.0005]
-    } else {
-        params.count = 1
     }
 
     const url = pushQueryParamsToURLString(cleanURL, params)
-    const data = await fetchDataWithTimeout(url).then(response => {
+    const data = await fetchDataWithTimeout(url, {timeoutMs:30000}).then(response => {
         if (response.ok || response.status === 200) {
             return response
         } else {
@@ -459,9 +461,9 @@ const fetchWFSData = async (event, layer) => {
     })
 
     if (data && data.features) {
-        layer.fire('fetch_ok')
+        layer.fire('fetched')
     } else {
-        layer.fire('fetch_error')
+        layer.fire('error')
     }
 
     return data
