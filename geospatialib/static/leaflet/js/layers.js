@@ -418,9 +418,15 @@ const createWFSLayer = (data) => {
         },
         onEachFeature: (feature, layer) => {
             if (Object.keys(feature.properties).length > 0) {
-                layer.bindPopup(createFeaturePropertiesTable(feature.properties).outerHTML)
+                layer.bindPopup(createFeaturePropertiesTable(feature.properties).outerHTML, {
+                    autoPan: false,
+                })
+
                 layer.on('popupopen', (event) => {
-                    event.popup._container.querySelector('.leaflet-popup-content-wrapper').classList.add(`text-bg-${getPreferredTheme()}`)
+                    const map = layer._map
+                    const wrapper = event.popup._container.querySelector('.leaflet-popup-content-wrapper')
+                    wrapper.classList.add(`text-bg-${getPreferredTheme()}`, 'overflow-auto')
+                    wrapper.style.maxHeight = `${map.getSize().y * 0.5}px`
                     event.popup._container.querySelector('.leaflet-popup-tip').classList.add(`bg-${getPreferredTheme()}`)
                 })
             }

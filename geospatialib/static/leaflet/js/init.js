@@ -337,6 +337,12 @@ const handleMapQuery = (map) => {
     const header = body.parentElement.querySelector('h6')
     header.querySelector('button').remove()
 
+    const footer = document.createElement('div')
+    footer.className = 'border-top p-3 d-flex flex-wrap font-monospace'
+    body.parentElement.appendChild(footer)
+
+    
+    
     const queryDropdown = document.createElement('div')
     queryDropdown.className = 'dropdown ms-auto'
     header.appendChild(queryDropdown)
@@ -402,9 +408,7 @@ const handleMapQuery = (map) => {
         }
     }).querySelector('button')
 
-    const footer = document.createElement('div')
-    footer.className = 'border-top p-3 d-flex flex-wrap font-monospace'
-    body.parentElement.appendChild(footer)
+
 
     const disableMapQuery = () => {
         map._queryEnabled = false
