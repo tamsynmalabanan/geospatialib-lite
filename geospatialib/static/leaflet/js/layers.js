@@ -473,10 +473,9 @@ const createWFSLayer = (data) => {
 
                 if (geojson) {
                     geojson = handleGeoJSON(geojson)
-                    
+
                     geojsonLayer.clearLayers()
                     geojsonLayer.addData(geojson)
-
                     
                     let legend = {}
                     geojsonLayer.eachLayer(feature => {
