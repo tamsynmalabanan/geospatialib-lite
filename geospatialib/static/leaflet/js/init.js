@@ -412,7 +412,7 @@ const handleMapQuery = (map) => {
 
     const disableMapQuery = () => {
         map._queryEnabled = false
-        enablePopups(map)
+        enableLayerClick(map)
         mapContainer.style.cursor = ''
         cancelQueryBtn.setAttribute('disabled', true)
     }
@@ -470,7 +470,7 @@ const handleMapQuery = (map) => {
             L.DomEvent.preventDefault(e);
             
             map._queryEnabled = true
-            disablePopups(map)
+            disableLayerClick(map)
             mapContainer.style.cursor = 'pointer'
             map._queryOSM = btn.getAttribute('data-query-osm') === "true"
 
@@ -481,7 +481,10 @@ const handleMapQuery = (map) => {
     queryOSMBtn.addEventListener('click', async (event) => {
         if (getMeterScale(map) <= 10000) {
             const defaultGeoJSON = L.rectangle(map.getBounds()).toGeoJSON()
-            const queryResults = await fetchQueryData(defaultGeoJSON, {'OpenStreetMap':fetchOSMDataInBbox(getMapBbox(map))})
+            const queryResults = await fetchQueryData(defaultGeoJSON, {'OpenStreetMap':{
+                label: 'OpenStreetMap',
+                data: fetchOSMDataInBbox(getMapBbox(map))
+            }})
             if (queryResults.children.length === 1) {
                 createSpanElement({
                     label: 'There are too many features within the query area. Zoom in to a smaller extent and try again.',
@@ -517,12 +520,19 @@ const handleMapQuery = (map) => {
         const libraryLayers = map.getLayerGroups().library.getLayers()
         if (libraryLayers.length > 0) {
             libraryLayers.forEach(layer => {
-                fetchers[layer.data.layerLabel] = fetchData(event, layer)
+                const data = layer.data
+                fetchers[`${data.layerUrl}:${data.layerFormat}:${data.layerName}`] = {
+                    label: data.layerLabel,
+                    data: fetchData(event, layer),
+                }
             })
         }
 
         if (map._queryOSM) {
-            fetchers['OpenStreetMap'] = fetchOSMData(event)
+            fetchers['OpenStreetMap'] = {
+                label: 'OpenStreetMap',
+                data: fetchOSMData(event),
+            }
         }
 
         return fetchers
@@ -557,17 +567,16 @@ const handleMapQuery = (map) => {
         setAsThemedControl(toolbar)
         body.appendChild(queryResults)
         
+        const color = 'hsla(111, 100%, 50%, 1)'
         const defaultLayer = L.geoJSON(defaultGeoJSON).getLayers()[0]
         defaultLayer.options.pane = 'queryPane'
         defaultLayer.title = `Query location`
-        assignDefaultLayerStyle(defaultLayer, {color:'hsla(111, 100%, 50%, 1)'})
+        assignDefaultLayerStyle(defaultLayer, {color:color})
         const [coordsToggle, coordsCollapse] = createLayerToggles(defaultLayer, queryResults, map, 'query')
         coordsToggle.classList.add('mb-3')
         coordsToggle.querySelector('input').click()
 
         if (Object.keys(fetchers).length > 0) {
-            const data = await Promise.all(Object.values(fetchers)) 
-    
             const handler = (geojson, title) => {
                 defautGeom = defaultGeoJSON.geometry
                 handleGeoJSON(geojson, {
@@ -576,18 +585,21 @@ const handleMapQuery = (map) => {
                     featureId:true,
                 })
                 
-                const geoJSONLayer = L.geoJSON(geojson)
-                geoJSONLayer.title = title
-                geoJSONLayer.eachLayer(layer => {
-                    layer.options.pane = 'queryPane'
-                    layer.title = getLayerTitle(layer)
-                    layer.bindTooltip(layer.title, {sticky:true})
-                    assignDefaultLayerStyle(layer, {
-                        color:'hsla(111, 100%, 50%, 1)',
-                        fillColor:true,
-                    })
+                const geoJSONLayer = L.geoJSON(geojson, {
+                    pointToLayer: (geoJsonPoint, latlng) => {
+                        return L.marker(latlng, {icon:getDefaultLayerStyle('point', {color:color})})
+                    },
+                    style: (geoJsonFeature) => {
+                        return getDefaultLayerStyle('other', {color:color, fillColor:true})
+                    },        
+                    onEachFeature: (feature, layer) => {
+                        layer.options.pane = 'queryPane'
+                        layer.title = getLayerTitle(layer)
+                        layer.bindTooltip(layer.title, {sticky:true})    
+                    }    
                 })
 
+                geoJSONLayer.title = title
                 createLayerToggles(geoJSONLayer, queryResults, map, 'query', geojson)
 
                 const layerFooter = document.createElement('div')
@@ -602,10 +614,12 @@ const handleMapQuery = (map) => {
                     layerFooter.appendChild(span)
                 }
             }
-    
+
+            const data = await Promise.all(Object.values(fetchers).map(value => value.data)) 
             for (let i = 0; i <= data.length-1; i++) {
                 if (data[i] && data[i].features && data[i].features.length > 0) {
-                    handler(data[i], Object.keys(fetchers)[i])
+                    const label = Object.values(fetchers).map(value => value.label)[i]
+                    handler(data[i], label)
                 }
             }
         } else {

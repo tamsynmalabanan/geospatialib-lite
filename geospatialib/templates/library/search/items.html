@@ -22,8 +22,10 @@
                 data-layer-url="{{content.dataset__url__url}}"
                 data-layer-format="{{content.dataset__format}}"
                 data-layer-name="{{content.dataset__name}}"
-                {% if content.dataset__default_legend__url %}
+                {% if content.dataset__default_style %}
                     data-layer-style="{{content.dataset__default_style}}"
+                {% endif %}
+                {% if content.dataset__default_legend__url %}
                     data-layer-legend-url="{{content.dataset__default_legend__url}}"
                 {% endif %}
             {% endif %}

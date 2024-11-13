@@ -10,7 +10,7 @@ const getOSMGeoJSON = (features) => {
     }
 }
 
-const fetchProj4Def = async (crs_int, crs_text) => {
+const fetchProj4Def = async (crs_int) => {
     return fetchDataWithTimeout(`https://spatialreference.org/ref/epsg/${crs_int}/proj4.txt`)
     .then(response => {
         if (response.ok || response.status === 200) {
@@ -20,6 +20,7 @@ const fetchProj4Def = async (crs_int, crs_text) => {
         }
     })
     .then(def => {
+        const crs_text = `EPSG:${crs}`
         proj4.defs(crs_text, def)
         return proj4.defs(crs_text)
     })

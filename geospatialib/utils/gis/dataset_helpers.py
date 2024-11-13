@@ -175,12 +175,13 @@ class WMSHandler(DatasetHandler):
             styles = extra_data.get('layer', {}).get('styles', {})
             if styles:
                 name = list(styles.keys())[0]
-                dataset.default_style_name = name
+                dataset.default_style = name
                 
                 url = styles[name].get('legend')
-                url_instance, created = models.URL.objects.get_or_create(url=url)
-                if url_instance:
-                    dataset.default_style_url = url_instance
+                if url:
+                    url_instance, created = models.URL.objects.get_or_create(url=url)
+                    if url_instance:
+                        dataset.default_legend = url_instance
             
             dataset.save()
 

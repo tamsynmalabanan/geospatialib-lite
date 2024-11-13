@@ -56,18 +56,22 @@ const getMapBbox = (map) => {
     ]
 }
 
-const disablePopups = (map) => {
-    map.eachLayer(function(layer) {
-        if (layer.off) {
+const disableLayerClick = (map) => {
+    map.eachLayer(layer => {
+        const clickFns = layer._events.click
+        if (layer.off && clickFns) {
+            layer.disabledClickFns = clickFns
             layer.off('click')
         }
     });
 }
 
-const enablePopups = (map) => {
-    map.eachLayer(function(layer) {
-        if (layer.on) {
-            layer.on('click', layer.openPopup)
+const enableLayerClick = (map) => {
+    map.eachLayer(layer => {
+        const clickFns = layer.disabledClickFns
+        if (layer.on && clickFns) {
+            layer._events.click = clickFns
+            delete layer.disabledClickFns
         }
     });
 }
