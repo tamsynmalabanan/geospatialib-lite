@@ -237,7 +237,7 @@ const handleMapLegend = (map) => {
             }
             
             if (layer.data.layerLegendObj) {
-                layer.on('styled', () => {
+                layer.on('legend_updated', () => {
                     legendCollapse.innerHTML = ''
                     
                     const styles = JSON.parse(layer.data.layerLegendObj)
@@ -408,6 +408,7 @@ const handleMapQuery = (map) => {
 
     const disableMapQuery = () => {
         map._queryEnabled = false
+        enablePopups(map)
         mapContainer.style.cursor = ''
         cancelQueryBtn.setAttribute('disabled', true)
     }
@@ -465,6 +466,7 @@ const handleMapQuery = (map) => {
             L.DomEvent.preventDefault(e);
             
             map._queryEnabled = true
+            disablePopups(map)
             mapContainer.style.cursor = 'pointer'
             map._queryOSM = btn.getAttribute('data-query-osm') === "true"
 

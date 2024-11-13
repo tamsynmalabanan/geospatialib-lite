@@ -55,3 +55,19 @@ const getMapBbox = (map) => {
         bounds.getWest(),
     ]
 }
+
+const disablePopups = (map) => {
+    map.eachLayer(function(layer) {
+        if (layer.off) {
+            layer.off('click')
+        }
+    });
+}
+
+const enablePopups = (map) => {
+    map.eachLayer(function(layer) {
+        if (layer.on) {
+            layer.on('click', layer.openPopup)
+        }
+    });
+}

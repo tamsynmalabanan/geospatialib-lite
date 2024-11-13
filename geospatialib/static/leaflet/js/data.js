@@ -204,7 +204,14 @@ const overpassOSMDataToGeoJSON = (data, options={}) => {
                         geojson_mls.geometry.coordinates.push(lineGeom)
                     })
 
+                    // try {
+                    //     const polygonized = turf.polygonize(geojson_mls)
+                    // } catch {
+                    
+                    // }
+
                     features.push(geojson_mls)
+
                 }
 
                 if (polygons.length !== 0) {

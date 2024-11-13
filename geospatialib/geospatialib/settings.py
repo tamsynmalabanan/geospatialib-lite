@@ -104,15 +104,26 @@ INSTALLED_APPS = [
 ]
 
 LEAFLET_CONFIG = {
-    'TILES': [],
+    # 'SPATIAL_EXTENT': (5.0, 44.0, 7.5, 46),
+    
     'DEFAULT_CENTER': (45, 0),
     'DEFAULT_ZOOM': 2,
     'MIN_ZOOM': 1,
-    'MAX_ZOOM': 20,
+    'MAX_ZOOM': 18,
     'DEFAULT_PRECISION': 6,
-    'RESET_VIEW': True,
-    'NO_GLOBALS': False,
+    
+    'TILES': [],
+    # 'OVERLAYS': [('Cadastral', 'http://server/a/{z}/{x}/{y}.png', {'attribution': '&copy; IGN'})],
+    # 'ATTRIBUTION_PREFIX': 'Powered by django-leaflet',
+    
+
     'SCALE': None,
+    # 'MINIMAP': True,
+    'RESET_VIEW': True,
+
+    'NO_GLOBALS': False,
+    'FORCE_IMAGE_PATH': False,
+
     'PLUGINS': {
         'geocoder': {
             'css': [
@@ -249,7 +260,9 @@ LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
 # for debug toolbar
-INTERNAL_IPS = ['127.0.0.1']
+INTERNAL_IPS = [
+    '127.0.0.1'
+]
 
 
 # for captcha
