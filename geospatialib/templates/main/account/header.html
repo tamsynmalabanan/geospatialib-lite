@@ -13,5 +13,15 @@
                 })
             }
         </script>
+    {% else %}
+        <script>
+            if (document.readyState === 'complete') {
+                {% if user.has_no_password %}
+                    document.querySelector('button[data-bs-target="#passwordAccountAccordion"]').click()
+                {% else %}
+                    document.querySelector('button[data-bs-target="#profileAccountAccordion"]').click()
+                {% endif %}
+            }
+        </script>
     {% endif %}
 </div>
