@@ -424,10 +424,12 @@ const createWFSLayer = (data) => {
 
                 layer.on('popupopen', (event) => {
                     const map = layer._map
-                    const wrapper = event.popup._container.querySelector('.leaflet-popup-content-wrapper')
-                    wrapper.classList.add(`text-bg-${getPreferredTheme()}`, 'overflow-auto')
-                    wrapper.style.maxHeight = `${map.getSize().y * 0.5}px`
-                    event.popup._container.querySelector('.leaflet-popup-tip').classList.add(`bg-${getPreferredTheme()}`)
+                    if (map) {
+                        const wrapper = event.popup._container.querySelector('.leaflet-popup-content-wrapper')
+                        wrapper.classList.add(`text-bg-${getPreferredTheme()}`, 'overflow-auto')
+                        wrapper.style.maxHeight = `${map.getSize().y * 0.5}px`
+                        event.popup._container.querySelector('.leaflet-popup-tip').classList.add(`bg-${getPreferredTheme()}`)
+                    }
                 })
             }
         }
@@ -435,6 +437,16 @@ const createWFSLayer = (data) => {
 
     geojsonLayer.data = data
     geojsonLayer.data.layerLegendObj = '{}'
+
+    geojsonLayer._openPopups = []
+    geojsonLayer.on('popupopen', (event) => {
+        geojsonLayer._openPopups.push(event.popup)
+    })
+
+    geojsonLayer.on('popupclose', (event) => {
+        console.log(event)
+        geojsonLayer._openPopups = geojsonLayer._openPopups.filter(popup => popup !== event.popup)
+    })
     
     geojsonLayer.on('add', (event) => {
         const map = event.target._map
@@ -483,6 +495,11 @@ const createWFSLayer = (data) => {
 
                 geojsonLayer.clearLayers()
                 geojsonLayer.addData(geojson)
+
+                if (geojsonLayer._openPopups.length > 0) {
+                    geojsonLayer._openPopups.forEach(popup => popup.openOn(map))
+                    geojsonLayer._openPopups = []
+                }
 
                 let legend = {}
                 geojsonLayer.eachLayer(feature => {
