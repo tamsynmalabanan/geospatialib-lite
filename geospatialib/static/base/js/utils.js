@@ -121,7 +121,6 @@ const fetchDataWithTimeout = async (url, options={}) => {
     
     const params = Object.assign({}, options)
     params.signal = controller.signal
-    
 
     const abortController = () => controller.abort()
 
@@ -143,7 +142,6 @@ const fetchDataWithTimeout = async (url, options={}) => {
                 }
             })
         } else {
-            console.log(error.name, error.message)
             throw error
         }
     }
@@ -195,17 +193,38 @@ const formatNumberWithCommas = (number) => {
     return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-const parseChunkedResponseToJSON = async (response) => {
+const parseChunkedResponseToJSON = async (response, timeout=5000) => {
+    const controller = new AbortController();
+    const signal = controller.signal;
+  
     const reader = response.body.getReader();
     const decoder = new TextDecoder('utf-8');
     let result = '';
   
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      result += decoder.decode(value, { stream: true });
-    }
+    const timeoutPromise = new Promise((resolve, reject) => {
+        setTimeout(() => {
+            reject(new Error('Timeout'));
+            controller.abort();
+        }, timeout);
+    });
   
-    const json = JSON.parse(result);
-    return json
-}
+    try {
+        while (true) {
+            const { done, value } = await Promise.race([reader.read(), timeoutPromise]);
+            if (done) break;
+            result += decoder.decode(value, { stream: true });
+        }
+    
+        const json = JSON.parse(result);
+        return json;
+    } catch (error) {
+        if (error.name === 'AbortError') {
+            return
+        } else {
+            throw error
+        }
+    } finally {
+        controller.abort()
+        reader.releaseLock()
+    }
+};

@@ -10,8 +10,10 @@ const getOSMGeoJSON = (features) => {
     }
 }
 
-const fetchProj4Def = async (crs_int) => {
-    return fetchDataWithTimeout(`https://spatialreference.org/ref/epsg/${crs_int}/proj4.txt`)
+const fetchProj4Def = async (crs) => {
+    const url = `https://spatialreference.org/ref/epsg/${crs}/ogcwkt`
+    // const url = `https://spatialreference.org/ref/epsg/${crs}/proj4.txt`
+    return fetchDataWithTimeout(url)
     .then(response => {
         if (response.ok || response.status === 200) {
             return response.text()
@@ -78,7 +80,11 @@ const fetchOSMDataInBbox = async (bbox) => {
         `)
     }).then(response => {
         if (response.ok || response.status === 200) {
-            return response.json()
+            try {
+                return parseChunkedResponseToJSON(response)
+            } catch {
+                throw new Error('Failed to parse JSON.')
+            }
         } else {
             throw new Error('Response not ok')
         }
@@ -111,7 +117,11 @@ const fetchOSMDataAroundLatLng = async (latlng, options={}) => {
             `)
         }).then(response => {
             if (response.ok || response.status === 200) {
-                return response.json()
+                try {
+                    return parseChunkedResponseToJSON(response)
+                } catch {
+                    throw new Error('Failed to parse JSON.')
+                }    
             } else {
                 throw new Error('Response not ok')
             }
@@ -300,7 +310,11 @@ const fetchOSMDataFromNominatim = async (event) => {
         }
     )).then(response => {
         if (response.ok || response.status === 200) {
-            return response.json()
+            try {
+                return parseChunkedResponseToJSON(response)
+            } catch {
+                throw new Error('Failed to parse JSON.')
+            }
         } else {
             throw new Error('Response not ok')
         }
@@ -367,21 +381,16 @@ const fetchWMSData = async (event, layer) => {
     .then(response => {
         const contentType = response.headers.get('Content-Type')
         if (contentType.includes('json')) {
-            return response.json()
-            .then(data => {
-                if (data && data.features && data.features.length > 0) {
-                    if (!data.licence) {
-                        data.licence = `Data © <a href='${cleanURL}' target='_blank'>${getDomain(cleanURL)}</a>`
-                    }
-                    return data
-                } else {
-                    throw new Error('No features returned.')
-                }
-            })        
+            try {
+                return parseChunkedResponseToJSON(response)
+            } catch {
+                throw new Error('Failed to parse JSON.')
+            }
         } else if (contentType.includes('xml')) {
             return response.text()
             .then(xmlString => {
                 const features = []
+
                 const [namespace, rootElement] = parseXML(xmlString)
                 if (namespace) {
                     if (namespace === 'http://www.esri.com/wms') {
@@ -404,7 +413,6 @@ const fetchWMSData = async (event, layer) => {
                 if (features.length > 0) {
                     return {
                         type: "FeatureCollection",
-                        licence: `Data © <a href='${cleanURL}' target='_blank'>${getDomain(cleanURL)}</a>`,
                         features: features
                     }
                 } else {
@@ -413,6 +421,16 @@ const fetchWMSData = async (event, layer) => {
             })
         }
     })
+    .then(data => {
+        if (data && data.features && data.features.length > 0) {
+            if (!data.licence) {
+                data.licence = `Data © <a href='${cleanURL}' target='_blank'>${getDomain(cleanURL)}</a>`
+            }
+            return data
+        } else {
+            throw new Error('No features returned.')
+        }
+    })        
     .catch(error => {
         return
     })
@@ -452,7 +470,7 @@ const fetchWFSData = async (event, layer) => {
     }
 
     const url = pushQueryParamsToURLString(cleanURL, params)
-    const data = await fetchDataWithTimeout(url, {timeoutMs:30000}).then(response => {
+    const data = await fetchDataWithTimeout(url).then(response => {
         if (response.ok || response.status === 200) {
             return response
         } else {
@@ -475,7 +493,6 @@ const fetchWFSData = async (event, layer) => {
         }
         return data
     }).catch(error => {
-        console.log(error)
         return
     })
 

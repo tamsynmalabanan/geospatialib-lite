@@ -33,9 +33,16 @@ const validateCoordinates = (coords, precision=6) => {
 }
 
 const transformCoordinatesToEPSG4326 = (coordinates, crs_text) => {
-    loopThroughCoordinates(coordinates, (coords) => {
-        const projectedCoord = proj4(crs_text, 'EPSG:4326', [coords[0], coords[1]]);
-        coords[0] = projectedCoord[0]
-        coords[1] = projectedCoord[1]
-    })
+    if (proj4.defs(crs_text)) {
+        loopThroughCoordinates(coordinates, (coords) => {
+            const projectedCoord = proj4(crs_text, 'EPSG:4326', [coords[0], coords[1]]);
+            coords[0] = projectedCoord[0]
+            coords[1] = projectedCoord[1]
+        })
+
+    } else {
+        console.log('CRS definition is not on Proj4: ', crs_text)
+    }
+
+    return coordinates
 }

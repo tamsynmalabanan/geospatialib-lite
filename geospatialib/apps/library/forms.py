@@ -13,7 +13,7 @@ class SearchForm(forms.Form):
         required=True,
         widget=forms.TextInput(attrs={
             'type':'search',
-            'class':'h-100 border-0 rounded-0 focus-underline-primary box-shadow-none',
+            'class':'h-100 border-0 rounded-0 focus-underline-primary box-shadow-none ps-0',
             'title':'Use "AND" and "OR" operators to refine your search.'
         })
     )

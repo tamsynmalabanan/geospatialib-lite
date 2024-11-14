@@ -469,7 +469,8 @@ const createWFSLayer = (data) => {
                     if (geojsonLayer.data && geojsonLayer.data.layerBbox) {
                         geojson = {
                             type: 'FeatureCollection',
-                            features: [turf.bboxPolygon(geojsonLayer.data.layerBbox.slice(1, -1).split(','))]
+                            features: [turf.bboxPolygon(geojsonLayer.data.layerBbox.slice(1, -1).split(','))],
+                            tooltip: 'Zoom in to load individual features.'
                         }
         
                         prefix = 'Bounding'
@@ -482,9 +483,13 @@ const createWFSLayer = (data) => {
 
                     geojsonLayer.clearLayers()
                     geojsonLayer.addData(geojson)
-                    
+
                     let legend = {}
                     geojsonLayer.eachLayer(feature => {
+                        if (geojson.tooltip) {
+                            feature.bindTooltip(geojson.tooltip, {sticky:true})
+                        } 
+
                         const type = feature.feature.geometry.type.replace('Multi', '')
                         
                         let label

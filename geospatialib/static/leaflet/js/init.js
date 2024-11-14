@@ -578,10 +578,10 @@ const handleMapQuery = (map) => {
         coordsToggle.querySelector('input').click()
 
         if (Object.keys(fetchers).length > 0) {
-            const handler = (geojson, title) => {
-                defautGeom = defaultGeoJSON.geometry
-                handleGeoJSON(geojson, {
-                    defautGeom:defautGeom,
+            const handler = async (geojson, title) => {
+                defaultGeom = defaultGeoJSON.geometry
+                geojson = await handleGeoJSON(geojson, {
+                    defaultGeom:defaultGeom,
                     sort:true,
                     featureId:true,
                 })

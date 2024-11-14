@@ -9,7 +9,7 @@ const handleFeatureGeom = (feature, defaultGeom) => {
     return geomAssigned
 }
 
-const getGeoJSONCRS = (geojson) => {
+const getGeoJSONCRS = async (geojson) => {
     let crs
     
     if (geojson.crs) {
@@ -19,22 +19,22 @@ const getGeoJSONCRS = (geojson) => {
             
             const crs_text = `EPSG:${crs}`
             if (!proj4.defs(crs_text)) {
-                fetchProj4Def(crs)
-            }      
+                await fetchProj4Def(crs)
+            }    
         }
     }
-    
+
     return crs
 }
 
 const handleFeatureCRS = (feature, crs) => {
-  if (crs && crs !== 4326) {
-      const crs_text = `EPSG:${crs}`
-      if (proj4.defs(crs_text)) {
-          const coords = feature.geometry.coordinates
-          transformCoordinatesToEPSG4326(coords, crs_text)
-      }
-  }
+    if (crs && crs !== 4326) {
+        const crs_text = `EPSG:${crs}`
+        if (proj4.defs(crs_text)) {
+            const coords = feature.geometry.coordinates
+            feature.geometry.coordinates = transformCoordinatesToEPSG4326(coords, crs_text)
+        }
+    }
 }
 
 const handleFeatureId = (feature) => {
@@ -78,8 +78,8 @@ const sortGeoJSONFeatures = (geojson) => {
     });
 }
 
-const handleGeoJSON = (geojson, options={}) => {
-    const crs = getGeoJSONCRS(geojson)
+const handleGeoJSON = async (geojson, options={}) => {
+    const crs = await getGeoJSONCRS(geojson)
 
     geojson.features.forEach(feature => {
         const geomAssigned = handleFeatureGeom(feature, options.defaultGeom)
