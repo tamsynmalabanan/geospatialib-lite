@@ -95,8 +95,6 @@ const handleGeoJSON = async (geojson, options={}) => {
     if (options.sort) {
         sortGeoJSONFeatures(geojson)
     }
-
-    return geojson
 }
 
 const downloadGeoJSON = (geojson, file_name) => {

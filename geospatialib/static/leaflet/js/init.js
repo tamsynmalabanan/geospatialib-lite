@@ -580,7 +580,7 @@ const handleMapQuery = (map) => {
         if (Object.keys(fetchers).length > 0) {
             const handler = async (geojson, title) => {
                 defaultGeom = defaultGeoJSON.geometry
-                geojson = await handleGeoJSON(geojson, {
+                await handleGeoJSON(geojson, {
                     defaultGeom:defaultGeom,
                     sort:true,
                     featureId:true,
