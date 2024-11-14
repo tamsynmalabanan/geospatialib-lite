@@ -122,7 +122,7 @@ LEAFLET_CONFIG = {
     'RESET_VIEW': True,
 
     'NO_GLOBALS': False,
-    'FORCE_IMAGE_PATH': False,
+    'FORCE_IMAGE_PATH': True,
 
     'PLUGINS': {
         'geocoder': {
@@ -263,7 +263,6 @@ LOGOUT_REDIRECT_URL = '/'
 INTERNAL_IPS = [
     '127.0.0.1'
 ]
-
 
 # for captcha
 RECAPTCHA_PUBLIC_KEY = '6LcNimkqAAAAAKstLLJ6qiuIpuHMiwusF7oh9ylF'

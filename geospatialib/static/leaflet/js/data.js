@@ -440,8 +440,15 @@ const fetchWFSData = async (event, layer) => {
 
     if (event.type === 'click') {
         map = event.target
+
+        let buffer = 0.0005
+        const mapScale = getMeterScale(map)
+        if (mapScale) {
+            buffer = mapScale/2/100000
+        }
+
         const xy = event.latlng
-        params.bbox = [xy.lat-0.0005, xy.lng-0.0005, xy.lat+0.0005, xy.lng+0.0005]
+        params.bbox = [xy.lat-buffer, xy.lng-buffer, xy.lat+buffer, xy.lng+buffer]
     }
 
     const url = pushQueryParamsToURLString(cleanURL, params)

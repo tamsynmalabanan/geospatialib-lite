@@ -2,7 +2,7 @@
 
 {% for content in page_obj.object_list %}
     <li 
-        class="list-group-item d-flex border-0 p-0 pb-3 w-100 gap-3"
+        class="list-group-item d-flex border-0 col-xxl-3 col-xl-5 col-12 p-0 gap-3 flex-grow-1"
         {% if forloop.last and page_obj.has_next  %}
             hx-get="{% url 'hx_library:search' %}{% querystring page=page_obj.number|add:1 %}"
             hx-trigger="intersect once"
@@ -11,57 +11,65 @@
             hx-indicator=".htmx-indicator-{{page_obj.number}}"
         {% endif %}
     >   
-        <input 
-            class="form-check-input" 
-            tabindex="-1"
-            type="checkbox" 
-            {% if content.type == 'dataset' %}
-                onclick="toggleLayer(event, {mapSelector:'#geospatialibMap'})"
-                data-layer-bbox="{{content.bbox.extent}}"
-                data-layer-label="{{content.label}}"
-                data-layer-url="{{content.dataset__url__url}}"
-                data-layer-format="{{content.dataset__format}}"
-                data-layer-name="{{content.dataset__name}}"
-                {% if content.dataset__default_style %}
-                    data-layer-style="{{content.dataset__default_style}}"
-                {% endif %}
-                {% if content.dataset__default_legend__url %}
-                    data-layer-legend-url="{{content.dataset__default_legend__url}}"
-                {% endif %}
-            {% endif %}
-        >
-        <div class='d-flex flex-column flex-grow-1'>
-            <label class="form-check-label d-flex justify-content-between gap-5">
-                <h6>
-                    {% var 'badge font-monospace fs-10 fw-normal align-middle' as badge_class %}
+        <div class="card w-100">
+            <div class="card-body w-100 d-flex flex-column">
+                <div>
+                    {% var 'badge font-monospace fs-10 align-top user-select-none' as badge_class %}
                     {% if content.type == 'map' %}
-                        <span class="{{badge_class}} bg-info">{{content.type}}</span>
+                        <span class="{{badge_class}} bg-info" title="{{content.type}}">{{content.type}}</span>
                     {% else %}
                         {% var content.dataset__format as format %}
                         {% if content.dataset__format == 'wms' %}
-                            <span class="{{badge_class}} bg-success">{{format}}</span>
+                            <span class="{{badge_class}} bg-success" title="{{format}}">{{format}}</span>
                         {% elif content.dataset__format == 'xyz' %}
-                            <span class="{{badge_class}} bg-danger">{{format}}</span>
+                            <span class="{{badge_class}} bg-danger" title="{{format}}">{{format}}</span>
                         {% else %}
-                            <span class="{{badge_class}} bg-warning">{{format}}</span>
+                            <span class="{{badge_class}} bg-warning" title="{{format}}">{{format}}</span>
                         {% endif %}
                     {% endif %}
-                    <span class="align-middle mx-1 text-capitalize lh-base fw-normal">
-                        {{content.label}}
+                </div>
+                <h6 class="card-title">{{content.label}}</h6>
+                {% if content.dataset__format != 'xyz' %}
+                    <h6 class="card-subtitle mb-2 text-body-secondary fs-14">{{content.dataset__name}}</h6>
+                {% endif %}    
+                <a class="text-decoration-none text-muted fs-12 fw-normal text-truncate w-100 mt-auto" href="{{content.dataset__url__url}}" target="_blank" rel="noopener noreferrer" title="Go to {{content.dataset__url__url}}">
+                    <i class="bi bi-box-arrow-up-right small me-1"></i>
+                    <span>
+                        {{content.dataset__url__url|domain}}
                     </span>
-                    <a class="text-decoration-none text-muted bi bi-box-arrow-up-right fs-10 align-middle" href="{{content.dataset__url__url}}" target="_blank" rel="noopener noreferrer" title="Go to {{content.dataset__url__url}}"></a>
-                </h6>
+                </a>
+            </div>
+            <div class="card-footer d-flex justify-content-between">
+                <input 
+                    class="form-check-input" 
+                    tabindex="-1"
+                    type="checkbox" 
+                    {% if content.type == 'dataset' %}
+                        onclick="toggleLayer(event, {mapSelector:'#geospatialibMap'})"
+                        data-layer-bbox="{{content.bbox.extent}}"
+                        data-layer-label="{{content.label}}"
+                        data-layer-url="{{content.dataset__url__url}}"
+                        data-layer-format="{{content.dataset__format}}"
+                        data-layer-name="{{content.dataset__name}}"
+                        {% if content.dataset__default_style %}
+                            data-layer-style="{{content.dataset__default_style}}"
+                        {% endif %}
+                        {% if content.dataset__default_legend__url %}
+                            data-layer-legend-url="{{content.dataset__default_legend__url}}"
+                        {% endif %}
+                    {% endif %}
+                >
                 <div class="dropdown">
                     <button class="p-0 border-0 bg-transparent" tabindex="-1" type="button" data-bs-toggle="dropdown" aria-expanded="false" onclick="populateLayerDropdownMenu(this, {mapSelector:'#geospatialibMap', bboxCoords:'{{content.bbox.extent}}', layerGroup:'library'})">
                         <i class="bi bi-three-dots"></i>
                     </button>
                     <ul class="dropdown-menu fs-12"></ul>
                 </div>
-            </label>
+            </div>
         </div>
     </li>
     {% if forloop.last and page_obj.has_next %}
-        <li class="htmx-indicator htmx-indicator-{{page_obj.number}}">
+        <li class="htmx-indicator htmx-indicator-{{page_obj.number}} col-12">
             <div class='d-flex justify-content-center gap-3'>
                 {% for i in '123' %}
                     <div class="spinner-grow spinner-grow-sm text-primary my-3 " role="status"></div>

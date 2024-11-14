@@ -63,7 +63,7 @@ class SearchList(ListView):
         if query:
             queryset = super().get_queryset()        
             
-            search_query = SearchQuery(query, search_type="websearch")
+            search_query = SearchQuery(query, search_type="plain")
 
             search_vector = (
                 SearchVector('type')
@@ -71,6 +71,7 @@ class SearchList(ListView):
                 + SearchVector('abstract')
                 + SearchVector('tags__tag')
 
+                + SearchVector('dataset__url__url') 
                 + SearchVector('dataset__format') 
                 + SearchVector('dataset__name') 
             )

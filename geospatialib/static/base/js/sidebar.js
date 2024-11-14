@@ -75,8 +75,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         col = 4
                     }
     
-                    if (col > 10) {
-                        col = 10
+                    if (col > 9) {
+                        col = 9
                     }
     
                     offcanvas.classList.forEach(className => {

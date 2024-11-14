@@ -93,7 +93,7 @@ const createButtonAndCollapse = (id, options={}) => {
     container.classList.add('d-flex', 'flex-column', 'gap-2')
 
     const button = document.createElement('button')
-    button.classList.add('fw-medium', 'dropdown-toggle')
+    button.className = `fw-medium dropdown-toggle ${options.buttonClassName}` 
     button.setAttribute('type', 'button')
     button.setAttribute('data-bs-toggle', 'collapse')
     button.setAttribute('data-bs-target', `#${id}`)

@@ -224,7 +224,8 @@ const handleMapLegend = (map) => {
 
             const legendContainer = createButtonAndCollapse(
                 containerId, {
-                    label: layer.data.layerLabel
+                    label: layer.data.layerLabel,
+                    buttonClassName: 'text-wrap'
                 }
             )
             legendContainer.classList.add('mb-3', 'px-3')

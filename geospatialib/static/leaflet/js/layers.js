@@ -449,17 +449,23 @@ const createWFSLayer = (data) => {
                     const mapScale = getMeterScale(map)
                     const featureCount = geojson.features.length
     
-                    if (mapScale > 10000) {
+                    if ((mapScale && mapScale > 10000) || (!mapScale && map.getZoom() < 9)) {
                         if (featureCount > 1000) {
                             geojson.features = [turf.bboxPolygon(turf.bbox(geojson))]
                             prefix = 'Bounding'
-                            suffix = `(${formatNumberWithCommas(featureCount)} features)`
+                            suffix = `for ${formatNumberWithCommas(featureCount)} features`
                         } else {
-                            geojson = turf.simplify(geojson, { tolerance: 0.01 })
-                            prefix = 'Simplified'
+                            try {
+                                geojson = turf.simplify(geojson, { tolerance: 0.01 })
+                                prefix = 'Simplified'
+                            } catch {
+                            
+                            }
                         }
                     }    
-                } else {
+                }
+                
+                if (!geojson) {
                     if (geojsonLayer.data && geojsonLayer.data.layerBbox) {
                         geojson = {
                             type: 'FeatureCollection',
@@ -467,7 +473,7 @@ const createWFSLayer = (data) => {
                         }
         
                         prefix = 'Bounding'
-                        suffix = '(all features)'
+                        suffix = 'for all features'
                     }
                 }
 
@@ -512,10 +518,10 @@ const createWFSLayer = (data) => {
         let fetchWFSDataTimeout
         const fetchDataOnTimeout = () => {
             clearTimeout(fetchWFSDataTimeout)
-            fetchWFSDataTimeout = setTimeout(fetchData, 1000)
+            fetchWFSDataTimeout = setTimeout(fetchData, 2000)
         }
 
-        fetchData()
+        fetchDataOnTimeout()
         map.on('moveend zoomend', fetchDataOnTimeout)
         geojsonLayer.on('remove', () => {
             map.off('moveend', fetchDataOnTimeout)

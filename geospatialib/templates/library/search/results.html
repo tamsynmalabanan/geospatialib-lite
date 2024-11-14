@@ -7,8 +7,14 @@
 
 {% if page_obj.number %}
     {% if page_obj.number == 1 %}
-        <ul id='searchResults' class="list-group list-group-flush">
+        <ul 
+            id='searchResults' 
+            class="d-flex flex-wrap p-0 gap-3"
+        >
             {% include "library/search/items.html" %}
+            {% for i in '12' %}
+                <li class='list-group-item d-flex border-0 col-xxl-3 col-lg-5 col-12 p-0 gap-3 flex-grow-1'></li>
+            {% endfor %}
             <script>
                 if (document.readyState === 'complete') {
                     resetSearchResults()

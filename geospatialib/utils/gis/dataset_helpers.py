@@ -115,9 +115,10 @@ class WMSHandler(DatasetHandler):
         keywords = list(set(keywords))
 
         for kw in keywords:
-            tag_instance, created = models.Tag.objects.get_or_create(tag=kw.lower())
-            if tag_instance:
-                tag_instances.append(tag_instance)
+            if isinstance(kw, str):
+                tag_instance, created = models.Tag.objects.get_or_create(tag=kw.lower())
+                if tag_instance:
+                    tag_instances.append(tag_instance)
 
         return tag_instances
 
@@ -276,9 +277,10 @@ class WFSHandler(DatasetHandler):
         keywords = list(set(keywords))
 
         for kw in keywords:
-            tag_instance, created = models.Tag.objects.get_or_create(tag=kw.lower())
-            if tag_instance:
-                tag_instances.append(tag_instance)
+            if isinstance(kw, str):
+                tag_instance, created = models.Tag.objects.get_or_create(tag=kw.lower())
+                if tag_instance:
+                    tag_instances.append(tag_instance)
 
         return tag_instances
 
