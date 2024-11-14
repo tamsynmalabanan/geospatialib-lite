@@ -55,10 +55,10 @@ class Map(models.Model):
 class Content(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     
-    added_by = models.ForeignKey("main.User", verbose_name='Added by', editable=False, on_delete=models.DO_NOTHING, related_name='%(class)ss_added')
+    added_by = models.ForeignKey("main.User", verbose_name='Added by', editable=False, on_delete=models.SET_NULL, blank=True, null=True, related_name='%(class)ss_added')
     added_on = models.DateTimeField('Added on', auto_now_add=True)
     
-    updated_by = models.ForeignKey("main.User", verbose_name='Updated by', editable=False, on_delete=models.DO_NOTHING, blank=True, null=True, related_name='%(class)ss_updated')
+    updated_by = models.ForeignKey("main.User", verbose_name='Updated by', editable=False, on_delete=models.SET_NULL, blank=True, null=True, related_name='%(class)ss_updated')
     updated_on = models.DateTimeField('Updated on', auto_now=True)
 
     type = models.CharField('Type', choices=[('dataset','dataset'), ('map', 'map')], editable=False, max_length=8, default='dataset')
@@ -78,18 +78,6 @@ class Content(models.Model):
     @property
     def instance(self):
         return getattr(self, self.type)
-
-    # @property
-    # def geojson(self):
-    #     geom_json = json.loads(self.bbox.geojson)
-    #     feature = geojson.Feature(
-    #         geometry=geom_json,
-    #         properties={
-    #             'id':str(self.id),
-    #             'label':self.label,
-    #         },
-    #     )
-    #     return feature
 
     def assign_type(self):
         if not self.id and self.map:
