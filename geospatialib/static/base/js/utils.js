@@ -110,22 +110,26 @@ const getCookie = (name) => {
 }
 
 const fetchDataWithTimeout = async (url, options={}) => {
-    let timeoutMs = options.timeoutMs
-    if (!timeoutMs) {
-        timeoutMs = 10000
-    } else {
+    let timeoutMs
+    if (options.timeoutMs) {
+        timeoutMs = options.timeoutMs
         delete options.timeoutMs
+    } else {
+        timeoutMs = 10000
     }
 
     const controller = new AbortController()
     
     const params = Object.assign({}, options)
     params.signal = controller.signal
-
+    
     const abortController = () => controller.abort()
-
     const timeoutId = setTimeout(abortController, timeoutMs);
     
+    if (options.abortBtn) {
+        options.abortBtn.addEventListener('click', abortController)
+    }
+
     try {
         const response = await fetch(url, params)
         clearTimeout(timeoutId)
@@ -194,9 +198,6 @@ const formatNumberWithCommas = (number) => {
 }
 
 const parseChunkedResponseToJSON = async (response, timeout=5000) => {
-    const controller = new AbortController();
-    const signal = controller.signal;
-  
     const reader = response.body.getReader();
     const decoder = new TextDecoder('utf-8');
     let result = '';
@@ -204,7 +205,6 @@ const parseChunkedResponseToJSON = async (response, timeout=5000) => {
     const timeoutPromise = new Promise((resolve, reject) => {
         setTimeout(() => {
             reject(new Error('Timeout'));
-            controller.abort();
         }, timeout);
     });
   
@@ -224,7 +224,6 @@ const parseChunkedResponseToJSON = async (response, timeout=5000) => {
             throw error
         }
     } finally {
-        controller.abort()
         reader.releaseLock()
     }
 };

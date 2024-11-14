@@ -10,10 +10,10 @@ const getOSMGeoJSON = (features) => {
     }
 }
 
-const fetchProj4Def = async (crs) => {
+const fetchProj4Def = async (crs, options={}) => {
     const url = `https://spatialreference.org/ref/epsg/${crs}/ogcwkt`
     // const url = `https://spatialreference.org/ref/epsg/${crs}/proj4.txt`
-    return fetchDataWithTimeout(url)
+    return fetchDataWithTimeout(url, {abortBtn:options.abortBtn})
     .then(response => {
         if (response.ok || response.status === 200) {
             return response.text()
@@ -45,8 +45,9 @@ const fetchOSMData = async (event, options={}) => {
     return getOSMGeoJSON(features)
 }
 
-const fetchOSMDataInBbox = async (bbox) => {
+const fetchOSMDataInBbox = async (bbox, options={}) => {
     return fetchDataWithTimeout("http://overpass-api.de/api/interpreter", {
+        abortBtn:options.abortBtn,
         method: "POST",
         body: "data="+ encodeURIComponent(`
             [bbox:${bbox[0]},${bbox[1]},${bbox[2]},${bbox[3]}]
@@ -90,9 +91,11 @@ const fetchOSMDataInBbox = async (bbox) => {
         }
     })
     .then(data => {
-        const filteredElements = data.elements.filter(element => Object.keys(element).includes('tags'))
-        data.elements = filteredElements
-        return getOSMGeoJSON(overpassOSMDataToGeoJSON(data))
+        if (data) {
+            const filteredElements = data.elements.filter(element => Object.keys(element).includes('tags'))
+            data.elements = filteredElements
+            return getOSMGeoJSON(overpassOSMDataToGeoJSON(data))
+        }
     })
     .catch(error => {
         console.error(error)
@@ -102,9 +105,10 @@ const fetchOSMDataInBbox = async (bbox) => {
 
 const fetchOSMDataAroundLatLng = async (latlng, options={}) => {
 
-    const fetchData = async (buffer=10, minimum=1) => {
+    const fetchData = async (buffer=10, minimum=1, options={}) => {
         const params = `around:${buffer},${latlng.lat},${latlng.lng}`
         return fetchDataWithTimeout("http://overpass-api.de/api/interpreter", {
+            abortBtn:options.abortBtn,
             method: "POST",
             body: "data="+ encodeURIComponent(`
                 [out:json][timeout:180];
@@ -132,7 +136,7 @@ const fetchOSMDataAroundLatLng = async (latlng, options={}) => {
                     data.elements = newElements
                     return data
                 } else {
-                    return fetchData(buffer*2, minimum*1.25)                    
+                    return fetchData(buffer*2, minimum*1.25, {abortBtn:options.abortBtn})                    
                 }
             } else {
                 throw new Error('No elements returned.')
@@ -142,7 +146,7 @@ const fetchOSMDataAroundLatLng = async (latlng, options={}) => {
         })
     }
 
-    const data = await fetchData()
+    const data = await fetchData(10, 1, {abortBtn:options.abortBtn})
     return {
         type: "FeatureCollection",
         features:overpassOSMDataToGeoJSON(data, {maximum:options.maximum})
@@ -287,7 +291,7 @@ const overpassOSMDataToGeoJSON = (data, options={}) => {
     return features
 }
 
-const fetchOSMDataFromNominatim = async (event) => {
+const fetchOSMDataFromNominatim = async (event, options={}) => {
     const getZoom = () => {
         const map = event.target
         
@@ -307,8 +311,7 @@ const fetchOSMDataFromNominatim = async (event) => {
             format: 'geojson',
             polygon_geojson: 1,
             polygon_threshold: 0,
-        }
-    )).then(response => {
+    }), {abortBtn:options.abortBtn}).then(response => {
         if (response.ok || response.status === 200) {
             try {
                 return parseChunkedResponseToJSON(response)
@@ -344,7 +347,7 @@ const fetchData = (event, layer) => {
     }
 }
 
-const fetchWMSData = async (event, layer) => {
+const fetchWMSData = async (event, layer, options={}) => {
     const map = event.target
     const cleanURL = removeQueryParams(layer.data.layerUrl)
     const params = {
@@ -371,7 +374,7 @@ const fetchWMSData = async (event, layer) => {
     }
 
     const url = pushQueryParamsToURLString(cleanURL, params)
-    return fetchDataWithTimeout(url).then(response => {
+    return fetchDataWithTimeout(url, {abortBtn:options.abortBtn,}).then(response => {
         if (response.ok || response.status === 200) {
             return response
         } else {
@@ -436,7 +439,7 @@ const fetchWMSData = async (event, layer) => {
     })
 }
 
-const fetchWFSData = async (event, layer) => {
+const fetchWFSData = async (event, layer, options={}) => {
     const cleanURL = removeQueryParams(layer.data.layerUrl)
     const params = {
         service: 'wfs',
@@ -470,7 +473,7 @@ const fetchWFSData = async (event, layer) => {
     }
 
     const url = pushQueryParamsToURLString(cleanURL, params)
-    const data = await fetchDataWithTimeout(url).then(response => {
+    const data = await fetchDataWithTimeout(url, {abortBtn:options.abortBtn,}).then(response => {
         if (response.ok || response.status === 200) {
             return response
         } else {

@@ -411,6 +411,12 @@ const handleMapQuery = (map) => {
 
 
 
+    const clearQueryResults = () => {
+        map.getLayerGroups().query.clearLayers()
+        body.innerHTML = ''
+        clearQueryBtn.setAttribute('disabled', true)
+    }
+
     const disableMapQuery = () => {
         map._queryEnabled = false
         enableLayerClick(map)
@@ -490,9 +496,9 @@ const handleMapQuery = (map) => {
             const defaultGeoJSON = L.rectangle(map.getBounds()).toGeoJSON()
             const queryResults = await fetchQueryData(defaultGeoJSON, {'OpenStreetMap':{
                 label: 'OpenStreetMap',
-                data: fetchOSMDataInBbox(getMapBbox(map))
+                data: fetchOSMDataInBbox(getMapBbox(map), {abortBtn:cancelQueryBtn})
             }})
-            if (queryResults.children.length === 1) {
+            if (queryResults && queryResults.children.length <= 1) {
                 createSpanElement({
                     label: 'There are too many features within the query area. Zoom in to a smaller extent and try again.',
                     className: 'mb-3 fs-12 font-monospace',
@@ -508,14 +514,9 @@ const handleMapQuery = (map) => {
     })
 
     cancelQueryBtn.addEventListener('click', () => {
+        map._queryCancelled = true
         disableMapQuery()
     })
-
-    const clearQueryResults = () => {
-        map.getLayerGroups().query.clearLayers()
-        body.innerHTML = ''
-        clearQueryBtn.setAttribute('disabled', true)
-    }
 
     clearQueryBtn.addEventListener('click', () => {
         clearQueryResults()
@@ -530,7 +531,7 @@ const handleMapQuery = (map) => {
                 const data = layer.data
                 fetchers[`${data.layerUrl}:${data.layerFormat}:${data.layerName}`] = {
                     label: data.layerLabel,
-                    data: fetchData(event, layer),
+                    data: fetchData(event, layer, {abortBtn:cancelQueryBtn}),
                 }
             })
         }
@@ -538,7 +539,7 @@ const handleMapQuery = (map) => {
         if (map._queryOSM) {
             fetchers['OpenStreetMap'] = {
                 label: 'OpenStreetMap',
-                data: fetchOSMData(event),
+                data: fetchOSMData(event, {abortBtn:cancelQueryBtn}),
             }
         }
 
@@ -546,10 +547,14 @@ const handleMapQuery = (map) => {
     }
 
     const fetchQueryData = async (defaultGeoJSON, fetchers) => {
+        map._queryCancelled = false
         map._querying = true
+
         disableMapQuery()
         disableQueryBtns()
         clearQueryResults()
+
+        cancelQueryBtn.removeAttribute('disabled')
 
         footer.innerText = 'Running query...'
         
@@ -641,10 +646,16 @@ const handleMapQuery = (map) => {
         map._querying = false
         toggleQueryButtons()
         cancelQueryBtn.setAttribute('disabled', true)
-        clearQueryBtn.removeAttribute('disabled')
-        footer.innerText = 'Query complete.'
+        if (map._queryCancelled) {
+            clearQueryResults()
+            footer.innerText = 'Query cancelled.'
+            return
+        } else {
+            clearQueryBtn.removeAttribute('disabled')
+            footer.innerText = 'Query complete.'
+            return queryResults
+        }
 
-        return queryResults
     }
 
     map._querying = false
