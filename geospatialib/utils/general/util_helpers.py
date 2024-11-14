@@ -1,6 +1,8 @@
 import string
 from django.utils.text import slugify
 from urllib.parse import urlparse, urlunparse
+from django.contrib import messages
+
 
 def get_domain_name(url):
     domain = urlparse(url).netloc
@@ -59,3 +61,10 @@ def get_first_substring_match(value, lst, helpers=None):
 def remove_query_params(url):
   parsed_url = urlparse(url)
   return urlunparse(parsed_url._replace(query=''))
+
+def check_or_add_message(request, method, message, tags):
+    msgs = messages.get_messages(request)
+    for msg in msgs:
+        if msg.message == message and msg.extra_tags == tags:
+            return
+    method(request, message, tags)

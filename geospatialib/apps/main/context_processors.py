@@ -1,20 +1,37 @@
-from . import forms as main_forms
 from django.contrib import messages
+
+from utils.general import util_helpers
+from . import forms as main_forms
 
 def forms(request):
     if not request.headers.get('HX-Request'):
         user = request.user
         if user.is_authenticated:
             if user.has_no_password:
-                messages.info(request, 'Please set a login password for your account.', extra_tags='password-form')
+                util_helpers.check_or_add_message(
+                    request, 
+                    messages.info, 
+                    'Please set a login password for your account.', 
+                    'password-form'
+                )
             if user.has_no_first_name:
-                messages.info(request, 'Please review or update details in your profile.', extra_tags='profile-form')
+                util_helpers.check_or_add_message(
+                    request, 
+                    messages.info, 
+                    'Please review or update details in your profile.', 
+                    'profile-form'
+                )
             return {
                 'account_forms': main_forms.get_account_forms(user),
                 'active_account_form': 'password' if user.has_no_password else 'profile'
             }
         else:
-            messages.info(request, 'main/login/message.html', extra_tags='login-form message-template')
+            util_helpers.check_or_add_message(
+                request, 
+                messages.info,
+                'main/login/message.html',
+                'login-form message-template'
+            )
             return {
                 'login_form': main_forms.AuthenticationForm()
             }
