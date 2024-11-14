@@ -415,7 +415,9 @@ const handleMapQuery = (map) => {
         map._queryEnabled = false
         enableLayerClick(map)
         mapContainer.style.cursor = ''
-        cancelQueryBtn.setAttribute('disabled', true)
+        if (!map._querying) {
+            cancelQueryBtn.setAttribute('disabled', true)
+        }
     }
 
     const disableQueryBtns = () => {
@@ -423,12 +425,16 @@ const handleMapQuery = (map) => {
             queryToggle.click()
         }
 
-        Array(queryOSMBtn, cancelQueryBtn, layersQueryBtn, layersOSMQueryBtn).forEach(btn => {
+        Array(queryOSMBtn, layersQueryBtn, layersOSMQueryBtn).forEach(btn => {
             btn.setAttribute('disabled', true)
         })
+
+        if (!map._querying) {
+            cancelQueryBtn.setAttribute('disabled', true)
+        }
     }
 
-    const toggleQueryButton = () => {
+    const toggleQueryButtons = () => {
         const scale = getMeterScale(map)
         if (scale <= 100000) {
             if (!map._querying) {
@@ -460,9 +466,9 @@ const handleMapQuery = (map) => {
 
     }
 
-    mapContainer.addEventListener('mapInitComplete', toggleQueryButton)
-    map.on('zoomend', toggleQueryButton)
-    map.on('resize', toggleQueryButton)
+    mapContainer.addEventListener('mapInitComplete', toggleQueryButtons)
+    map.on('zoomend', toggleQueryButtons)
+    map.on('resize', toggleQueryButtons)
 
     map._queryEnabled = false
     Array(layersQueryBtn, layersOSMQueryBtn).forEach(btn => {
@@ -565,6 +571,7 @@ const handleMapQuery = (map) => {
             buttonCallback: () => hideAllSubCollapse(queryResults),
             parent: body
         })
+        
         setAsThemedControl(toolbar)
         body.appendChild(queryResults)
         
@@ -632,7 +639,8 @@ const handleMapQuery = (map) => {
         }
 
         map._querying = false
-        toggleQueryButton()
+        toggleQueryButtons()
+        cancelQueryBtn.setAttribute('disabled', true)
         clearQueryBtn.removeAttribute('disabled')
         footer.innerText = 'Query complete.'
 
