@@ -591,7 +591,7 @@ const handleMapQuery = (map) => {
                         return L.marker(latlng, {icon:getDefaultLayerStyle('point', {color:color})})
                     },
                     style: (geoJsonFeature) => {
-                        return getDefaultLayerStyle('other', {color:color, fillColor:true})
+                        return getDefaultLayerStyle('other', {color:color, fillColor:true, weight:2})
                     },        
                     onEachFeature: (feature, layer) => {
                         layer.options.pane = 'queryPane'

@@ -440,7 +440,7 @@ const createWFSLayer = (data) => {
         const map = event.target._map
 
         const fetchData = async () => {
-            const geojson = await fetchWFSData(event, geojsonLayer)
+            let geojson = await fetchWFSData(event, geojsonLayer)
 
             let prefix
             let suffix
@@ -466,11 +466,11 @@ const createWFSLayer = (data) => {
             }
             
             if (!geojson) {
-                if (geojsonLayer.data && geojsonLayer.data.layerBbox) {
+                if (data.layerBbox) {
                     geojson = {
                         type: 'FeatureCollection',
-                        features: [turf.bboxPolygon(geojsonLayer.data.layerBbox.slice(1, -1).split(','))],
-                        tooltip: 'Zoom in to load individual features.'
+                        features: [turf.bboxPolygon(data.layerBbox.slice(1, -1).split(','))],
+                        tooltip: `Zoom in to load individual ${data.layerLabel} features.`
                     }
     
                     prefix = 'Bounding'
