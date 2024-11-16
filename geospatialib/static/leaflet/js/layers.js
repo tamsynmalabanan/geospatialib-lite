@@ -444,7 +444,6 @@ const createWFSLayer = (data) => {
     })
 
     geojsonLayer.on('popupclose', (event) => {
-        console.log(event)
         geojsonLayer._openPopups = geojsonLayer._openPopups.filter(popup => popup !== event.popup)
     })
     
@@ -464,6 +463,7 @@ const createWFSLayer = (data) => {
                 if ((mapScale && mapScale > 10000) || (!mapScale && map.getZoom() < 9)) {
                     if (featureCount > 1000) {
                         geojson.features = [turf.bboxPolygon(turf.bbox(geojson))]
+                        geojson.tooltip = `Zoom in to load individual ${data.layerLabel} features.`
                         prefix = 'Bounding'
                         suffix = `for ${formatNumberWithCommas(featureCount)} features`
                     } else {
