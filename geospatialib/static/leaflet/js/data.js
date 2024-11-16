@@ -31,8 +31,8 @@ const fetchProj4Def = async (crs, options={}) => {
 
 const fetchOSMData = async (event, options={}) => {
     const data = await Promise.all([
-        fetchOSMDataAroundLatLng(event.latlng, {maximum:options.maximum}),
-        fetchOSMDataFromNominatim(event),
+        fetchOSMDataAroundLatLng(event.latlng, options),
+        fetchOSMDataFromNominatim(event, options),
     ])
 
     let features = []
@@ -104,7 +104,6 @@ const fetchOSMDataInBbox = async (bbox, options={}) => {
 }
 
 const fetchOSMDataAroundLatLng = async (latlng, options={}) => {
-
     const fetchData = async (buffer=10, minimum=1, options={}) => {
         const params = `around:${buffer},${latlng.lat},${latlng.lng}`
         return fetchDataWithTimeout("http://overpass-api.de/api/interpreter", {
@@ -136,7 +135,7 @@ const fetchOSMDataAroundLatLng = async (latlng, options={}) => {
                     data.elements = newElements
                     return data
                 } else {
-                    return fetchData(buffer*2, minimum*1.25, {abortBtn:options.abortBtn})                    
+                    return fetchData(buffer=buffer*2, minimum=minimum*1.25, options={abortBtn:options.abortBtn})                    
                 }
             } else {
                 throw new Error('No elements returned.')
@@ -146,7 +145,7 @@ const fetchOSMDataAroundLatLng = async (latlng, options={}) => {
         })
     }
 
-    const data = await fetchData(10, 1, {abortBtn:options.abortBtn})
+    const data = await fetchData(buffer=10, minimum=1, options={abortBtn:options.abortBtn})
     return {
         type: "FeatureCollection",
         features:overpassOSMDataToGeoJSON(data, {maximum:options.maximum})
@@ -336,14 +335,14 @@ const fetchOSMDataFromNominatim = async (event, options={}) => {
     });
 }
 
-const fetchData = (event, layer) => {
+const fetchLibraryData = (event, layer, options={}) => {
     const handler = {
         wms: fetchWMSData,
         wfs: fetchWFSData,
     }[layer.data.layerFormat]
     
     if (handler) {
-        return handler(event, layer)
+        return handler(event, layer, options)
     }
 }
 

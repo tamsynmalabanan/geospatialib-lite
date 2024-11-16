@@ -119,17 +119,18 @@ const fetchDataWithTimeout = async (url, options={}) => {
     }
 
     const controller = new AbortController()
-    
-    const params = Object.assign({}, options)
-    params.signal = controller.signal
-    
     const abortController = () => controller.abort()
     const timeoutId = setTimeout(abortController, timeoutMs);
     
     if (options.abortBtn) {
         options.abortBtn.addEventListener('click', abortController)
+        delete options.abortBtn
     }
 
+    const params = Object.assign({}, options)
+    params.signal = controller.signal
+    
+    
     try {
         const response = await fetch(url, params)
         clearTimeout(timeoutId)

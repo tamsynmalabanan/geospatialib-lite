@@ -491,20 +491,20 @@ const handleMapQuery = (map) => {
         })
     })
 
-    queryOSMBtn.addEventListener('click', async (event) => {
+    queryOSMBtn.addEventListener('click', (event) => {
         if (getMeterScale(map) <= 10000) {
-            const defaultGeoJSON = L.rectangle(map.getBounds()).toGeoJSON()
-            const queryResults = await fetchQueryData(defaultGeoJSON, {'OpenStreetMap':{
+            fetchQueryData(L.rectangle(map.getBounds()).toGeoJSON(), {'OpenStreetMap':{
                 label: 'OpenStreetMap',
                 data: fetchOSMDataInBbox(getMapBbox(map), {abortBtn:cancelQueryBtn})
-            }})
-            if (queryResults && queryResults.children.length <= 1) {
-                createSpanElement({
-                    label: 'There are too many features within the query area. Zoom in to a smaller extent and try again.',
-                    className: 'mb-3 fs-12 font-monospace',
-                    parent: queryResults
-                })    
-            }
+            }}).then(queryResults => {
+                if (queryResults && queryResults.children.length === 1) {
+                    createSpanElement({
+                        label: 'There are too many features within the query area. Zoom in to a smaller extent and try again.',
+                        className: 'mb-3 fs-12 font-monospace',
+                        parent: queryResults
+                    })    
+                }
+            })
         } else {
             const span = document.createElement('span')
             span.className = 'font-monospace fs-12 text-wrap'
@@ -531,7 +531,7 @@ const handleMapQuery = (map) => {
                 const data = layer.data
                 fetchers[`${data.layerUrl}:${data.layerFormat}:${data.layerName}`] = {
                     label: data.layerLabel,
-                    data: fetchData(event, layer, {abortBtn:cancelQueryBtn}),
+                    data: fetchLibraryData(event, layer, {abortBtn:cancelQueryBtn}),
                 }
             })
         }
@@ -632,7 +632,7 @@ const handleMapQuery = (map) => {
             for (let i = 0; i <= data.length-1; i++) {
                 if (data[i] && data[i].features && data[i].features.length > 0) {
                     const label = Object.values(fetchers).map(value => value.label)[i]
-                    handler(data[i], label)
+                    await handler(data[i], label)
                 }
             }
         } else {
@@ -655,7 +655,6 @@ const handleMapQuery = (map) => {
             footer.innerText = 'Query complete.'
             return queryResults
         }
-
     }
 
     map._querying = false

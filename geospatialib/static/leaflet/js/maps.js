@@ -1,12 +1,14 @@
 const mapQuerySelector = (selector) => {
     let map
 
-    window.maps.forEach(currentMap => {
-        if (currentMap.getContainer().matches(selector)) {
-            map = currentMap
-            return
-        }
-    })
+    if (window.maps) {
+        window.maps.forEach(currentMap => {
+            if (currentMap.getContainer().matches(selector)) {
+                map = currentMap
+                return
+            }
+        })
+    }
 
     return map
 }
