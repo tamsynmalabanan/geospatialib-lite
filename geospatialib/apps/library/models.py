@@ -36,7 +36,7 @@ class URL(models.Model):
     
 class Dataset(models.Model):
     url = models.ForeignKey("library.URL", verbose_name='URL', on_delete=models.CASCADE, related_name='datasets')
-    format = models.CharField('Format', max_length=16, choices=form_helpers.dict_to_choices(choices.DATASET_FORMATS))
+    format = models.CharField('Format', max_length=32, choices=form_helpers.dict_to_choices(choices.DATASET_FORMATS))
     name = models.CharField('Layer', max_length=255)
     extra_data = models.JSONField('Data', blank=True, null=True)
 

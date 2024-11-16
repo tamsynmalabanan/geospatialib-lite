@@ -56,32 +56,36 @@ const shareDatasetLayerLoadError = (event) => {
 const renderSharedDatasetLayer = () => {
     const map = getShareDatasetMap()
     if (map) {
-        const form = document.querySelector('#shareDatasetModal form')
-        const data = {
-            layerUrl: form.elements.url.value, 
-            layerFormat: form.elements.format.value,
-            layerName: form.elements.name.value,
+        const formElements = document.querySelector('#shareDatasetModal form').elements
+        const fields = {
+            layerUrl: formElements.url, 
+            layerFormat: formElements.format,
+            layerName: formElements.name,
         }
 
-        const layer = createLayerFromURL(data)
-        if (layer) {
-            assignLayerLoadEventHandlers(
-                layer, 
-                shareDatasetLayerLoaded,
-                shareDatasetLayerLoadError,
-            )
-    
-            map.getLayerGroups().client.addLayer(layer)
-            // shareDatasetLayerLoadErrorTimeout = setTimeout(
-            //     shareDatasetLayerLoadError, 
-            //     60000
-            // )
+        if (Object.values(fields).every(field => !field.classList.contains('is-invalid') && field.value !== '')) {
+            const data = {}
+            for (const key in fields) {
+                data[key] = fields[key].value
+            }
+            
+            const layer = createLayerFromURL(data)
+            if (layer) {
+                assignLayerLoadEventHandlers(
+                    layer, 
+                    shareDatasetLayerLoaded,
+                    shareDatasetLayerLoadError,
+                )
+        
+                map.getLayerGroups().client.addLayer(layer)
+            }
+        
+            if (shareDatasetBounds) {
+                const [minX, minY, maxX, maxY] = shareDatasetBounds
+                const bounds = L.latLngBounds([[minY, minX], [maxY, maxX]]);
+                map.fitBounds(bounds)
+            }
         }
-    
-        if (shareDatasetBounds) {
-            const [minX, minY, maxX, maxY] = shareDatasetBounds
-            const bounds = L.latLngBounds([[minY, minX], [maxY, maxX]]);
-            map.fitBounds(bounds)
-        }
+
     }
 }

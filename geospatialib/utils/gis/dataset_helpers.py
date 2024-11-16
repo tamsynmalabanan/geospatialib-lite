@@ -49,6 +49,33 @@ class XYZHandler(DatasetHandler):
 
         content.save()
 
+class ArcGISImageHandler(DatasetHandler):
+
+    def get_layers(self):
+        domain = urlparse(self.url).netloc
+        if domain.endswith('arcgis.com'):
+            name = self.url.split('.arcgis.com/arcgis/rest/services/')[1].split('/ImageServer')[0].replace('/', ' ')
+        else:
+            name = util_helpers.get_domain_name(self.url)
+        return {name: name}
+    
+    def handler(self):
+        self.access_url = self.url
+        self.layers = self.get_layers()
+
+    def populate_dataset(self, dataset):
+        content = dataset.content
+
+        content.label = dataset.name.replace('_', ' ')
+        content.bbox = geom_helpers.WORLD_GEOM
+        content.tags.set(
+            model_helpers.collect_url_tags(
+                util_helpers.remove_query_params(self.access_url)
+            )
+        )
+
+        content.save()
+
 class WMSHandler(DatasetHandler):
     
     def get_service(self):
@@ -361,6 +388,7 @@ def get_dataset_handler(format, **kwargs):
         'xyz': XYZHandler, 
         'wms': WMSHandler, 
         'wfs': WFSHandler, 
+        'arcgis-image': ArcGISImageHandler, 
     }.get(format)
 
     if handler:
@@ -369,6 +397,7 @@ def get_dataset_handler(format, **kwargs):
 def get_dataset_format(url):
     helpers = {
         'xyz': ['{x}','{y}','{z}', 'tile'],
+        'arcgis-image': ['ImageServer'],
     }
     format_list = list(choices.DATASET_FORMATS.keys())
     match = util_helpers.get_first_substring_match(url, format_list, helpers)

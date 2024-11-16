@@ -4,6 +4,43 @@
 {% leaflet_css plugins="forms, geocoder" %}
 {% leaflet_js plugins="forms, geocoder" %}
 
+{% comment %} esri {% endcomment %}
+{% comment %} <script
+  src="https://unpkg.com/esri-leaflet@3.0.13/dist/esri-leaflet.js"
+  integrity="sha512-1BY1iJnismgnet+8+FYysyXAAWeX53enEnjPDLb9ML8Ai9IXHbHO+Sf8o0cwbRObhee5gsGSfaJIhVkrtHPj3w=="
+  crossorigin=""
+></script>
+<script
+  src="https://unpkg.com/esri-leaflet-vector@4.2.5/dist/esri-leaflet-vector.js"
+  integrity="sha512-KGSCiYghNE2IgeDP4AUnlF1mEEDgFXMvuq2yDZSzsjQXV+KuMcpwNR2af1w2iHx+z3Ozr2t9Fk9g1aNRV+aS5w=="
+  crossorigin=""
+></script>
+<script
+  src="https://unpkg.com/esri-leaflet-geocoder@3.1.5/dist/esri-leaflet-geocoder.js"
+  integrity="sha512-aLjyj35uR16dEFlUNPhNRgu3K18p2EFOWymE2dIY6PfYHKy/LN1RpuMPdNu+/2O/JH7pD41VXOk8BNBm8jnnLw=="
+  crossorigin=""></script>
+<link
+    rel="stylesheet"
+    href="https://unpkg.com/esri-leaflet-geocoder@3.1.5/dist/esri-leaflet-geocoder.css"
+    integrity="sha512-tUBtfB754PMBTIv4EblkcBr52uhc3uQKcJYzn24IU2TyvYSKArpr3Pg5bn+bk7xrpR555ikysThMtBijcWxp+w=="
+    crossorigin="" />
+    <script
+  src="https://unpkg.com/esri-leaflet-cluster@3.0.1/dist/esri-leaflet-cluster.js"
+  integrity="sha512-owlLNb9FC1P/vOTmW7GHEfuqsD54Xqj+B49XDVIqWlRTdPVXN4b/OrdarBVMP9ITeikRa3qj2HYQuFFORGCF4A=="
+  crossorigin=""></script>
+  <script
+  src="https://unpkg.com/esri-leaflet-heatmap@2.0.1/dist/esri-leaflet-heatmap.js"
+  integrity="sha512-lLo+xSNI2/unVl7Diwz+umq6xVFELYCt2kyhTSY5Gc07D62Uag68BZeXiqaN9sfnAwyq27uu912N06sRXweH2w=="
+  crossorigin=""></script>
+  <script
+  src="https://unpkg.com/esri-leaflet-renderers@3.0.1/dist/esri-leaflet-renderers.js"
+  integrity="sha512-ObP+hL762A0l3J0MfLlH5cEfpDiN0ItUJwm71EZ/X/EMsLyOMOW2GQHO8i/nLvseh8n68/UDjIev2nYwCtYqHQ=="
+  crossorigin=""></script>
+  <script
+  src="https://unpkg.com/esri-leaflet-gp@3.0.0/dist/esri-leaflet-gp.js"
+  integrity="sha512-eCye7787EK8BVBNsj7Azq0fSpj3TaUc++phMoSySv+qoJ+F8+uOQr97GKg/76R1kgdlbBIRst5Sd2/xxeuN+Xg=="
+  crossorigin=""></script> {% endcomment %}
+
 {% comment %} proj4 {% endcomment %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.12.1/proj4.js" integrity="sha512-8cX2hkLcrgklvabUEGfanjHM+J9Aw1/WEt+649vdP8QcbmRLAnxT4YS2/plOSsQzv7PDBogUYxbMxB9LdBN1oA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4leaflet/1.0.2/proj4leaflet.min.js" integrity="sha512-GsAYl1wxzWW6azVpXkhyYfjMb2LbaOnlrqWMBdAk9xDcilinFvGMN+48Ajp/10u/9lcnh8YyS2CYNgung7ewHg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
