@@ -39,10 +39,17 @@ const handleTagsInputFields = (parent) => {
                 }
             });
         }
+
+        if (event.type === 'htmx:afterSwap' && event.detail.requestConfig.triggeringEvent.type === 'tagsinput:change') {
+            const targetId = event.detail.requestConfig.triggeringEvent.target.id
+            if (field.id === targetId) {
+                document.querySelector(`#${targetId}_new`).focus()
+            }
+        }
     })
 }
 
-document.body.addEventListener('htmx:afterSwap', (event) => {
+document.addEventListener('htmx:afterSwap', (event) => {
     let parent = event.target
     if (parent.parentElement) {
         parent = parent.parentElement

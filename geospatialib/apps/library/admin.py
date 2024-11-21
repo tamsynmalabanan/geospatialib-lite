@@ -13,6 +13,7 @@ class MetaAbstractAdmin(admin.ModelAdmin):
         'added_on',
         'updated_on',
     )
+    search_fields = ['label']
 
 admin.site.register(models.URL)
 admin.site.register(models.Tag)

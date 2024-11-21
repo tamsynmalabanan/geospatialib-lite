@@ -2,6 +2,7 @@ import string
 from django.utils.text import slugify
 from urllib.parse import urlparse, urlunparse
 from django.contrib import messages
+import random
 
 
 def get_domain_name(url):
@@ -19,13 +20,30 @@ def build_cache_key(*args):
     return ':'.join(key_parts)
 
 def get_special_characters(value):
-    return [sc for sc in list(string.punctuation) if sc in value]
+    puncts = list(string.punctuation) + [' ']
+    if len(value) > len(puncts):
+        scs = [sc for sc in puncts if sc in value]
+    else:
+        scs = [char for char in value if char in puncts]
+    return list(set(scs))
 
-def split_by_special_characters(string):
-    special_chars = get_special_characters(string) + [' ']
+def split_by_special_characters(value, excluded_chars=[]):
+    special_chars = get_special_characters(value)
+
+    if len(excluded_chars) > 0:
+        for i in excluded_chars:
+            try:
+                special_chars.remove(i)
+            except ValueError:
+                pass
+
+    delimiter = ','
+    while delimiter in excluded_chars:
+        delimiter = random.choice(list(string.punctuation))
+
     for sc in special_chars:
-        string = string.replace(sc, ',')
-    return list(set([i for i in string.split(',') if i != '']))
+        value = value.replace(sc, delimiter)
+    return list(set([i for i in value.split(delimiter) if i != '']))
 
 def get_first_substring_match(value, lst, helpers=None):
     value_lower = value.lower()

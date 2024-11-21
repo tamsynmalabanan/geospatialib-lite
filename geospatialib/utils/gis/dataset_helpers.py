@@ -133,31 +133,16 @@ class WMSHandler(DatasetHandler):
             return geom_helpers.WORLD_GEOM
 
     def get_tags(self, id, layer):
-        tag_instances = model_helpers.collect_url_tags(self.access_url)
+        url_tag_instances = model_helpers.collect_url_tags(self.access_url)
 
         keywords = []
         for obj in [id, layer]:
             if obj and hasattr(obj, 'keywords') and isinstance(obj.keywords, (list, tuple)):
                 keywords = keywords + list(obj.keywords)
+        keywords = list(set([kw for kw in keywords if isinstance(kw, str)]))
+        kw_tag_instances = model_helpers.list_to_tags(keywords)
 
-        clean_keywords = []
-        for kw in keywords:
-            if ',' in kw:
-                kws = [i.strip() for i in kw.split(',')]
-                for i in kws:
-                    clean_keywords.append(i)
-            else:
-                clean_keywords.append(kw)
-
-        clean_keywords = list(set(clean_keywords))
-
-        for kw in clean_keywords:
-            if isinstance(kw, str):
-                tag_instance, created = models.Tag.objects.get_or_create(tag=kw.lower())
-                if tag_instance:
-                    tag_instances.append(tag_instance)
-
-        return tag_instances
+        return url_tag_instances + kw_tag_instances
 
     def get_abstract(self, id, layer):
         abstracts = []
@@ -305,31 +290,17 @@ class WFSHandler(DatasetHandler):
             return geom_helpers.WORLD_GEOM
 
     def get_tags(self, id, layer):
-        tag_instances = model_helpers.collect_url_tags(self.access_url)
+        url_tag_instances = model_helpers.collect_url_tags(self.access_url)
 
         keywords = []
         for obj in [id, layer]:
             if obj and hasattr(obj, 'keywords') and isinstance(obj.keywords, (list, tuple)):
                 keywords = keywords + list(obj.keywords)
+        keywords = list(set([kw for kw in keywords if isinstance(kw, str)]))
+        print(keywords)
+        kw_tag_instances = model_helpers.list_to_tags(keywords)
 
-        clean_keywords = []
-        for kw in keywords:
-            if ',' in kw:
-                kws = [i.strip() for i in kw.split(',')]
-                for i in kws:
-                    clean_keywords.append(i)
-            else:
-                clean_keywords.append(kw)
-
-        clean_keywords = list(set(clean_keywords))
-
-        for kw in clean_keywords:
-            if isinstance(kw, str):
-                tag_instance, created = models.Tag.objects.get_or_create(tag=kw.lower())
-                if tag_instance:
-                    tag_instances.append(tag_instance)
-
-        return tag_instances
+        return url_tag_instances + kw_tag_instances
 
     def get_abstract(self, id, layer):
         abstracts = []

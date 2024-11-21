@@ -327,7 +327,6 @@ const handleMapLegend = (map) => {
 
 const handleMapQuery = (map) => {
     const mapContainer = map.getContainer()
-    const mapId = mapContainer.id
 
     const body = constructInfoPanel(map, 'Query', {
         toggleTitle: 'Toggle query panel',
@@ -472,9 +471,7 @@ const handleMapQuery = (map) => {
 
     }
 
-    mapContainer.addEventListener('mapInitComplete', toggleQueryButtons)
-    map.on('zoomend', toggleQueryButtons)
-    map.on('resize', toggleQueryButtons)
+    map.on('zoomend resize mapInitComplete', toggleQueryButtons)
 
     map._queryEnabled = false
     Array(layersQueryBtn, layersOSMQueryBtn).forEach(btn => {
@@ -608,7 +605,18 @@ const handleMapQuery = (map) => {
                     onEachFeature: (feature, layer) => {
                         layer.options.pane = 'queryPane'
                         layer.title = getLayerTitle(layer)
-                        layer.bindTooltip(layer.title, {sticky:true})    
+                        layer.bindTooltip(layer.title, {sticky:true})
+
+                        if (Object.keys(feature.properties).length > 0) {
+                            const createPopup = () => {
+                                layer.bindPopup(createFeaturePropertiesTable(feature.properties).outerHTML, {
+                                    autoPan: false,
+                                }).openPopup()
+                                layer.off('click', createPopup)
+                            }
+
+                            layer.on('click', createPopup)
+                        }
                     }    
                 })
 
@@ -722,6 +730,37 @@ const handleMapInfoPanels = (map) => {
     }
 }
 
+const handleMapObservers = (map) => {
+    map.on('popupopen', (event) => {
+        const wrapper = event.popup._container.querySelector('.leaflet-popup-content-wrapper')
+        wrapper.classList.add(`text-bg-${getPreferredTheme()}`, 'overflow-auto')
+        wrapper.style.maxHeight = `${map.getSize().y * 0.5}px`
+        event.popup._container.querySelector('.leaflet-popup-tip').classList.add(`bg-${getPreferredTheme()}`)
+    })
+
+    const bboxFieldsSelector = getMapDataset(map).leafletBboxFields
+    if (bboxFieldsSelector) {
+        const updateBboxFields = () => {
+            const bboxFields = document.querySelectorAll(bboxFieldsSelector)
+            bboxFields.forEach(field => {
+                const bounds = loopThroughCoordinates(map.getBounds(), validateCoordinates)
+                const geom = JSON.stringify(L.rectangle(bounds).toGeoJSON().geometry)
+                field.value = geom
+            })
+        }        
+
+        updateBboxFields(map)
+        
+        let updateBboxFieldsTimeout
+        map.on('resize moveend zoomend updateBboxFields', (event) => {
+            clearTimeout(updateBboxFieldsTimeout)
+            updateBboxFieldsTimeout = setTimeout(() => {
+                updateBboxFields(map)
+            }, 100)
+        })
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener("map:init", function (event) {
         const map = event.detail.map
@@ -732,8 +771,8 @@ document.addEventListener('DOMContentLoaded', () => {
         handleMapSize(map)
         handleMapInfoPanels(map)
         handleMapControls(map) // needs to be after handleMapInfoPanels
+        handleMapObservers(map)
 
-        const newEvent = new Event('mapInitComplete')
-        map.getContainer().dispatchEvent(newEvent)
+        map.fire('mapInitComplete')
     })
 })

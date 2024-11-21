@@ -1,7 +1,7 @@
 {% load static %}
 {% load leaflet_tags %}
 
-{% with endpoint='hx_library:share_dataset' id='createMapModal' %}
+{% with endpoint='hx_library:create_map' id='createMapModal' %}
     <div class="modal fade" id="{{id}}" tabindex="-1" role="dialog" aria-labelledby="{{id}}Title" aria-hidden="true" >
         <div class="modal-dialog modal-lg modal-fullscreen-sm-down modal-dialog-scrollable modal-dialog-centered" role="document">
             <form
@@ -20,15 +20,22 @@
                 <div class="modal-body flex-grow-1">
                     <div class="container-fluid">
                         <div class="row">
-                            {% include "base/components/messages/body.html" with dismissible=0 tag='share-dataset-form' hx_swap_oob="true" %}
+                            {% include "base/components/messages/body.html" with dismissible=0 tag='create-map-form' hx_swap_oob="true" %}
                         </div>
                         <div class="row gap-4 gap-lg-0">
-                            <div class='col-12 col-lg-6' data-leaflet-controls-excluded='all' data-leaflet-map-class='rounded border'>
+                            <div 
+                                class='col-12 col-lg-6' 
+                                data-leaflet-controls-included='search' 
+                                data-leaflet-map-class='rounded border'
+                                data-leaflet-geocoder-fields='#createmapform_focus_area'
+                                data-leaflet-bbox-fields='#createmapform_bbox'
+                            >
                                 {% leaflet_map id|add:"Map" %}
                             </div>
                             <div id='createMapFormFields' class="col">
-                                {% include "library/share_dataset/form.html" with form=create_map_form %}
+                                {% include "library/create_map/form.html" with form=create_map_form %}
                             </div>
+                            <input type="text" name="bbox" id="createmapform_bbox" hidden="true">
                         </div>
                     </div>
                 </div>

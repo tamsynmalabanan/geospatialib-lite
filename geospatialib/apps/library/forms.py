@@ -14,14 +14,13 @@ class SearchForm(forms.Form):
         widget=forms.TextInput(attrs={
             'type':'search',
             'class':'h-100 border-0 rounded-0 focus-underline-primary box-shadow-none ps-0',
-            'title':'Use "AND" and "OR" operators to refine your search.'
         })
     )
 
-class CreateMapForm(forms.ModelForm):
-    label = forms.CharField(
+class CreateMapForm(forms.Form):
+    title = forms.CharField(
         label='Title', 
-        max_length=255, 
+        max_length=255,
         required=True,
         widget=forms.TextInput(attrs={
             'hx-post':reverse_lazy('hx_library:create_map'),
@@ -46,23 +45,36 @@ class CreateMapForm(forms.ModelForm):
             'data-datalist-endpoint': reverse_lazy('hx_library:tags_datalist'),
         })
     )
+    focus_area = forms.CharField(
+        label='Focus area', 
+        max_length=255,
+        required=False,
+        widget=forms.TextInput(attrs={
+            'hx-post':reverse_lazy('hx_library:create_map'),
+            'hx-trigger':'input changed delay:1000ms',
+            'hx-target':'#createMapFormFields',
+            'hx-swap': 'innerHTML',
+        })
+    )
 
-    class Meta:
-        model = models.Content
-        fields = ['label', 'tags']
-
-    def clean_label(self):
+    def clean_title(self):
         clean_data = self.cleaned_data
-        label = clean_data.get('label')
+        title = clean_data.get('title')
 
-        if len(label) < 3:
+        if len(title) < 3:
             raise forms.ValidationError('Title must be at least 3 characters.')
 
-        map_query = models.Map.objects.filter(content__label__iexact=label)
+        map_query = models.Map.objects.filter(content__label__iexact=title)
         if map_query.exists():
             raise forms.ValidationError('You already have a map with this title.')
         
-        return label
+        return title
+
+    def clean_tags(self):
+        clean_data = self.cleaned_data
+        tags = clean_data.get('tags')
+        clean_tags = ','.join(util_helpers.split_by_special_characters(tags, ['_', '-', ','])).lower()
+        return clean_tags
 
 class ShareDatasetForm(forms.Form):
     url = forms.URLField(

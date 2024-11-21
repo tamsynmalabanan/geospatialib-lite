@@ -15,7 +15,7 @@ from utils.general import form_helpers, util_helpers
 
 
 class Tag(models.Model):
-    tag = models.CharField('Tag', max_length=255, unique=True)
+    tag = models.CharField('Tag', max_length=64, unique=True)
 
     def __str__(self) -> str:
         return self.tag
@@ -50,7 +50,7 @@ class Dataset(models.Model):
         return self.name
 
 class Map(models.Model):
-    pass
+    focus_area = models.CharField('Focus area', max_length=255, blank=True, null=True)
 
 class Content(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

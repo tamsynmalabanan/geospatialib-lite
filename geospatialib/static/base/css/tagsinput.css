@@ -8,9 +8,9 @@
     overflow-y: auto;
     font-size: 14px;
     
-    input {
+    /* input {
         padding-left: 12px;
-    }
+    } */
 
     .tag.label.label-info {
         border: var(--bs-border-width) solid var(--bs-border-color);

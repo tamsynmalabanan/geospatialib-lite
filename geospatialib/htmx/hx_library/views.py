@@ -74,6 +74,8 @@ class SearchList(ListView):
                 + SearchVector('dataset__url__url') 
                 + SearchVector('dataset__format') 
                 + SearchVector('dataset__name') 
+
+                + SearchVector('map__focus_area') 
             )
 
             # search_headline = SearchHeadline('abstract', search_query)
@@ -139,6 +141,8 @@ class SearchList(ListView):
             context['filters'] = self.get_filters()
         return context
 
+
+
 @require_http_methods(['GET'])
 @login_required
 def tags_datalist(request):
@@ -165,14 +169,23 @@ def create_map(request):
     data = request.POST.dict()
     form = lib_forms.CreateMapForm(data=data)
     
-    label_value = data.get('label', '')
-    if label_value.strip() != '':
-        label_field = form['label']
-        label_is_valid = form_helpers.validate_field(label_field)
-        if label_is_valid:
-            tags_field = form['tags']
-            tags_is_valid = form_helpers.validate_field(tags_field)
-            print(tags_is_valid)
+    clean_title = None
+    if data.get('title', '').strip() != '':
+        title_field = form['title']
+        clean_title = form_helpers.validate_field(title_field)
+        
+    tags_field = form['tags']
+    clean_tags = form_helpers.validate_field(tags_field)
+    if clean_tags:
+        form.data.update({'tags':clean_tags})
+    else:
+        form.data.update({'tags':''})
+        if not clean_title:
+            form_helpers.remove_classes_from_field(tags_field, ['is-invalid'])
+
+    focus_area_value = data.get('focus_area', '').strip()
+    if focus_area_value != '':
+        form.data.update({'focus_area': focus_area_value.title()})
 
     return render(request, 'library/create_map/form.html', {'form':form})
 
@@ -190,8 +203,8 @@ def share_dataset(request):
     if url_value.strip() != '':
         url_field = form['url']
         form.data.update({'url':url_value})
-        url_is_valid = form_helpers.validate_field(url_field)
-        if url_is_valid:
+        clean_url = form_helpers.validate_field(url_field)
+        if clean_url:
             format_field = form['format']
             format_field.field.widget.attrs['disabled'] = False
 
@@ -202,8 +215,8 @@ def share_dataset(request):
                 form.data.update({'format': format_value})
                 form.full_clean()
             
-            format_is_valid = form_helpers.validate_field(format_field)
-            if format_is_valid:
+            clean_format = form_helpers.validate_field(format_field)
+            if clean_format:
                 name_field = form['name']
                 name_field.field.widget.attrs['disabled'] = False
                 name_field.field.widget.attrs['autofocus'] = True

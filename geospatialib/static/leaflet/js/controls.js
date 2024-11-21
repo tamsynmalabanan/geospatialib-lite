@@ -64,6 +64,28 @@ const searchBar = (map, include=true) => {
         const button = geocoderContainer.querySelector('button')
         button.innerText = ''
         button.classList.add('bi','bi-binoculars-fill')
+
+        const geocoderFieldsSelector = map.getContainer().parentElement.getAttribute('data-leaflet-geocoder-fields')
+        if (geocoderFieldsSelector) {
+            document.addEventListener('change', (event) => {
+                if (event.target.matches(geocoderFieldsSelector)) {
+                    const place = event.target.value
+                    if (place !== '') {
+                        geocoder.setQuery(place)
+                        geocoder._geocode()
+                    }
+                }
+            })
+            
+            // geocoder.on('markgeocode', (e) => {
+            //     const geocoderFields = document.querySelectorAll(geocoderFieldsSelector)
+            //     geocoderFields.forEach(field => {
+            //         if (field.value === e.target._lastGeocode) {
+            //             field.value = e.geocode.name
+            //         }
+            //     })
+            // })
+        }
     }
 }
 

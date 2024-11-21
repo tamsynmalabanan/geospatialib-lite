@@ -28,7 +28,7 @@ def validate_field(field, style_if_valid=False):
         append_classes_to_field(field, ['is-invalid'])
         if style_if_valid:
             remove_classes_from_field(field, ['is-valid'])
-    return valid
+    return field.form.cleaned_data.get(field.name)
 
 def assign_field_style_classes(field):
     field_classes = []
