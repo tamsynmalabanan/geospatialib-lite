@@ -139,9 +139,19 @@ class WMSHandler(DatasetHandler):
         for obj in [id, layer]:
             if obj and hasattr(obj, 'keywords') and isinstance(obj.keywords, (list, tuple)):
                 keywords = keywords + list(obj.keywords)
-        keywords = list(set(keywords))
 
+        clean_keywords = []
         for kw in keywords:
+            if ',' in kw:
+                kws = [i.strip() for i in kw.split(',')]
+                for i in kws:
+                    clean_keywords.append(i)
+            else:
+                clean_keywords.append(kw)
+
+        clean_keywords = list(set(clean_keywords))
+
+        for kw in clean_keywords:
             if isinstance(kw, str):
                 tag_instance, created = models.Tag.objects.get_or_create(tag=kw.lower())
                 if tag_instance:
@@ -301,9 +311,19 @@ class WFSHandler(DatasetHandler):
         for obj in [id, layer]:
             if obj and hasattr(obj, 'keywords') and isinstance(obj.keywords, (list, tuple)):
                 keywords = keywords + list(obj.keywords)
-        keywords = list(set(keywords))
 
+        clean_keywords = []
         for kw in keywords:
+            if ',' in kw:
+                kws = [i.strip() for i in kw.split(',')]
+                for i in kws:
+                    clean_keywords.append(i)
+            else:
+                clean_keywords.append(kw)
+
+        clean_keywords = list(set(clean_keywords))
+
+        for kw in clean_keywords:
             if isinstance(kw, str):
                 tag_instance, created = models.Tag.objects.get_or_create(tag=kw.lower())
                 if tag_instance:

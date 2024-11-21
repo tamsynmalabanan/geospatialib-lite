@@ -18,6 +18,52 @@ class SearchForm(forms.Form):
         })
     )
 
+class CreateMapForm(forms.ModelForm):
+    label = forms.CharField(
+        label='Title', 
+        max_length=255, 
+        required=True,
+        widget=forms.TextInput(attrs={
+            'hx-post':reverse_lazy('hx_library:create_map'),
+            'hx-trigger':'input changed delay:1000ms',
+            'hx-target':'#createMapFormFields',
+            'hx-swap': 'innerHTML',
+        })
+    )
+    tags = forms.CharField(
+        label='Add a tag',
+        required=True,
+        error_messages={
+            'required': 'Add at least one tag.',
+        },
+        widget=forms.TextInput(attrs={
+            'hx-post':reverse_lazy('hx_library:create_map'),
+            'hx-trigger': 'tagsinput:change',
+            'hx-target':'#createMapFormFields',
+            'hx-swap': 'innerHTML',
+
+            'data-role': 'tagsinput',
+            'data-datalist-endpoint': reverse_lazy('hx_library:tags_datalist'),
+        })
+    )
+
+    class Meta:
+        model = models.Content
+        fields = ['label', 'tags']
+
+    def clean_label(self):
+        clean_data = self.cleaned_data
+        label = clean_data.get('label')
+
+        if len(label) < 3:
+            raise forms.ValidationError('Title must be at least 3 characters.')
+
+        map_query = models.Map.objects.filter(content__label__iexact=label)
+        if map_query.exists():
+            raise forms.ValidationError('You already have a map with this title.')
+        
+        return label
+
 class ShareDatasetForm(forms.Form):
     url = forms.URLField(
         label='URL',
@@ -25,7 +71,7 @@ class ShareDatasetForm(forms.Form):
         widget=forms.URLInput(attrs={
             'type':'search',
             'hx-post':reverse_lazy('hx_library:share_dataset'),
-            'hx-trigger':'input changed delay:500ms',
+            'hx-trigger':'input changed delay:1000ms',
             'hx-target':'#shareDatasetFormFields',
             'hx-swap': 'innerHTML',
         })

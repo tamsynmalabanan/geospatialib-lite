@@ -1,1 +1,19 @@
-{% lorem 1 b random %}
+{% load util_tags %}
+
+{% csrf_token %}
+<div class='d-flex flex-column gap-3'>
+    {% for field in form %}
+        {% include "base/components/form/field.html" %}
+    {% endfor %}
+</div>
+
+<script>
+    if (document.readyState === 'complete') {
+        var submitBtn = document.querySelector('#createMapModal .btn[type="submit"]')
+        {% if form.is_valid %}
+            submitBtn.removeAttribute('disabled')
+        {% else %}
+            submitBtn.setAttribute('disabled', true)
+        {% endif %}
+    }
+</script>

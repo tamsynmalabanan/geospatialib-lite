@@ -1,50 +1,52 @@
-<div
-    class="modal fade"
-    id="createMapModal"
-    tabindex="-1"
-    role="dialog"
-    aria-labelledby="createMapModalTitle"
-    aria-hidden="true"
->
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="createMapModalTitle">
-                    Modal title
-                </h5>
-                <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal"
-                    aria-label="Close"
-                ></button>
-            </div>
-            <div class="modal-body">
-                <div class="container-fluid">Add rows here</div>
-            </div>
-            <div class="modal-footer">
-                <button
-                    type="button"
-                    class="btn btn-secondary"
-                    data-bs-dismiss="modal"
-                >
-                    Close
-                </button>
-                <button type="button" class="btn btn-primary">Save</button>
-            </div>
+{% load static %}
+{% load leaflet_tags %}
+
+{% with endpoint='hx_library:share_dataset' id='createMapModal' %}
+    <div class="modal fade" id="{{id}}" tabindex="-1" role="dialog" aria-labelledby="{{id}}Title" aria-hidden="true" >
+        <div class="modal-dialog modal-lg modal-fullscreen-sm-down modal-dialog-scrollable modal-dialog-centered" role="document">
+            <form
+                class='modal-content d-flex flex-column'
+                hx-post="{% url endpoint %}"
+                hx-trigger='submit'
+                hx-target="#createMapFormFields"
+                hx-swap='innerHTML'
+            >
+                <div class="modal-header">
+                    <h5 class="modal-title" id="{{id}}Title">
+                        Create a Map
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" ></button>
+                </div>
+                <div class="modal-body flex-grow-1">
+                    <div class="container-fluid">
+                        <div class="row">
+                            {% include "base/components/messages/body.html" with dismissible=0 tag='share-dataset-form' hx_swap_oob="true" %}
+                        </div>
+                        <div class="row gap-4 gap-lg-0">
+                            <div class='col-12 col-lg-6' data-leaflet-controls-excluded='all' data-leaflet-map-class='rounded border'>
+                                {% leaflet_map id|add:"Map" %}
+                            </div>
+                            <div id='createMapFormFields' class="col">
+                                {% include "library/share_dataset/form.html" with form=create_map_form %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" name='submit' class="btn btn-primary htmx-request-hide" disabled>Create map</button>
+                    <button class="btn btn-primary htmx-indicator" type="button" disabled>
+                        <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+                        <span role="status">Onboarding...</span>
+                    </button>               
+                </div>
+            </form>
         </div>
     </div>
-</div>
 
-{% comment %} <script>
-    var createMapModal = document.getElementById('createMapModal');
-
-    createMapModal.addEventListener('show.bs.modal', function (event) {
-          // Button that triggered the modal
-          let button = event.relatedTarget;
-          // Extract info from data-bs-* attributes
-          let recipient = button.getAttribute('data-bs-whatever');
-
-        // Use above variables to manipulate the DOM
-    });
-</script> {% endcomment %}
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const modal = new bootstrap.Modal("#{{id}}")
+            modal.show()
+        })
+    </script>
+{% endwith %}

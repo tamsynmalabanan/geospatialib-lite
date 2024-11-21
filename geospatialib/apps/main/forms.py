@@ -39,7 +39,7 @@ class SetPasswordForm(SetPasswordForm):
         required=True,
         widget=forms.PasswordInput(attrs={
             'hx-post': reverse_lazy('hx_main:password_validation'),
-            'hx-trigger': 'input changed delay:500ms',
+            'hx-trigger': 'input changed delay:1000ms',
             'hx-target':'#accountPasswordFormValidationFields',
             'hx-swap':'outerHTML',
         })
@@ -91,7 +91,7 @@ class UserProfileForm(forms.ModelForm):
         required=True,
         widget=forms.TextInput(attrs={
             'hx-post': reverse_lazy('hx_main:username_validation'),
-            'hx-trigger': 'input changed delay:500ms',
+            'hx-trigger': 'input changed delay:1000ms',
             'hx-target':'.field-container:has(input[name="username"])',
             'hx-swap':'outerHTML',
         })

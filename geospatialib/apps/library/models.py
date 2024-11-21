@@ -15,7 +15,7 @@ from utils.general import form_helpers, util_helpers
 
 
 class Tag(models.Model):
-    tag = models.CharField('Tag', max_length=255)
+    tag = models.CharField('Tag', max_length=255, unique=True)
 
     def __str__(self) -> str:
         return self.tag
@@ -38,8 +38,8 @@ class Dataset(models.Model):
     url = models.ForeignKey("library.URL", verbose_name='URL', on_delete=models.CASCADE, related_name='datasets')
     format = models.CharField('Format', max_length=32, choices=form_helpers.dict_to_choices(choices.DATASET_FORMATS))
     name = models.CharField('Layer', max_length=255)
-    extra_data = models.JSONField('Data', blank=True, null=True)
 
+    extra_data = models.JSONField('Data', blank=True, null=True)
     default_style = models.CharField('Default style name', max_length=255, blank=True, null=True)
     default_legend = models.ForeignKey("library.URL", verbose_name='Default style url', on_delete=models.SET_NULL, blank=True, null=True)
 
@@ -68,7 +68,7 @@ class Content(models.Model):
     label = models.CharField('label', max_length=255, blank=True, null=True)
     bbox = models.PolygonField('Bounding box', blank=True, null=True)
     abstract = models.TextField('Abstract', blank=True, null=True)
-    tags = models.ManyToManyField("library.Tag", verbose_name='Tags', blank=True)
+    tags = models.ManyToManyField("library.Tag", verbose_name='Tags', blank=True, related_name='contents')
 
     def __str__(self) -> str:
         if self.label:

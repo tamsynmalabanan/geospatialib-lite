@@ -545,7 +545,7 @@ const createWFSLayer = (data) => {
         fetchDataOnTimeout()
         map.on('moveend zoomend', fetchDataOnTimeout)
         geojsonLayer.on('remove', () => {
-            map.off('moveend', fetchDataOnTimeout)
+            map.off('moveend zoomend', fetchDataOnTimeout)
         })
     })
 

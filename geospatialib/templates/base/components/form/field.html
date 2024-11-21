@@ -3,15 +3,24 @@
 
 {% assign_field_attributes field as field %}
 {% var field.field.widget as widget %}
+{% var widget.attrs|get:'data-datalist-endpoint' as datalist_endpoint %}
+{% var widget.input_type as input_type %}
 
 <div class="flex-grow-1 field-container">
     {% if format == 'default' %}
         {% render_field field %}
     {% elif widget|is_captchta_widget %}
         {% render_field field %}
-    {% elif widget.input_type == 'hidden' or widget.attrs.hidden %}
+    {% elif input_type and input_type == 'hidden' or widget.attrs.hidden %}
         {% render_field field %}
-    {% elif widget.input_type == 'checkbox' %}
+        {% if widget.attrs|get:'data-role' == 'tagsinput' %}
+            <div class="invalid-feedback">
+                {% for error in field.errors %}
+                    {{ error }}
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% elif input_type and input_type == 'checkbox' %}
         <div class="form-check">
             {% render_field field %}
             <label class="form-check-label" for="{{widget.attrs.id}}">{{field.label}}</label>
@@ -26,5 +35,17 @@
                 {% endfor %}
             </div>
         </div>
+    {% endif %}
+
+    {% if datalist_endpoint %}
+        <datalist 
+            id="{{field.id_for_label}}_datalist"
+            class='text-bg-dark'
+            hx-get="{{datalist_endpoint}}"
+            hx-trigger="input delay:1000ms"
+            hx-include='closest .field-container'
+            hx-target="this"
+            hx-swap='innerHTML'
+        ></datalist>
     {% endif %}
 </div>

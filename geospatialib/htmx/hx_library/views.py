@@ -139,6 +139,44 @@ class SearchList(ListView):
             context['filters'] = self.get_filters()
         return context
 
+@require_http_methods(['GET'])
+@login_required
+def tags_datalist(request):
+    current_tags = request.GET.get('tags','').split(',')
+    query = request.GET.get('tags_new', '').strip()
+
+    tags_query = lib_models.Tag.objects.filter(tag__istartswith=query)
+    tags_query = tags_query.exclude(tag__in=current_tags)
+
+    tags_query = tags_query.annotate(content_count=Count('contents', distinct=True))
+    tags_query = tags_query.order_by('-content_count')
+    tags_query = tags_query[:5]
+    
+    template = 'base/components/form/datalist.html'
+    return render(request, template, {'queryset': tags_query})
+
+@require_http_methods(['POST'])
+@login_required
+def create_map(request):
+    print(request.POST)
+
+    user = request.user
+
+    data = request.POST.dict()
+    form = lib_forms.CreateMapForm(data=data)
+    
+    label_value = data.get('label', '')
+    if label_value.strip() != '':
+        label_field = form['label']
+        label_is_valid = form_helpers.validate_field(label_field)
+        if label_is_valid:
+            tags_field = form['tags']
+            tags_is_valid = form_helpers.validate_field(tags_field)
+            print(tags_is_valid)
+
+    return render(request, 'library/create_map/form.html', {'form':form})
+
+
 @require_http_methods(['POST'])
 @login_required
 def share_dataset(request):

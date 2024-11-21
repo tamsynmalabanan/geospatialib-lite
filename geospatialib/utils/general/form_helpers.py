@@ -38,7 +38,11 @@ def assign_field_style_classes(field):
         field_classes.append('d-flex')
         field_classes.append('justify-content-center')
     else:
-        input_type = widget.input_type
+        if hasattr(widget, 'input_type'):
+            input_type = widget.input_type
+        else:
+            input_type = None
+
         if input_type == 'select':
             field_classes.append('form-select')
         elif input_type == 'checkbox':
@@ -60,6 +64,12 @@ def assign_field_attributes(field):
         # attrs['data-size'] = 'normal'
     else:
         attrs['placeholder'] = field.label
+
+    if attrs.get('data-role') == 'tagsinput':
+        attrs['hidden'] = True
+
+    if 'data-datalist-endpoint' in attrs:
+        attrs['list'] = f'{field.id_for_label}_datalist'
 
 def black_choices(value='---------'):
     return [('', value)]
