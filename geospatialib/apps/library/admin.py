@@ -14,6 +14,8 @@ class MetaAbstractAdmin(admin.ModelAdmin):
         'updated_on',
     )
     search_fields = ['label']
+    list_filter = ['type']
+
 
 admin.site.register(models.URL)
 admin.site.register(models.Tag)

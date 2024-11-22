@@ -7,13 +7,22 @@
     {% endfor %}
 </div>
 
-<script>
-    if (document.readyState === 'complete') {
-        var submitBtn = document.querySelector('#createMapModal .btn[type="submit"]')
-        {% if form.is_valid %}
-            submitBtn.removeAttribute('disabled')
-        {% else %}
-            submitBtn.setAttribute('disabled', true)
-        {% endif %}
-    }
-</script>
+{% if request.headers|get:'HX-Request' %}
+    {% include "base/components/messages/body.html" with dismissible=1 tag='create-map-form' hx_swap_oob="true" %}
+    <script>
+        if (document.readyState === 'complete') {
+            var map = mapQuerySelector('createMapModalMap')
+            if (map) {
+                map.fire('updateBboxFields')
+            }
+
+            var submitBtn = document.querySelector('#createMapModal .btn[type="submit"]')
+            {% if form.is_valid and not content %}
+                submitBtn.removeAttribute('disabled')
+            {% else %}
+                submitBtn.setAttribute('disabled', true)
+            {% endif %}
+        }
+    </script>
+{% endif %}
+

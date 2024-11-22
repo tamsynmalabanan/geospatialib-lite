@@ -56,6 +56,7 @@ class CreateMapForm(forms.Form):
             'hx-swap': 'innerHTML',
         })
     )
+    bbox = forms.CharField(widget=forms.Textarea(attrs={'hidden':True}))
 
     def clean_title(self):
         clean_data = self.cleaned_data
@@ -64,9 +65,12 @@ class CreateMapForm(forms.Form):
         if len(title) < 3:
             raise forms.ValidationError('Title must be at least 3 characters.')
 
-        map_query = models.Map.objects.filter(content__label__iexact=title)
+        map_query = models.Map.objects.filter(
+            owner__pk=self.data.get('owner'),
+            content__label__iexact=title
+        )
         if map_query.exists():
-            raise forms.ValidationError('You already have a map with this title.')
+            raise forms.ValidationError('You already have a map with a similar title.')
         
         return title
 

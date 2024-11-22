@@ -18,7 +18,7 @@ from apps.library import (
     choices as lib_choices, 
     models as lib_models
 )
-from utils.general import form_helpers, util_helpers
+from utils.general import form_helpers, util_helpers, model_helpers
 from utils.gis import dataset_helpers
 import json
 import requests
@@ -76,22 +76,34 @@ class SearchList(ListView):
                 + SearchVector('dataset__name') 
 
                 + SearchVector('map__focus_area') 
+                + SearchVector('map__references__url') 
             )
 
             # search_headline = SearchHeadline('abstract', search_query)
 
             queryset = (
                 queryset
-                .select_related('dataset', 'dataset__url', 'dataset__default_legend', 'map')
+                .select_related(
+                    'dataset', 
+                    'dataset__url', 
+                    'dataset__default_legend', 
+
+                    'map',
+                    'map__references',
+                )
                 .prefetch_related('tags')
                 .values(*self.filter_fields+[
-                    'pk', 
+                    # 'pk', 
                     'label', 
                     'bbox',     
+
                     'dataset__url__url', 
                     'dataset__name', 
                     'dataset__default_style', 
                     'dataset__default_legend__url', 
+
+                    'map__focus_area', 
+                    # 'map__references__url', 
                 ])
                 .annotate(
                     rank=SearchRank(search_vector, search_query),
@@ -162,11 +174,13 @@ def tags_datalist(request):
 @require_http_methods(['POST'])
 @login_required
 def create_map(request):
-    print(request.POST)
+    map_instance = None
+    content_instance = None
 
     user = request.user
 
     data = request.POST.dict()
+    data['owner'] = user.pk
     form = lib_forms.CreateMapForm(data=data)
     
     clean_title = None
@@ -187,7 +201,30 @@ def create_map(request):
     if focus_area_value != '':
         form.data.update({'focus_area': focus_area_value.title()})
 
-    return render(request, 'library/create_map/form.html', {'form':form})
+    if data.get('submit') is not None:
+        if form.is_valid():
+            clean_data = form.cleaned_data
+            map_instance = lib_models.Map.objects.create(
+                owner=user, 
+                focus_area=clean_data.get('focus_area', '')
+            )
+            if map_instance:
+                content_instance = lib_models.Content.objects.create(
+                    added_by=user,
+                    type='map',
+                    map=map_instance,
+                    label=clean_data.get('title', ''),
+                    bbox=clean_data.get('bbox', ''),
+                )
+                if content_instance:
+                    tag_instances = model_helpers.list_to_tags(clean_data.get('tags','').split(','))
+                    content_instance.tags.set(tag_instances)
+                    messages.success(request, 'Your map is created.', 'create-map-form')
+        
+        if not map_instance or not content_instance:
+            messages.error(request, 'There was an error while creating the map. Please review the form and try again.', 'create-map-form')
+
+    return render(request, 'library/create_map/form.html', {'form':form, 'content':content_instance})
 
 
 @require_http_methods(['POST'])
@@ -271,7 +308,7 @@ def share_dataset(request):
                     else:
                         messages.info(request, message_template, message_tags)
             else:
-                messages.info(request, message_template, message_tags)
+                messages.error(request, message_template, message_tags)
 
     return render(request, 'library/share_dataset/form.html', {
         'form':form, 

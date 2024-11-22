@@ -50,7 +50,9 @@ class Dataset(models.Model):
         return self.name
 
 class Map(models.Model):
+    owner = models.ForeignKey("main.User", verbose_name='Owner', on_delete=models.SET_NULL, blank=True, null=True, related_name='maps')
     focus_area = models.CharField('Focus area', max_length=255, blank=True, null=True)
+    references = models.ManyToManyField("library.URL", verbose_name='References', blank=True, related_name='maps')
 
 class Content(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -66,9 +68,9 @@ class Content(models.Model):
     map = models.OneToOneField("library.Map", verbose_name='Map', on_delete=models.CASCADE, related_name='content', blank=True, null=True, editable=False)
 
     label = models.CharField('label', max_length=255, blank=True, null=True)
-    bbox = models.PolygonField('Bounding box', blank=True, null=True)
     abstract = models.TextField('Abstract', blank=True, null=True)
     tags = models.ManyToManyField("library.Tag", verbose_name='Tags', blank=True, related_name='contents')
+    bbox = models.PolygonField('Bounding box', blank=True, null=True)
 
     def __str__(self) -> str:
         if self.label:
@@ -79,10 +81,5 @@ class Content(models.Model):
     def instance(self):
         return getattr(self, self.type)
 
-    def assign_type(self):
-        if not self.id and self.map:
-            self.type = 'map'
-
     def save(self, *args, **kwargs):
-        self.assign_type()
         super().save(*args, **kwargs)

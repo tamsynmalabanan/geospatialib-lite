@@ -77,14 +77,14 @@ const searchBar = (map, include=true) => {
                 }
             })
             
-            // geocoder.on('markgeocode', (e) => {
-            //     const geocoderFields = document.querySelectorAll(geocoderFieldsSelector)
-            //     geocoderFields.forEach(field => {
-            //         if (field.value === e.target._lastGeocode) {
-            //             field.value = e.geocode.name
-            //         }
-            //     })
-            // })
+            geocoder.on('markgeocode', (e) => {
+                const geocoderFields = document.querySelectorAll(geocoderFieldsSelector)
+                geocoderFields.forEach(field => {
+                    if (field.value.toLowerCase() === e.target._lastGeocode.toLowerCase()) {
+                        field.value = e.geocode.name
+                    }
+                })
+            })
         }
     }
 }
