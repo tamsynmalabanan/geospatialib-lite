@@ -25,9 +25,22 @@
         {% include "library/search/items.html" %}
     {% endif %}
 {% else %}
-    <div id='searchResults' class='pt-3'>
-        <div class='d-flex mt-3'>
+    {% if form.is_valid %}
+        <div
+            class='htmx-indicator htmx-indicator-search-results d-flex justify-content-center gap-3 flex-grow-1 align-items-center'
+            hx-get="{% url 'hx_library:search' %}{% querystring %}"
+            hx-trigger="load"
+            hx-swap='outerHTML'
+            hx-target='this'
+            hx-indicator=".htmx-indicator-search-results"
+        >
+            {% for i in '123' %}
+                <div class="spinner-grow spinner-grow-sm text-primary my-3 " role="status"></div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div id='searchResults' class=''>
             fetch default filters
         </div>
-    </div>
+    {% endif %}
 {% endif %}

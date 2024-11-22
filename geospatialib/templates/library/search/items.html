@@ -8,7 +8,7 @@
             hx-trigger="intersect once"
             hx-swap='afterend'
             hx-target='this'
-            hx-indicator=".htmx-indicator-{{page_obj.number}}"
+            hx-indicator=".htmx-indicator-search-results-{{page_obj.number}}"
         {% endif %}
     >   
         <div class="card w-100">
@@ -73,7 +73,7 @@
         </div>
     </li>
     {% if forloop.last and page_obj.has_next %}
-        <li class="htmx-indicator htmx-indicator-{{page_obj.number}} col-12">
+        <li class="htmx-indicator htmx-indicator-search-results-{{page_obj.number}} col-12">
             <div class='d-flex justify-content-center gap-3'>
                 {% for i in '123' %}
                     <div class="spinner-grow spinner-grow-sm text-primary my-3 " role="status"></div>

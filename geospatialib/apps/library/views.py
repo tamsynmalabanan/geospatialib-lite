@@ -8,16 +8,7 @@ import json
 
 def index(request):
     form = forms.SearchForm(data=request.GET)
-    context = {'form':form}
-    if form.is_valid():
-        search_list = SearchList(request=request)
-        queryset = search_list.get_queryset()
-        context['filters'] = search_list.get_filters()
-        
-        paginator = Paginator(queryset, search_list.paginate_by)
-        context['page_obj'] = paginator.get_page(1)
-
-    return render(request, 'library/index.html', context)
+    return render(request, 'library/index.html', {'form':form})
 
 def map(request):
     pass
