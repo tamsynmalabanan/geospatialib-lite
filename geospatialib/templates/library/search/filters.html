@@ -25,11 +25,16 @@
                         <div class="d-flex gap-2 mb-2 flex-wrap overflow-y-auto" style='max-height:100px;'>
                             {% for field, queryset in filters.items %}
                                 {% for i in queryset %}
-                                    {% var i|get:field as label %}
                                     {% var i.count as icount %}
+                                    {% var i|get:field as value %}
+                                    
+                                    {% var field|field_name as field_name %}
+                                    {% var value|sub_bool:field_name as label %}
+                                    
+                                    {% var 'btn btn-sm rounded-pill font-monospace fs-12' as button_class %}
+
                                     {% if label %}
-                                        {% var 'btn btn-sm rounded-pill font-monospace fs-12' as button_class %}
-                                        {% if request.GET|get:field == label %}
+                                        {% if request.GET|get:field == value|stringify %}
                                             <button
                                                 type='submit'
                                                 name="{{field}}"
@@ -41,7 +46,7 @@
                                                 <button
                                                     type='submit'
                                                     name="{{field}}"
-                                                    value="{{label}}"
+                                                    value="{{value}}"
                                                     class="{{button_class}} btn-outline-primary"
                                                 >{{label|upper}} ({{icount}})</button>
                                             {% endif %}

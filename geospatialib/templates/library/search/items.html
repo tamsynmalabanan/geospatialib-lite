@@ -16,13 +16,13 @@
                 <div>
                     {% var 'badge font-monospace fs-10 align-top user-select-none' as badge_class %}
                     {% if content.type == 'map' %}
-                        <span class="{{badge_class}} bg-info" title="{{content.type}}">{{content.type}}</span>
+                        <span class="{{badge_class}} bg-danger" title="{{content.type}}">{{content.type}}</span>
                     {% else %}
                         {% var content.dataset__format as format %}
                         {% if content.dataset__format == 'wms' %}
                             <span class="{{badge_class}} bg-success" title="{{format}}">{{format}}</span>
                         {% elif content.dataset__format == 'xyz' %}
-                            <span class="{{badge_class}} bg-danger" title="{{format}}">{{format}}</span>
+                            <span class="{{badge_class}} bg-info" title="{{format}}">{{format}}</span>
                         {% else %}
                             <span class="{{badge_class}} bg-warning" title="{{format}}">{{format}}</span>
                         {% endif %}

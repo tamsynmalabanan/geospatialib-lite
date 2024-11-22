@@ -21,6 +21,7 @@ admin.site.register(models.URL)
 admin.site.register(models.Tag)
 
 admin.site.register(models.Map)
+admin.site.register(models.MapRole)
 admin.site.register(models.Dataset)
 
 admin.site.register(models.Content, MetaAbstractAdmin)

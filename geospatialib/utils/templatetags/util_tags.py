@@ -31,8 +31,24 @@ def is_captchta_widget(widget):
     return isinstance(widget, ReCaptchaV2Checkbox)
 
 @register.filter
+def field_name(exp):
+    return exp.split('__')[-1]
+
+@register.filter
+def sub_bool(value, sub):
+    if isinstance(value, bool):
+        if value:
+            return sub
+        return f'not {sub}'
+    return value
+
+@register.filter
 def get(dict, key):
     return dict.get(key)
+
+@register.filter
+def stringify(value):
+    return str(value)
 
 @register.filter
 def domain(url):

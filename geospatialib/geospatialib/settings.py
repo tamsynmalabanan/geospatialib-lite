@@ -109,7 +109,7 @@ LEAFLET_CONFIG = {
     'DEFAULT_CENTER': (45, 0),
     'DEFAULT_ZOOM': 2,
     'MIN_ZOOM': 1,
-    'MAX_ZOOM': 18,
+    'MAX_ZOOM': 20,
     'DEFAULT_PRECISION': 6,
     
     'TILES': [],

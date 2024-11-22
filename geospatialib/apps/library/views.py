@@ -18,3 +18,6 @@ def index(request):
         context['page_obj'] = paginator.get_page(1)
 
     return render(request, 'library/index.html', context)
+
+def map(request):
+    pass

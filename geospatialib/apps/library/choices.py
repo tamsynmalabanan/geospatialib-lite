@@ -4,3 +4,14 @@ DATASET_FORMATS = {
     'xyz': 'XYZ Tiles',
     # 'arcgis-image': 'ArcGIS ImageServer'
 }
+
+MAP_PRIVACY = {
+    'public': 'Public',
+    'private': 'Private',
+}
+
+MAP_ROLES = {
+    'admin': 'Admin',
+    'editor': 'Editor',
+    'viewer': 'Viewer',
+}

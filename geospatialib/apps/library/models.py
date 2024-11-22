@@ -50,9 +50,21 @@ class Dataset(models.Model):
         return self.name
 
 class Map(models.Model):
+    privacy = models.CharField('Privacy', max_length=8, choices=form_helpers.dict_to_choices(choices.MAP_PRIVACY), default='public')
     owner = models.ForeignKey("main.User", verbose_name='Owner', on_delete=models.SET_NULL, blank=True, null=True, related_name='maps')
+    roles = models.ManyToManyField("main.User", 'Roles', through='library.MapRole', blank=True)
+
+    published = models.BooleanField('Published', default=False)
+    published_on = models.DateTimeField('Date published', blank=True, null=True)
+    updated_on = models.DateTimeField('Updated on', auto_now=True)
+    
     focus_area = models.CharField('Focus area', max_length=255, blank=True, null=True)
     references = models.ManyToManyField("library.URL", verbose_name='References', blank=True, related_name='maps')
+
+class MapRole(models.Model):
+    map = models.ForeignKey("library.Map", verbose_name='Map', on_delete=models.CASCADE)
+    user = models.ForeignKey("main.User", verbose_name='User', on_delete=models.CASCADE)
+    role = models.CharField('Role', max_length=8, default='viewer', choices=form_helpers.dict_to_choices(choices.MAP_ROLES))
 
 class Content(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

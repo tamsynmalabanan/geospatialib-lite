@@ -40,7 +40,12 @@ class SearchList(ListView):
 
     @property
     def filter_fields(self):
-        return ['type', 'dataset__format']
+        return [
+            'type', 
+            'dataset__format',
+            # 'map__privacy',
+            # 'map__published',
+        ]
 
     @property
     def filter_expressions(self):
@@ -53,31 +58,54 @@ class SearchList(ListView):
     @property
     def cache_key(self):
         return util_helpers.build_cache_key(
-            'search-queryset', 
-            self.request.user.pk, 
+            'search-queryset',
             self.query
         )
+
+    def apply_privacy_filters(self, queryset):
+        current_user = self.request.user
+        if not current_user.is_staff:
+            map_privacy_queries = Q(map__published=True) & ~Q(map__privacy='private')
+            if current_user.is_authenticated:
+                current_user_pk = current_user.pk
+                map_privacy_queries |= (
+                    Q(added_by__pk=current_user_pk)
+                    | Q(map__owner__pk=current_user_pk)
+                    | Q(map__roles__pk=current_user_pk)
+                )
+            privacy_queries = Q(type='dataset') | map_privacy_queries
+            return queryset.filter(privacy_queries)
+        return queryset
+
+    def apply_query_filters(self, queryset):
+        return queryset.filter(**{
+            param:value 
+            for param,value in self.request.GET.items() 
+            if param in self.filters
+            and value not in ['', None]
+        })
 
     def perform_full_text_search(self):
         query = self.query
         if query:
-            queryset = super().get_queryset()        
+            queryset = super().get_queryset()
             
             search_query = SearchQuery(query, search_type="plain")
 
-            search_vector = (
-                SearchVector('type')
-                + SearchVector('label')
-                + SearchVector('abstract')
-                + SearchVector('tags__tag')
+            search_vector = SearchVector('type')
+            for field in [
+                'label',
+                'abstract',
+                'tags__tag',
 
-                + SearchVector('dataset__url__url') 
-                + SearchVector('dataset__format') 
-                + SearchVector('dataset__name') 
-
-                + SearchVector('map__focus_area') 
-                + SearchVector('map__references__url') 
-            )
+                'dataset__url__url',
+                'dataset__format',
+                'dataset__name',
+                
+                'map__focus_area',
+                'map__references__url',
+            ]:
+                search_vector = search_vector + SearchVector(field)
 
             # search_headline = SearchHeadline('abstract', search_query)
 
@@ -87,12 +115,22 @@ class SearchList(ListView):
                     'dataset', 
                     'dataset__url', 
                     'dataset__default_legend', 
-
+                    
                     'map',
-                    'map__references',
+                    'map__owner',
                 )
-                .prefetch_related('tags')
+                .prefetch_related(
+                    'tags', 
+                    'map__roles',
+                    # 'map__references',
+                )
                 .values(*self.filter_fields+[
+                    'added_by__pk',
+                    'map__owner__pk', 
+                    'map__roles__pk', 
+                    'map__published', 
+                    'map__privacy', 
+
                     # 'pk', 
                     'label', 
                     'bbox',     
@@ -124,17 +162,15 @@ class SearchList(ListView):
 
             if queryset:
                 cache.set(self.cache_key, queryset, timeout=3600)
-                
-                queryset = queryset.filter(**{
-                    param:value 
-                    for param,value in self.request.GET.items() 
-                    if param in self.filters
-                    and value not in ['', None]
-                })
+                queryset = self.apply_privacy_filters(queryset)
+                queryset = self.apply_query_filters(queryset)
+                self.queryset = queryset
 
-            self.queryset = queryset
-
-        return self.queryset.annotate(rank=Max('rank')).order_by(*['-rank']+self.filter_fields+['label'])
+        return (
+            self.queryset
+            .annotate(rank=Max('rank'))
+            .order_by(*['-rank']+self.filter_fields+['label'])
+        )
 
     def get_filters(self):
         return {
