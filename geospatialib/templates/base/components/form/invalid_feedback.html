@@ -1,0 +1,5 @@
+<div class="invalid-feedback">
+    {% for error in field.errors %}
+        {{ error|safe }}
+    {% endfor %}
+</div>

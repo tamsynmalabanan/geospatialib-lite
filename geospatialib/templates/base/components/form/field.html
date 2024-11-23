@@ -14,11 +14,7 @@
     {% elif input_type and input_type == 'hidden' or widget.attrs.hidden %}
         {% render_field field %}
         {% if widget.attrs|get:'data-role' == 'tagsinput' %}
-            <div class="invalid-feedback">
-                {% for error in field.errors %}
-                    {{ error }}
-                {% endfor %}
-            </div>
+            {% include "base/components/form/invalid_feedback.html" %}
         {% endif %}
     {% elif input_type and input_type == 'checkbox' %}
         <div class="form-check">
@@ -29,11 +25,7 @@
         <div class="form-floating">
             {% render_field field %}
             <label for="{{widget.attrs.id}}">{{field.label}}</label>
-            <div class="invalid-feedback">
-                {% for error in field.errors %}
-                    {{ error }}
-                {% endfor %}
-            </div>
+            {% include "base/components/form/invalid_feedback.html" %}
         </div>
     {% endif %}
 

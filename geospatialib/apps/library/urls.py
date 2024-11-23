@@ -7,4 +7,5 @@ app_name = 'library'
 
 urlpatterns = [
     path('', views.index, name='index'),
+    path('#<uuid:pk>/', views.map, name='map'),
 ]

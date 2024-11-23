@@ -10,6 +10,7 @@ from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 from django.utils.text import slugify
 from django.contrib.gis.geos import Polygon, GEOSGeometry
 from django.http import JsonResponse
+from django.urls import reverse_lazy
 
 import time
 
@@ -125,13 +126,14 @@ class SearchList(ListView):
                     # 'map__references',
                 )
                 .values(*self.filter_fields+[
-                    'added_by__pk',
-                    'map__owner__pk', 
-                    'map__roles__pk', 
                     'map__published', 
                     'map__privacy', 
+                     
+                    'added_by__pk',
+                    'map__owner__pk', 
+                    'map__roles__pk',
 
-                    # 'pk', 
+                    'pk', 
                     'label', 
                     'bbox',     
 
@@ -140,7 +142,7 @@ class SearchList(ListView):
                     'dataset__default_style', 
                     'dataset__default_legend__url', 
 
-                    'map__focus_area', 
+                    'map__focus_area',
                     # 'map__references__url', 
                 ])
                 .annotate(
@@ -255,7 +257,12 @@ def create_map(request):
                 if content_instance:
                     tag_instances = model_helpers.list_to_tags(clean_data.get('tags','').split(','))
                     content_instance.tags.set(tag_instances)
-                    messages.success(request, 'Your map is created.', 'create-map-form')
+
+                    messages.success(request, 'Map successfully created!', 'map-floating-message')
+                    response = HttpResponse()
+                    response['HX-Redirect'] = reverse_lazy('library:map', kwargs={'pk': content_instance.pk})
+                    return response
+
         
         if not map_instance or not content_instance:
             messages.error(request, 'There was an error while creating the map. Please review the form and try again.', 'create-map-form')

@@ -65,12 +65,14 @@ class CreateMapForm(forms.Form):
         if len(title) < 3:
             raise forms.ValidationError('Title must be at least 3 characters.')
 
-        map_query = models.Map.objects.filter(
-            owner__pk=self.data.get('owner'),
-            content__label__iexact=title
+        content_query = models.Content.objects.filter(
+            map__owner__pk=self.data.get('owner'),
+            label__iexact=title
         )
-        if map_query.exists():
-            raise forms.ValidationError('You already have a map with a similar title.')
+        if content_query.exists():
+            content_instance = content_query.first()
+            url = reverse_lazy('library:map', kwargs={'pk':content_instance.pk})
+            raise forms.ValidationError(f'You already have a map with a similar title <a target="_blank" class="text-reset" href="{url}">here.</a>')
         
         return title
 

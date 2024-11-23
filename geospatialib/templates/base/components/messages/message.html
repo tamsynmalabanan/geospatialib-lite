@@ -1,4 +1,9 @@
+{% load util_tags %}
+
+{% random_string as id %}
+
 <div
+    id="{{id}}"
     role="alert"
     class="alert d-flex align-items-center fade show mb-3 {{message.tags}}
         {% if dismissible == 1 %}
@@ -24,4 +29,19 @@
     {% if dismissible == 1 %}
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     {% endif %}
+    
+    {% if fadeout == 1 %}
+        <script>
+            var element = document.querySelector("#{{id}}")
+            if (element) {
+                setTimeout(() => {
+                    element.classList.add('fadeout')
+                    setTimeout(() => {
+                        element.remove()
+                    }, 3000)
+                }, 10000)
+            }
+        </script>
+    {% endif %}
 </div>
+

@@ -1,12 +1,15 @@
 {% load leaflet_tags %}
 
 <div 
-    class='vh-100'
+    class='vh-100 position-relative'
     {% comment %} data-leaflet-map-class="" {% endcomment %}
     data-leaflet-info-panels="legend query"
     data-leaflet-controls-included='all'
     {% comment %} data-leaflet-controls-excluded='reset' {% endcomment %}
     data-leaflet-bbox-fields='.geospatialibMap-bbox-field'
 >
+    <div class='position-absolute top-0 start-0 z-2 d-flex w-100 justify-content-center px-5' style='margin-top:10px;'>
+        {% include "base/components/messages/body.html" with tag='map-floating-message' dismissible=1 fadeout=1 %}
+    </div>
     {% leaflet_map 'geospatialibMap' %}
 </div>

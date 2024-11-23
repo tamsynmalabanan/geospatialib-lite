@@ -1,0 +1,34 @@
+{% extends "base/index.html" %}
+{% load static %}
+
+{% block title_prefix %}
+    {{map.content__label}}
+{% endblock title_prefix %}
+
+{% block sidebar_toggle_name %}
+    Configure
+{% endblock sidebar_toggle_name %}
+
+{% block sidebar_toggle_icon %}
+    <i class="bi bi-gear-fill"></i>
+{% endblock sidebar_toggle_icon %}
+
+{% block offcanvas_nav %}
+    {% comment %} {% include "base/components/messages/body.html" with dismissible=1 tag='create-map-form' %} {% endcomment %}
+{% endblock offcanvas_nav %}
+
+{% block offcanvas_body %}
+    {{map}}
+    {% comment %} {% include "library/search/results.html" %} {% endcomment %}
+{% endblock offcanvas_body %}
+
+{% comment %} {% if user.is_authenticated %}
+    {% block toggle_menu %}
+        {% include "library/share_dataset/toggle.html" %}
+        {% include "library/create_map/toggle.html" %}
+    {% endblock toggle_menu %}
+    {% block offcanvas_footer %}
+        {% include "library/share_dataset/toggle.html" %}
+        {% include "library/create_map/toggle.html" %}
+    {% endblock offcanvas_footer %}
+{% endif %} {% endcomment %}

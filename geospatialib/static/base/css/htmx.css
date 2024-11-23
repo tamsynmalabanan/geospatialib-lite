@@ -19,3 +19,16 @@
 .htmx-request.htmx-request-hide {
     display: none;
 }
+
+.fadeout {
+    animation: fadeOut 4s ease-in-out;
+}
+  
+  @keyframes fadeOut {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+}
