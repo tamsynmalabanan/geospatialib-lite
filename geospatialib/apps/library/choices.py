@@ -14,5 +14,5 @@ MAP_PRIVACY = {
 MAP_ROLES = {
     'admin': 'Admin',
     'editor': 'Editor',
-    'viewer': 'Viewer',
+    'reviewer': 'Reviewer',
 }
