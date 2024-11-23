@@ -61,6 +61,9 @@ class Map(models.Model):
     focus_area = models.CharField('Focus area', max_length=255, blank=True, null=True)
     references = models.ManyToManyField("library.URL", verbose_name='References', blank=True, related_name='maps')
 
+    def __str__(self) -> str:
+        return self.content.label
+
 class MapRole(models.Model):
     map = models.ForeignKey("library.Map", verbose_name='Map', on_delete=models.CASCADE)
     user = models.ForeignKey("main.User", verbose_name='User', on_delete=models.CASCADE)

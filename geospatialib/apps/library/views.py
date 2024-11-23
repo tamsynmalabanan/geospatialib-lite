@@ -12,6 +12,8 @@ def index(request):
     return render(request, 'library/index.html', {'form':form})
 
 def map(request, pk):
+    current_user = request.user
+
     try:
         map_instance = (
             models.Map.objects

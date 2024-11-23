@@ -64,19 +64,12 @@ class SearchList(ListView):
         )
 
     def apply_privacy_filters(self, queryset):
-        current_user = self.request.user
-        if not current_user.is_staff:
-            map_privacy_queries = Q(map__published=True) & (Q(map__privacy='public') | Q(map__privacy='default', map__owner__map_privacy='public'))
-            if current_user.is_authenticated:
-                current_user_pk = current_user.pk
-                map_privacy_queries |= (
-                    Q(added_by__pk=current_user_pk)
-                    | Q(map__owner__pk=current_user_pk)
-                    | Q(map__roles__pk=current_user_pk)
-                )
-            privacy_queries = Q(type='dataset') | map_privacy_queries
-            return queryset.filter(privacy_queries)
-        return queryset
+        return queryset.filter(
+            Q(type='dataset') | (
+                Q(type='map') & 
+                model_helpers.get_map_privacy_filters(self.request.user, 'map')
+            )
+        )
 
     def apply_query_filters(self, queryset):
         return queryset.filter(**{
