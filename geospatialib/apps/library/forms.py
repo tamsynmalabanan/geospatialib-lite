@@ -49,12 +49,6 @@ class CreateMapForm(forms.Form):
         label='Focus area', 
         max_length=255,
         required=False,
-        widget=forms.TextInput(attrs={
-            'hx-post':reverse_lazy('hx_library:create_map'),
-            'hx-trigger':'input changed delay:1000ms',
-            'hx-target':'#createMapFormFields',
-            'hx-swap': 'innerHTML',
-        })
     )
     bbox = forms.CharField(widget=forms.Textarea(attrs={'hidden':True}))
 

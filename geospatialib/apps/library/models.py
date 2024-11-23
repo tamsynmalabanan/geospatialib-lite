@@ -50,7 +50,7 @@ class Dataset(models.Model):
         return self.name
 
 class Map(models.Model):
-    privacy = models.CharField('Privacy', max_length=8, choices=form_helpers.dict_to_choices(choices.MAP_PRIVACY), default='public')
+    privacy = models.CharField('Privacy', max_length=8, choices=form_helpers.dict_to_choices(choices.MAP_PRIVACY), default='default')
     owner = models.ForeignKey("main.User", verbose_name='Owner', on_delete=models.SET_NULL, blank=True, null=True, related_name='maps')
     roles = models.ManyToManyField("main.User", 'Roles', through='library.MapRole', blank=True)
 

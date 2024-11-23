@@ -6,6 +6,7 @@ DATASET_FORMATS = {
 }
 
 MAP_PRIVACY = {
+    'default': 'Default',
     'public': 'Public',
     'private': 'Private',
 }
