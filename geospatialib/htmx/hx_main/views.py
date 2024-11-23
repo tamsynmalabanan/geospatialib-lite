@@ -82,11 +82,15 @@ def user_account(request, name):
         form = main_forms.get_account_forms(user, name=name)
     else:
         if form.is_valid():
+            proper_name = name
+            if name == 'privacy':
+                proper_name = 'privacy settings'
+
             if len(form.changed_data) != 0:
                 user = form.save()
-                messages.success(request, f'You have successfully updated your {name}.', extra_tags=f'{name}-form')
+                messages.success(request, f'You have successfully updated your {proper_name}.', extra_tags=f'{name}-form')
             else:
-                messages.info(request, f'No changes made to your {name}.', extra_tags=f'{name}-form')
+                messages.info(request, f'No changes made to your {proper_name}.', extra_tags=f'{name}-form')
         else:
             messages.error(request, 'Please review the error/s below.', f'{name}-form')
             for field in form.errors:

@@ -7,7 +7,8 @@ from django.contrib.auth.hashers import UNUSABLE_PASSWORD_PREFIX
 
 from random_username.generate import generate_username
 
-from . import validators
+from . import validators, choices
+from utils.general import form_helpers
 
 class UserManager(BaseUserManager):
 
@@ -63,6 +64,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+
+    dashboard_privacy = models.CharField('Dashboard privacy', max_length=8, choices=form_helpers.dict_to_choices(choices.USER_PRIVACY), default='public')
+    map_privacy = models.CharField('Default map privacy', max_length=8, choices=form_helpers.dict_to_choices(choices.USER_PRIVACY), default='public')
     
     joined_on = models.DateTimeField('Join date', auto_now_add=True)
     first_name = models.CharField('First name', max_length=32, blank=True, null=True)
