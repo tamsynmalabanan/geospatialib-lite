@@ -2,6 +2,12 @@ body {
     min-width: 300px;
 }
 
+.no-icon.accordion-button::after {
+    width: 0px !important;
+    --bs-accordion-btn-icon: none !important;
+    --bs-accordion-btn-active-icon: none !important;
+}
+
 ::-webkit-scrollbar {
     width: 5px;
     height: 5px;
