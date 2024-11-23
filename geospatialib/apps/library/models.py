@@ -52,7 +52,6 @@ class Dataset(models.Model):
 class Map(models.Model):
     privacy = models.CharField('Privacy', max_length=8, choices=form_helpers.dict_to_choices(choices.MAP_PRIVACY), default='default')
     owner = models.ForeignKey("main.User", verbose_name='Owner', on_delete=models.CASCADE, related_name='maps')
-    roles = models.ManyToManyField("main.User", 'Roles', through='library.MapRole', blank=True)
 
     published = models.BooleanField('Published', default=False)
     published_on = models.DateTimeField('Date published', blank=True, null=True)
@@ -65,9 +64,25 @@ class Map(models.Model):
         return self.content.label
 
 class MapRole(models.Model):
-    map = models.ForeignKey("library.Map", verbose_name='Map', on_delete=models.CASCADE)
+    map = models.ForeignKey("library.Map", verbose_name='Map', on_delete=models.CASCADE, related_name='roles')
     user = models.ForeignKey("main.User", verbose_name='User', on_delete=models.CASCADE)
+    added_on = models.DateTimeField('Added on', auto_now_add=True, blank=True, null=True)
+    updated_on = models.DateTimeField('Updated on', auto_now=True, blank=True, null=True)
     role = models.CharField('Role', max_length=8, default='viewer', choices=form_helpers.dict_to_choices(choices.MAP_ROLES))
+
+class MapLog(models.Model):
+    map = models.ForeignKey("library.Map", verbose_name='Map', on_delete=models.CASCADE, related_name='logs')
+    user = models.ForeignKey("main.User", verbose_name='User', on_delete=models.SET_NULL, blank=True, null=True)
+    added_on = models.DateTimeField('Added on', auto_now_add=True, blank=True, null=True)
+    field = models.CharField('Field', max_length=50)
+    value = models.TextField('Value')
+    comments = models.ManyToManyField("library.Comment", verbose_name='Comments', blank=True)
+
+class Comment(models.Model):
+    user = models.ForeignKey("main.User", verbose_name='User', on_delete=models.SET_NULL, blank=True, null=True)
+    added_on = models.DateTimeField('Added on', auto_now_add=True, blank=True, null=True)
+    updated_on = models.DateTimeField('Updated on', auto_now=True, blank=True, null=True)
+    comment = models.TextField('Comment')
 
 class Content(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -82,7 +97,7 @@ class Content(models.Model):
     dataset = models.OneToOneField("library.Dataset", verbose_name='Dataset', on_delete=models.CASCADE, related_name='content', blank=True, null=True, editable=False)
     map = models.OneToOneField("library.Map", verbose_name='Map', on_delete=models.CASCADE, related_name='content', blank=True, null=True, editable=False)
 
-    label = models.CharField('label', max_length=255, blank=True, null=True)
+    label = models.CharField('Label', max_length=255, blank=True, null=True)
     abstract = models.TextField('Abstract', blank=True, null=True)
     tags = models.ManyToManyField("library.Tag", verbose_name='Tags', blank=True, related_name='contents')
     bbox = models.PolygonField('Bounding box', blank=True, null=True)

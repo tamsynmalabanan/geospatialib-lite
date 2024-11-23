@@ -26,6 +26,7 @@ def map(request, pk):
                 # 'content__abstract',
                 # 'content__tags__tag',
 
+                # 'roles__user__pk',
                 # 'published',
                 # 'privacy', 
                 # 'focus_area',

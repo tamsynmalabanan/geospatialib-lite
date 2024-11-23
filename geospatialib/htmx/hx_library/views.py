@@ -115,7 +115,7 @@ class SearchList(ListView):
                 )
                 .prefetch_related(
                     'tags', 
-                    'map__roles',
+                    'map__roles__user',
                     # 'map__references',
                 )
                 .values(*self.filter_fields+[
@@ -124,7 +124,7 @@ class SearchList(ListView):
                      
                     'added_by__pk',
                     'map__owner__pk', 
-                    'map__roles__pk',
+                    'map__roles__user__pk',
 
                     'pk', 
                     'label', 

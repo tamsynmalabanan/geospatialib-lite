@@ -22,7 +22,7 @@ def get_map_privacy_filters(user, map_field_name=None):
         queries |= (
             Q(**{f'{prefix}content__added_by__pk':user_pk})
             | Q(**{f'{prefix}owner__pk':user_pk})
-            | Q(**{f'{prefix}roles__pk':user_pk})
+            | Q(**{f'{prefix}roles__user__pk':user_pk})
         )
 
     return queries
