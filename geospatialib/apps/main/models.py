@@ -78,6 +78,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ['username']
 
     @property
+    def proper_name(self):
+        return ' '.join([self.first_name, self.last_name])
+
+    @property
     def has_no_password(self):
         return self.password.startswith(UNUSABLE_PASSWORD_PREFIX)
 

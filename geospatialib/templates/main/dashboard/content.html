@@ -1,0 +1,20 @@
+<div data-bs-spy="scroll" data-bs-target="#dashboardNavbar" data-bs-root-margin="0px 0px -40%" data-bs-smooth-scroll="true" class="scrollspy-example bg-body-tertiary p-3 rounded-2" tabindex="0">
+    <div id="scrollspyProfile" class='d-flex gap-3'>
+        <img src="{{ profile_picture }}" width="100" height="100" class='rounded border-0' alt=''>
+        <div class='d-flex flex-column'>
+            <h4>{{request.user.proper_name}}</h4>
+            <h6 class='lead'>@{{request.user.username}}</h6>
+            <p>{% lorem 10 w random %}</p>
+        </div>
+    </div>
+    <p>{% lorem 1 p random %}</p>
+    
+    <h4 id="scrollspyHeading2">Second heading</h4>
+    <p>{% lorem 1 b random %}</p>
+    <h4 id="scrollspyHeading3">Third heading</h4>
+    <p>{% lorem 1 b random %}</p>
+    <h4 id="scrollspyHeading4">Fourth heading</h4>
+    <p>{% lorem 1 b random %}</p>
+    <h4 id="scrollspyHeading5">Fifth heading</h4>
+    <p>{% lorem 1 b random %}</p>
+</div>
