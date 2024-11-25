@@ -6,22 +6,70 @@
 {% endblock title_prefix %}
 
 {% block sidebar_toggle_name %}
-    Configure
+    {% if role == 0 %}
+        Details
+    {% else %}
+        Configure
+    {% endif %}
 {% endblock sidebar_toggle_name %}
 
 {% block sidebar_toggle_icon %}
-    <i class="bi bi-gear-fill"></i>
+    {% if role == 0 %}
+        <i class="bi bi-info-circle-fill"></i>
+    {% else %}
+        <i class="bi bi-gear-fill"></i>
+    {% endif %}
 {% endblock sidebar_toggle_icon %}
 
-{% block offcanvas_nav %}
-    {% comment %} {% include "base/components/messages/body.html" with dismissible=1 tag='create-map-form' %} {% endcomment %}
-{% endblock offcanvas_nav %}
+{% block offcanvas_nav_body %}
+<div class="accordion accordion-flush px-0 flex-grow-1 d-flex flex-column" id="mapAccordion">
+    <ul class="nav nav-tabs card-header-tabs ps-3">
+        <li class="nav-item">
+            <button
+                class="accordion-button no-icon me-2 px-2 ps-3 py-1 text-bg-dark bg-transparent border-0 rounded-top z-3"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#detailsMapAccordion"
+                aria-expanded="true"
+                aria-controls="detailsMapAccordion"
+            >Details</button>
+        </li>
+        <li class="nav-item">
+            <button
+                class="accordion-button no-icon me-2 px-2 ps-3 py-1 text-bg-dark bg-transparent border-0 rounded-top z-3 collapsed"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#commentsMapAccordion"
+                aria-expanded="false"
+                aria-controls="commentsMapAccordion"
+            >Comments</button>
+        </li>
+    </ul>
 
-{% block offcanvas_body %}
-    {{map}}
-    {{role}}
-    {% comment %} {% include "library/search/results.html" %} {% endcomment %}
-{% endblock offcanvas_body %}
+    <div class="offcanvas-body p-0 border-top text-bg-dark z-2 flex-grow-1 d-flex flex-column" style='margin-top:-1px;'>
+        <div
+            id="detailsMapAccordion"
+            class="accordion-collapse collapse flex-grow-1 fade show"
+            data-bs-parent="#mapAccordion"
+        >
+            <div class="accordion-body h-100 pt-4">
+                {{map}}
+                {{role}}
+            </div>
+        </div>
+        <div
+            id="commentsMapAccordion"
+            class="accordion-collapse collapse flex-grow-1 fade"
+            data-bs-parent="#mapAccordion"
+        >
+            <div class="accordion-body h-100 pt-4">
+                {{map}}
+                {{role}}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock offcanvas_nav_body %}
 
 {% comment %} {% if user.is_authenticated %}
     {% block toggle_menu %}

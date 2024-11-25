@@ -5,7 +5,7 @@
         {% for name in forms.keys  %}
             <li class="nav-item">
                 <button
-                    class="accordion-button no-icon me-2 p-2 ps-3 text-bg-dark rounded-top z-3 {% if name != active_account_form %}collapsed{% endif %}"
+                    class="accordion-button no-icon me-2 px-2 ps-3 py-1 text-bg-dark rounded-top z-3 {% if name != active_account_form %}collapsed{% endif %}"
                     type="button"
                     data-bs-toggle="collapse"
                     data-bs-target="#{{name}}AccountAccordion"
@@ -16,7 +16,7 @@
         {% endfor %}
         <li class="nav-item">
             <button
-                class="accordion-button no-icon me-2 p-2 ps-3 text-bg-dark rounded-top z-3 collapsed"
+                class="accordion-button no-icon me-2 px-2 ps-3 py-1 text-bg-dark rounded-top z-3 collapsed"
                 type="button"
                 data-bs-toggle="collapse"
                 data-bs-target="#optionsAccountAccordion"

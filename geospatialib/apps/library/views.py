@@ -19,8 +19,11 @@ def map(request, pk):
     try:
         map_instance = (
             models.Map.objects
-            .select_related('content')
-            .prefetch_related()
+            .select_related('content', 'owner')
+            .prefetch_related(
+                'roles', 
+                'roles__user'
+            )
             .get(
                 Q(content__pk=pk) & 
                 model_helpers.get_map_privacy_filters(user)

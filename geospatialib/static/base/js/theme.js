@@ -93,36 +93,44 @@ const getThemedControls = (parent=document) => {
     ]
 }
 
-const toggleControlsTheme = (theme, parent=document) => {
+const toggleControlsTheme = async (theme, parent=document) => {
+    document.documentElement.setAttribute('data-bs-theme', theme)
+
+    let toggleControlsThemeTimeout
     getThemedControls(parent).forEach(control => {
         control.elements.forEach(element => {
             for (let themeName in control.classes) {
-                const themeClasses = control.classes[themeName]
+                const themeClasses = control.classes[themeName];
                 if (themeName === theme) {
                     themeClasses.forEach(className => {
-                        element.classList.add(className)
-                    })
+                        element.classList.add(className);
+                    });
                 } else {
                     themeClasses.forEach(className => {
-                        element.classList.remove(className)
-                    })
+                        element.classList.remove(className);
+                    });
                 }
             }
-        })
-    })
-}
+
+            clearTimeout(toggleControlsThemeTimeout);
+            toggleControlsThemeTimeout = setTimeout(() => {
+                const setThemeEvent = new Event('setTheme');
+                document.dispatchEvent(setThemeEvent);
+            }, 250)
+        });
+    
+    });}
 
 const setTheme = theme => {
     if (theme === 'auto') {
         theme = getPreferredTheme()
     }
     
-    document.documentElement.setAttribute('data-bs-theme', theme)
     setStoredTheme(theme)
-    toggleControlsTheme(theme)
 
-    const setThemeEvent = new Event('setTheme')
-    document.dispatchEvent(setThemeEvent)
+    toggleControlsTheme(theme)
+    // const setThemeEvent = new Event('setTheme')
+    // document.dispatchEvent(setThemeEvent)
 }
 
 const toggleDarkMode = (event) => {

@@ -715,8 +715,7 @@ const handleMapInfoPanels = (map) => {
             return container
         }
     
-        const infoPanelControl = control.addTo(map)
-        const infoPanelContainer = infoPanelControl.getContainer()
+        control.addTo(map)
 
         if (includedPanels.includes('legend')) {
             handleMapLegend(map)
@@ -760,6 +759,37 @@ const handleMapObservers = (map) => {
         })
     }
 }
+
+// const handleMapTitle = (map) => {
+//     const title = getMapDataset(map)['leafletMapTitle']
+//     if (title) {
+//         const control = L.control({position:'topleft'})
+//         control.onAdd = (map) => {
+//             const container = L.DomUtil.create('div', 'leaflet-map-title')
+//             setAsThemedControl(container)
+//             container.classList.add(
+//                 'rounded',
+//                 'px-3',
+//                 'py-2',
+//                 'bg-opacity-75',
+//             )
+            
+//             const header = document.createElement('h4')
+//             container.appendChild(header)
+//             header.className = 'm-0'
+//             header.innerText = title
+            
+//             return container
+//         }
+
+//         const container = control.addTo(map).getContainer()
+
+//         const topLeftContainer = map._controlCorners.topleft
+//         if (topLeftContainer.firstChild !== container) {
+//             topLeftContainer.insertBefore(container, topLeftContainer.firstChild);
+//         }
+//     }
+// }
 
 document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener("map:init", function (event) {

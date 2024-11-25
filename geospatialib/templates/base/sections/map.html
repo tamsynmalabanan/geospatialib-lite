@@ -2,6 +2,11 @@
 
 <div 
     class='vh-100 position-relative'
+
+    {% if title %}
+        data-leaflet-map-title = "{{title}}"
+    {% endif %}
+
     {% comment %} data-leaflet-map-class="" {% endcomment %}
     data-leaflet-info-panels="legend query"
     data-leaflet-controls-included='all'
