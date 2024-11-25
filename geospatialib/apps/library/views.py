@@ -14,36 +14,27 @@ def index(request):
     return render(request, 'library/index.html', {'form':form})
 
 def map(request, pk):
+    user = request.user
+
     try:
         map_instance = (
             models.Map.objects
-            .select_related('content', 'owner')
-            .prefetch_related('content__tags', 'roles', 'references')
-            .values(*[
-                'content__pk', 
-                'content__label', 
-                # 'content__bbox',
-                # 'content__abstract',
-                # 'content__tags__tag',
-
-                # 'roles__user__pk',
-                # 'published',
-                # 'privacy', 
-                # 'focus_area',
-                # 'references__url',
-            ])
-            .filter(
+            .select_related('content')
+            .prefetch_related()
+            .get(
                 Q(content__pk=pk) & 
-                model_helpers.get_map_privacy_filters(request.user)
+                model_helpers.get_map_privacy_filters(user)
             )
-            .first()
         )
     except Exception as e:
         print(e)
         map_instance = None
 
     if map_instance:
-        return render(request, 'library/map.html', {'map':map_instance})
+        return render(request, 'library/map.html', {
+            'map':map_instance, 
+            'role':map_instance.get_role(user)}
+        )
 
     messages.error(request, 'Page not found. You have been redirected to the library.', 'map-floating-message')
     return redirect('library:index')

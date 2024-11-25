@@ -50,8 +50,8 @@ class Dataset(models.Model):
         return self.name
 
 class Map(models.Model):
-    privacy = models.CharField('Privacy', max_length=8, choices=form_helpers.dict_to_choices(choices.MAP_PRIVACY), default='default')
     owner = models.ForeignKey("main.User", verbose_name='Owner', on_delete=models.CASCADE, related_name='maps')
+    privacy = models.CharField('Privacy', max_length=8, choices=form_helpers.dict_to_choices(choices.MAP_PRIVACY), default='default')
 
     published = models.BooleanField('Published', default=False)
     published_on = models.DateTimeField('Date published', blank=True, null=True)
@@ -62,13 +62,32 @@ class Map(models.Model):
 
     def __str__(self) -> str:
         return self.content.label
+    
+    def get_role(self, user):
+        if self.owner == user:
+            return 4
+        else:
+            try:
+                return self.roles.get(map=self, user=user).role
+            except:
+                return 0
+        
+    def create_logs(self):
+        print(vars(self))
+    
+    def save(self, *args, **kwargs):
+        self.create_logs()
+        super().save(*args, **kwargs)
 
 class MapRole(models.Model):
     map = models.ForeignKey("library.Map", verbose_name='Map', on_delete=models.CASCADE, related_name='roles')
     user = models.ForeignKey("main.User", verbose_name='User', on_delete=models.CASCADE)
     added_on = models.DateTimeField('Added on', auto_now_add=True, blank=True, null=True)
     updated_on = models.DateTimeField('Updated on', auto_now=True, blank=True, null=True)
-    role = models.CharField('Role', max_length=8, default='viewer', choices=form_helpers.dict_to_choices(choices.MAP_ROLES))
+    role = models.SmallIntegerField('Role', default=2, choices=form_helpers.dict_to_choices(choices.MAP_ROLES))
+
+    class Meta:
+        unique_together = ['map', 'user']
 
 class MapLog(models.Model):
     map = models.ForeignKey("library.Map", verbose_name='Map', on_delete=models.CASCADE, related_name='logs')

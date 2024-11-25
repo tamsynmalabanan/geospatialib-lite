@@ -65,8 +65,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
-    dashboard_privacy = models.CharField('Dashboard privacy', max_length=8, choices=form_helpers.dict_to_choices(choices.USER_PRIVACY), default='public')
-    map_privacy = models.CharField('Default map privacy', max_length=8, choices=form_helpers.dict_to_choices(choices.USER_PRIVACY), default='public')
+    dashboard_privacy = models.CharField('Dashboard', max_length=8, choices=form_helpers.dict_to_choices(choices.USER_PRIVACY), default='public')
+    map_privacy = models.CharField('Map (default)', max_length=8, choices=form_helpers.dict_to_choices(choices.USER_PRIVACY), default='public')
     
     joined_on = models.DateTimeField('Join date', auto_now_add=True)
     first_name = models.CharField('First name', max_length=32, blank=True, null=True)

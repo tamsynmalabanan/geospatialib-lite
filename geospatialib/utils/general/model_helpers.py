@@ -9,21 +9,21 @@ def get_map_privacy_filters(user, map_field_name=None):
     if map_field_name:
         prefix = f'{map_field_name}__'
 
-    # if not user.is_staff:
-    queries = Q(**{f'{prefix}published':True}) & (
-        Q(**{f'{prefix}privacy':'public'}) | Q(
-            **{f'{prefix}privacy':'default'}, 
-            **{f'{prefix}owner__map_privacy':'public'}
+    if not user.is_staff:
+        queries = Q(**{f'{prefix}published':True}) & (
+            Q(**{f'{prefix}privacy':'public'}) | Q(
+                **{f'{prefix}privacy':'default'}, 
+                **{f'{prefix}owner__map_privacy':'public'}
+            )
         )
-    )
-    
-    if user.is_authenticated:
-        user_pk = user.pk
-        queries |= (
-            Q(**{f'{prefix}content__added_by__pk':user_pk})
-            | Q(**{f'{prefix}owner__pk':user_pk})
-            | Q(**{f'{prefix}roles__user__pk':user_pk})
-        )
+        
+        if user.is_authenticated:
+            user_pk = user.pk
+            queries |= (
+                Q(**{f'{prefix}owner__pk':user_pk})
+                | Q(**{f'{prefix}roles__user__pk':user_pk})
+                # | Q(**{f'{prefix}content__added_by__pk':user_pk})
+            )
 
     return queries
 

@@ -12,7 +12,7 @@ MAP_PRIVACY = {
 }
 
 MAP_ROLES = {
-    'admin': 'Admin',
-    'editor': 'Editor',
-    'reviewer': 'Reviewer',
+    3: 'Admin',
+    2: 'Editor',
+    1: 'Reviewer',
 }

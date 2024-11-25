@@ -2,11 +2,10 @@
 {% load static %}
 
 {% block title_prefix %}
-    {{map.content__label}}
+    {{map.content.label}}
 {% endblock title_prefix %}
 
 {% block sidebar_toggle_name %}
-    
     Configure
 {% endblock sidebar_toggle_name %}
 
@@ -20,6 +19,7 @@
 
 {% block offcanvas_body %}
     {{map}}
+    {{role}}
     {% comment %} {% include "library/search/results.html" %} {% endcomment %}
 {% endblock offcanvas_body %}
 

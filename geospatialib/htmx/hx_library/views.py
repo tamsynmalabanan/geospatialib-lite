@@ -37,7 +37,12 @@ class SearchList(ListView):
 
     @property
     def query(self):
-        return self.request.GET.get('query')
+        query = self.request.GET.get('query')
+        
+        if query.endswith('?'):
+            query = query[:-1]
+
+        return query
 
     @property
     def filter_fields(self):
@@ -101,6 +106,7 @@ class SearchList(ListView):
             ]:
                 search_vector = search_vector + SearchVector(field)
 
+
             # search_headline = SearchHeadline('abstract', search_query)
 
             queryset = (
@@ -153,19 +159,23 @@ class SearchList(ListView):
             queryset = cache.get(self.cache_key)
 
             if not queryset:
-                queryset = self.perform_full_text_search()  
+                queryset = self.perform_full_text_search()
 
-            if queryset:
+            if queryset.exists():
                 cache.set(self.cache_key, queryset, timeout=3600)
                 queryset = self.apply_privacy_filters(queryset)
                 queryset = self.apply_query_filters(queryset)
-                self.queryset = queryset
 
-        return (
-            self.queryset
-            .annotate(rank=Max('rank'))
-            .order_by(*['-rank']+self.filter_fields+['label'])
-        )
+            self.queryset = queryset
+
+        queryset = self.queryset
+        if queryset and queryset.exists():
+            queryset = (
+                self.queryset
+                .annotate(rank=Max('rank'))
+                .order_by(*['-rank']+self.filter_fields+['label'])
+            )
+        return queryset
 
     def get_filters(self):
         return {
