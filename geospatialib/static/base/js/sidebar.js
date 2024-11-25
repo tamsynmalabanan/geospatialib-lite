@@ -18,7 +18,9 @@ const toggleSidebar = (event) => {
         
         dismiss.classList.remove('d-lg-none')
 
-        footer.classList.remove('d-lg-flex')
+        if (footer) {
+            footer.classList.remove('d-lg-flex')
+        }
 
         gutter.classList.remove('d-lg-flex')
 
@@ -33,7 +35,9 @@ const toggleSidebar = (event) => {
         
         dismiss.classList.add('d-lg-none')
         
-        footer.classList.add('d-lg-flex')
+        if (footer) {
+            footer.classList.add('d-lg-flex')
+        }
 
         gutter.classList.add('d-lg-flex')
     }

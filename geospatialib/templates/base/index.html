@@ -36,14 +36,18 @@
                         <div class="offcanvas-body d-flex flex-column flex-grow-1 overflow-x-hidden px-3 pt-0">
                             {% block offcanvas_body %}{% endblock offcanvas_body %}
                         </div>
-                        <div class="footer border-top d-none d-lg-flex py-3 gap-3 justify-content-center px-5">
-                            {% with button_class='btn btn-sm btn-dark d-flex gap-2 justify-content-center align-items-center' labelClass='text-nowrap d-none d-xxl-inline' %}
+                        <div class="footer border-top d-none d-lg-flex py-3 gap-3 justify-content-center px-3">
+                            {% with button_class='btn btn-sm btn-dark d-flex gap-2 justify-content-center align-items-between' labelClass='text-nowrap d-none d-xxl-inline' %}
                                 {% if user.is_authenticated %}
                                     {% include "main/menu/dropup.html" with labelClass='text-nowrap' %}
-                                    {% block offcanvas_footer %}{% endblock offcanvas_footer %}
+                                    <div class='d-flex ms-auto'>
+                                        {% block offcanvas_footer %}{% endblock offcanvas_footer %}
+                                    </div>
                                 {% else %}
-                                    {% include "main/about/toggle.html" %}
-                                    {% include "main/login/toggle.html" with button_class='btn btn-sm d-flex gap-2 justify-content-center btn-primary flex-grow-1' %}
+                                    <div class='d-flex w-100 gap-3 px-5'>
+                                        {% include "main/about/toggle.html" %}
+                                        {% include "main/login/toggle.html" with button_class='btn btn-sm d-flex gap-2 justify-content-center btn-primary flex-grow-1' %}
+                                    </div>
                                 {% endif %}
                             {% endwith %}
                         </div>
