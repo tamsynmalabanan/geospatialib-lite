@@ -1,0 +1,29 @@
+<button
+    class="{{button_class}} btn-dark"
+    type="button"
+>
+    {% if map.proper_privacy == 'Private' %}
+        <i class="bi bi-unlock-fill"></i>
+        <span class="{{label_class}}">Set as public</span>
+    {% else %}    
+        <i class="bi bi-lock-fill"></i>
+        <span class="{{label_class}}">Set as private</span>
+    {% endif %}
+</button>
+
+<button
+    class="
+        {{button_class}}
+        {% if map.published %} btn-dark
+        {% else %} btn-success {% endif %}
+    "
+    type="button"
+>
+    {% if map.published %}
+        <i class="bi bi-x-circle-fill"></i>
+        <span class="{{label_class}}">Unpublish</span>
+    {% else %}    
+        <i class="bi bi-globe"></i>
+        <span class="{{label_class}}">Publish</span>
+    {% endif %}
+</button>

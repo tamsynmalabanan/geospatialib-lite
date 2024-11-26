@@ -16,7 +16,8 @@ const resetShareDatasetSubmitBtn = () => {
 
 const handleShareDatasetForm = (bounds) => {
     if (bounds) {
-        shareDatasetBounds = bounds.slice(1, -1).split(',')
+        bounds = bounds.replace('(', '[').replace(')', ']')
+        shareDatasetBounds = JSON.parse(bounds)
     } else {
         shareDatasetBounds = undefined
     }

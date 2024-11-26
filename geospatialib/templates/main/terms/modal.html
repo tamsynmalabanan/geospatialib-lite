@@ -18,10 +18,10 @@
                     </div>
                 </div>
                 <div class="modal-footer d-flex flex-nowrap justify-content-between">
-                    {% include "main/about/toggle.html" with button_class='btn btn-dark d-flex gap-2 justify-content-center' labelClass='d-none' %}
+                    {% include "main/about/toggle.html" with button_class='btn btn-dark d-flex gap-2 justify-content-center' label_class='d-none' %}
                     <div class='d-flex gap-2'>
                         {% if not user.is_authenticated %}
-                            {% include "main/login/toggle.html" with button_class='btn d-flex gap-2 justify-content-center btn-primary' labelClass='d-none' %}
+                            {% include "main/login/toggle.html" with button_class='btn d-flex gap-2 justify-content-center btn-primary' label_class='d-none' %}
                         {% endif %}
                         <button type="button" tabindex='-1' class="btn btn-secondary" data-bs-dismiss="modal" >Understood</button>
                     </div>

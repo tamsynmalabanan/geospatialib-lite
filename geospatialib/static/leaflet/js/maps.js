@@ -77,3 +77,16 @@ const enableLayerClick = (map) => {
         }
     });
 }
+
+const zoomMapToBbox = (map, bbox) => {
+    if (typeof bbox === 'string') {
+        bbox = bbox.replace('(', '[').replace(')', ']')
+        bbox = JSON.parse(bbox)
+    }
+
+    const [minX, minY, maxX, maxY] = bbox
+    const bounds = L.latLngBounds([[minY, minX], [maxY, maxX]]);
+    map.fitBounds(bounds)
+
+    return bounds
+}

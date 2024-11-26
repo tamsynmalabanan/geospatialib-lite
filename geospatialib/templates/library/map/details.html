@@ -6,40 +6,83 @@
     <div>
         <h6 class="{{label_class}}">Focus Area</h6>
         <h6 class='fw-normal'>{{map.focus_area}}</h6>
-        <h6 class='fw-light fs-12'>{{map.content.bbox.extent}}</h6>
     </div>
     <div>
         <h6 class="{{label_class}}">Abstract</h6>
-        <p class='fw-normal m-0'>{{map.content.abstract|safe}}</p>
+        <div class='fw-normal m-0 text-justify'>{{map.content.abstract|safe|linebreaks|escape}}</div>
     </div>
     <div>
         <h6 class="{{label_class}}">Tags</h6>
-        <p class='fw-normal m-0'>{{map.content.tags.all}}</p>
+        <div class="d-flex gap-2">
+            {% for tag in map.content.tags.all %}
+                <span class="badge rounded-pill text-bg-primary">
+                    {{tag}}
+                </span>
+            {% endfor %}
+        </div>
     </div>
     <div>
         <h6 class="{{label_class}}">References</h6>
-        <h6 class='fw-normal'>{{map.references.all}}</h6>
+        <ul class="list-unstyled">
+            {% for reference in map.references.all %}
+                <li>
+                    <a href="{{reference.url.url}}" target="_blank" rel="noopener noreferrer">
+                        {{reference.label}}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <hr>
+
+    <div>
+        <h6 class="{{label_class}}">Publication</h6>
+        <h6 class='fw-normal'>
+            {% if map.published %}
+                   {% if map.published_off %}Republished{% else %}Published{% endif %} on {{map.published_on}}
+                {% else %}
+                    {% if map.published_off %}
+                        Unpublished on {{map.published_off}}
+                    {% else %}
+                        Not published since creation
+                    {% endif %}
+            {% endif %}
+        </h6>
+    </div>
+    <div>
+        <h6 class="{{label_class}}">Privacy</h6>
+        <h6 class='fw-normal'>
+            {{map.proper_privacy}}
+        </h6>
     </div>
     <div>
         <h6 class="{{label_class}}">Owner</h6>
         <h6 class='fw-normal'>{{map.owner.proper_name}}</h6>
+        <h6 class='fw-normal'>{{map.owner.owner_since}}</h6>
     </div>
     <div>
         <h6 class="{{label_class}}">Contributors</h6>
         <h6 class='fw-normal'>{{map.roles.all}}</h6>
     </div>
     <div>
-        <h6 class="{{label_class}}">Privacy</h6>
-        <h6 class='fw-normal'>{{map.privacy}}</h6>
-    </div>
-    <div>
-        <h6 class="{{label_class}}">Published</h6>
-        <h6 class='fw-normal'>{{map.published}}</h6>
-        <h6 class='fw-normal'>{{map.published_on}}</h6>
-    </div>
-    <div>
         <h6 class="{{label_class}}">Last update</h6>
         <h6 class='fw-normal'>{{map.updated_on}}</h6>
         <h6 class='fw-normal'>{{map.content.updated_on}}</h6>
     </div>
+    <div>
+        <h6 class="{{label_class}}">Initial creation</h6>
+        <h6 class='fw-normal'>{{map.content.added_by.proper_name}}</h6>
+        <h6 class='fw-normal'>{{map.content.added_on}}</h6>
+    </div>
 {% endwith %}
+
+<script>
+    if (document.readyState === 'complete') {
+        handleMapFocusAreaBbox("{{map.content.bbox.extent}}")
+    } else {
+        document.addEventListener('DOMContentLoaded', () => {
+            handleMapFocusAreaBbox("{{map.content.bbox.extent}}")
+        })
+    }
+</script>

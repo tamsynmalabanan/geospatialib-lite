@@ -39,10 +39,10 @@
                             </div>
                         {% endblock offcanvas_body_outer %}
                         <div class="footer border-top d-none d-lg-flex py-3 gap-3 justify-content-center px-3">
-                            {% with button_class='btn btn-sm btn-dark d-flex gap-2 justify-content-center align-items-between' labelClass='text-nowrap d-none d-xxl-inline' %}
+                            {% with button_class='btn btn-sm d-flex gap-2 justify-content-center align-items-between' label_class='text-nowrap d-none d-xxl-inline' %}
                                 {% if user.is_authenticated %}
-                                    {% include "main/menu/dropup.html" with labelClass='text-nowrap' %}
-                                    <div class='d-flex ms-auto'>
+                                    {% include "main/menu/dropup.html" with label_class='text-nowrap' %}
+                                    <div class='d-flex ms-auto gap-2'>
                                         {% block offcanvas_footer %}{% endblock offcanvas_footer %}
                                     </div>
                                 {% else %}
@@ -81,14 +81,14 @@
                             {% if user.is_authenticated %}
                                 {% include "main/menu/toggle.html" with button_class='btn btn-sm btn-dark dropdown-toggle-split rounded-end' %}
                                 <div class="dropdown-menu p-2 mb-1">
-                                    {% with button_class='btn btn-sm btn-dark d-flex gap-2 w-100 justify-content-start' labelClass='text-nowrap' %}
+                                    {% with button_class='btn btn-sm btn-dark d-flex gap-2 w-100 justify-content-start' label_class='text-nowrap' %}
                                         {% block toggle_menu %}{% endblock toggle_menu %}
                                         <div class="dropdown-divider"></div>
                                         {% include "main/menu/items.html" %}
                                     {% endwith %}
                                 </div>
                             {% else %}
-                                {% include "main/about/toggle.html" with button_class='btn btn-sm btn-dark rounded-end d-flex gap-2' labelClass='text-nowrap d-none d-xxl-inline' %}
+                                {% include "main/about/toggle.html" with button_class='btn btn-sm btn-dark rounded-end d-flex gap-2' label_class='text-nowrap d-none d-xxl-inline' %}
                             {% endif %}
                         </div>
                     </div>

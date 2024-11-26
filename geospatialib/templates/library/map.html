@@ -29,14 +29,9 @@
     {% include "library/map/body.html" %}
 {% endblock offcanvas_body_outer %}
 
-{% comment %} {% if user.is_authenticated %}
-    {% block toggle_menu %}
-        {% include "library/share_dataset/toggle.html" %}
-        {% include "library/create_map/toggle.html" %}
-    {% endblock toggle_menu %}
-    {% block offcanvas_footer %}
-        {% include "library/share_dataset/toggle.html" %}
-        {% include "library/create_map/toggle.html" %}
-    {% endblock offcanvas_footer %}
-{% endif %} {% endcomment %}
-
+{% block toggle_menu %}
+    {% include "library/map/footer.html" %}
+{% endblock toggle_menu %}
+{% block offcanvas_footer %}
+    {% include "library/map/footer.html" %}
+{% endblock offcanvas_footer %}

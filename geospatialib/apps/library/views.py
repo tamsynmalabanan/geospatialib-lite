@@ -21,6 +21,10 @@ def map(request, pk):
             models.Map.objects
             .select_related('content', 'owner')
             .prefetch_related(
+                'content__tags', 
+                'references', 
+                'references__url', 
+
                 'roles', 
                 'roles__user'
             )

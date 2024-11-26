@@ -243,6 +243,8 @@ const handleMapLegend = (map) => {
                     
                     const styles = JSON.parse(layer.data.layerLegendObj)
                     Object.keys(styles).forEach(name => {
+                        const style = styles[name]
+
                         const container = document.createElement('div')
                         container.className = 'd-flex gap-2'
                         legendCollapse.appendChild(container)
@@ -252,13 +254,16 @@ const handleMapLegend = (map) => {
                         icon.style.height = '10px'
                         container.appendChild(icon)
 
+                        let labelText = name
+                        if (style.count > 1) {
+                            labelText = labelText + ` (${style.count})`
+                        }
+
                         const label = document.createElement('div')
-                        label.innerText = name
+                        label.innerText = labelText
                         container.appendChild(label)
 
-                        const style = styles[name]
                         const styleDef = style.style
-
                         if (style.type === 'Point') {
                             icon.style.width = '10px'
                             icon.innerHTML = styleDef.options.html
@@ -301,7 +306,6 @@ const handleMapLegend = (map) => {
                                     const [fillh,fills,filll,filla] = fillColor.split(',').map(str => parseNumberFromString(str))
                                     box.style.backgroundColor = `hsla(${fillh}, ${fills}%, ${filll}%, ${fillOpacity})`
                                 }
-
                             }
                         }
 
@@ -803,6 +807,7 @@ document.addEventListener('DOMContentLoaded', () => {
         handleMapControls(map) // needs to be after handleMapInfoPanels
         handleMapObservers(map)
 
+        map.initComplete = true
         map.fire('mapInitComplete')
     })
 })

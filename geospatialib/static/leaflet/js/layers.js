@@ -521,8 +521,11 @@ const createWFSLayer = (data) => {
 
                         legend[label] = {
                             type: type,
-                            style: style
+                            style: style,
+                            count: 1,
                         }
+                    } else {
+                        legend[label].count += 1 
                     }
                 })
 
