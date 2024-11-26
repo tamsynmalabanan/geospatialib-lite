@@ -17,9 +17,9 @@
     {% include "library/search/form.html" %}
 {% endblock offcanvas_nav %}
 
-{% block offcanvas_body %}
+{% block offcanvas_body_inner %}
     {% include "library/search/results.html" %}
-{% endblock offcanvas_body %}
+{% endblock offcanvas_body_inner %}
 
 {% if user.is_authenticated %}
     {% block toggle_menu %}

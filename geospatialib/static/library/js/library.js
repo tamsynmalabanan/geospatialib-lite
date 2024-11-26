@@ -1,11 +1,14 @@
 const searchEndpoint = "/htmx/library/search/"
+const getSearchForm = () => document.querySelector(`form[hx-get="${searchEndpoint}"]`)
 
 const resetSearchResults = () => {
     const searchResults = document.querySelector('#searchResults')
     if (searchResults) {
         searchResults.parentElement.scrollTop = 0
     }
+}
 
+const clearLibraryLayers = () => {
     const map = mapQuerySelector('#geospatialibMap')
     if (map) {
         map.getLayerGroups().library.clearLayers()
@@ -13,7 +16,7 @@ const resetSearchResults = () => {
 }
 
 const searchLibrary = (query=null) => {
-    const form = document.querySelector(`form[hx-get="${searchEndpoint}"]`)
+    const form = getSearchForm()
     
     if (query !== null) {
         form.elements.query.value = query
@@ -23,18 +26,9 @@ const searchLibrary = (query=null) => {
     form.dispatchEvent(event)
 }
 
-window.addEventListener("map:init", (event) => {
-    const map = event.detail.map
-    if (map.getContainer().id === 'geospatialibMap') {
-        map.on('mapInitComplete', () => {
-            const urlParams = getURLParams()
-            const bbox = urlParams.bbox__bboverlaps
-            if (bbox) {
-                map.fitBounds(L.geoJSON(JSON.parse(bbox)).getBounds())
-            }
-        })
-    }
-})
+const handleSearchQueryField = (value) => {
+    getSearchForm().elements.query.value = value
+}
 
 document.addEventListener('htmx:afterSwap', (event) => {
     if (event.target.id === 'searchResults') {
@@ -45,7 +39,7 @@ document.addEventListener('htmx:afterSwap', (event) => {
 
 document.addEventListener('htmx:configRequest', (event) => {
     const detail = event.detail
-    if (detail.path === searchEndpoint && window.location.pathname === '/') {
+    if (detail.path === searchEndpoint) {
         const requestParams = detail.parameters
 
         if (Object.keys(requestParams).length > 1){

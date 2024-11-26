@@ -1,0 +1,45 @@
+{% with label_class="lead fs-14 text-muted" %}
+    <div>
+        <h6 class="{{label_class}}">Title</h6>
+        <h4>{{map.content.label}}</h4>
+    </div>
+    <div>
+        <h6 class="{{label_class}}">Focus Area</h6>
+        <h6 class='fw-normal'>{{map.focus_area}}</h6>
+        <h6 class='fw-light fs-12'>{{map.content.bbox.extent}}</h6>
+    </div>
+    <div>
+        <h6 class="{{label_class}}">Abstract</h6>
+        <p class='fw-normal m-0'>{{map.content.abstract|safe}}</p>
+    </div>
+    <div>
+        <h6 class="{{label_class}}">Tags</h6>
+        <p class='fw-normal m-0'>{{map.content.tags.all}}</p>
+    </div>
+    <div>
+        <h6 class="{{label_class}}">References</h6>
+        <h6 class='fw-normal'>{{map.references.all}}</h6>
+    </div>
+    <div>
+        <h6 class="{{label_class}}">Owner</h6>
+        <h6 class='fw-normal'>{{map.owner.proper_name}}</h6>
+    </div>
+    <div>
+        <h6 class="{{label_class}}">Contributors</h6>
+        <h6 class='fw-normal'>{{map.roles.all}}</h6>
+    </div>
+    <div>
+        <h6 class="{{label_class}}">Privacy</h6>
+        <h6 class='fw-normal'>{{map.privacy}}</h6>
+    </div>
+    <div>
+        <h6 class="{{label_class}}">Published</h6>
+        <h6 class='fw-normal'>{{map.published}}</h6>
+        <h6 class='fw-normal'>{{map.published_on}}</h6>
+    </div>
+    <div>
+        <h6 class="{{label_class}}">Last update</h6>
+        <h6 class='fw-normal'>{{map.updated_on}}</h6>
+        <h6 class='fw-normal'>{{map.content.updated_on}}</h6>
+    </div>
+{% endwith %}

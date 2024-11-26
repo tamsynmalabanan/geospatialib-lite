@@ -30,14 +30,14 @@
                 >
                     <div class='d-flex flex-column w-100 vh-100'>
                         {% include "base/sections/header.html" %}
-                        {% block offcanvas_nav_body %}
-                            <div class='px-3'>
-                                {% block offcanvas_nav %}{% endblock offcanvas_nav %}
+                        <div>
+                            {% block offcanvas_nav %}{% endblock offcanvas_nav %}
+                        </div>
+                        {% block offcanvas_body_outer %}
+                            <div class="offcanvas-body d-flex flex-column flex-grow-1 overflow-x-hidden p-0 pt-3">
+                                {% block offcanvas_body_inner %}{% endblock offcanvas_body_inner %}
                             </div>
-                            <div class="offcanvas-body d-flex flex-column flex-grow-1 overflow-x-hidden px-3 pt-0">
-                                {% block offcanvas_body %}{% endblock offcanvas_body %}
-                            </div>
-                        {% endblock offcanvas_nav_body %}
+                        {% endblock offcanvas_body_outer %}
                         <div class="footer border-top d-none d-lg-flex py-3 gap-3 justify-content-center px-3">
                             {% with button_class='btn btn-sm btn-dark d-flex gap-2 justify-content-center align-items-between' labelClass='text-nowrap d-none d-xxl-inline' %}
                                 {% if user.is_authenticated %}

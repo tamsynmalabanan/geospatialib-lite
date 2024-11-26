@@ -1,0 +1,27 @@
+<div class="offcanvas-body d-flex flex-column flex-grow-1 overflow-x-hidden p-0 border-top pt-3" style='margin-top:-1px;'>
+    <div 
+        id="mapAccordion" 
+        class="accordion accordion-flush d-flex flex-column px-3 z-2" 
+    >
+        <div
+            id="detailsMapAccordion"
+            class="accordion-collapse collapse fade show"
+            data-bs-parent="#mapAccordion"
+        >
+            <div class="accordion-body d-flex flex-column gap-3 p-0">
+                {% include "library/map/details.html" %}
+            </div>
+        </div>
+        <div
+            id="commentsMapAccordion"
+            class="accordion-collapse collapse fade"
+            data-bs-parent="#mapAccordion"
+        >
+            <div class="accordion-body d-flex flex-column gap-3 p-0">
+                {{map}}
+                {{role}}
+            </div>
+        </div>
+    </div>
+</div>
+
