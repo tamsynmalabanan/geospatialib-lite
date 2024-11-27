@@ -91,8 +91,10 @@ INSTALLED_APPS = [
     'utils',
     'htmx.hx_main',
     'htmx.hx_library',
+    'htmx.hx_map',
     'apps.main',
     'apps.library',
+    'apps.map',
 
     # 3rd-party apps
     'widget_tweaks',
@@ -175,6 +177,7 @@ TEMPLATES = [
                 'apps.main.context_processors.forms',
                 'apps.main.context_processors.social',
                 'apps.library.context_processors.forms',
+                'apps.map.context_processors.forms',
             ],
         },
     },

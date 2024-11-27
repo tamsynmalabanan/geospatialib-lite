@@ -1,6 +1,6 @@
 from django.contrib import messages
 
-from apps.library import forms as lib_forms
+from .forms import CreateMapForm
 from htmx.hx_library import views
 
 def forms(request):
@@ -8,7 +8,7 @@ def forms(request):
         user = request.user
         if user.is_authenticated:
             return {
-                'share_dataset_form': lib_forms.ShareDatasetForm(),
+                'create_map_form': CreateMapForm()
             }
     
     return {}

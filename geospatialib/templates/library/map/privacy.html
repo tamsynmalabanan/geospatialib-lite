@@ -6,7 +6,7 @@
     type="button"
     {% if user == map.owner %}
         data-account-form="privacy"
-        data-account-endpoint="{% url 'hx_library:map_privacy' %}?uuid={{map.content.pk}}"
+        data-account-endpoint="{% url 'hx_map:map_privacy' %}?uuid={{map.content.pk}}"
         data-account-context='{"button_class":"{{button_class}}","label_class":"{{label_class}}"}'
     {% endif %}
 >

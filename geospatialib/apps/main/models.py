@@ -1,9 +1,12 @@
 from django.db import models
+from django.contrib.gis.db import models as gis_models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from django.utils.text import slugify
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.contrib.auth.hashers import UNUSABLE_PASSWORD_PREFIX
 
+from urllib.parse import urlparse
+import uuid
 
 from random_username.generate import generate_username
 
@@ -88,3 +91,55 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def has_no_first_name(self):
         return not self.first_name or self.first_name.strip() == ''
+    
+
+class Tag(models.Model):
+    tag = models.CharField('Tag', max_length=64, unique=True)
+
+    def __str__(self) -> str:
+        return self.tag
+    
+    def save(self, *args, **kwargs):
+        self.tag = self.tag.lower()
+        super().save(*args, **kwargs)
+
+class URL(models.Model):
+    url = models.URLField('URL', max_length=255, unique=True)
+
+    def __str__(self) -> str:
+        return self.url
+
+    @property
+    def domain(self):
+        return urlparse(self.url).netloc
+    
+class Content(gis_models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    
+    added_by = models.ForeignKey("main.User", verbose_name='Added by', editable=False, on_delete=models.SET_NULL, blank=True, null=True, related_name='%(class)ss_added')
+    added_on = models.DateTimeField('Added on', auto_now_add=True)
+    
+    updated_by = models.ForeignKey("main.User", verbose_name='Updated by', editable=False, on_delete=models.SET_NULL, blank=True, null=True, related_name='%(class)ss_updated')
+    updated_on = models.DateTimeField('Updated on', auto_now=True)
+
+    type = models.CharField('Type', choices=[('dataset','dataset'), ('map', 'map')], editable=False, max_length=8, default='dataset')
+    dataset = models.OneToOneField("library.Dataset", verbose_name='Dataset', on_delete=models.CASCADE, related_name='content', blank=True, null=True, editable=False)
+    map = models.OneToOneField("map.Map", verbose_name='Map', on_delete=models.CASCADE, related_name='content', blank=True, null=True, editable=False)
+
+    label = models.CharField('Label', max_length=255, blank=True, null=True)
+    abstract = models.TextField('Abstract', blank=True, null=True)
+    tags = models.ManyToManyField("main.Tag", verbose_name='Tags', blank=True, related_name='contents')
+    bbox = models.PolygonField('Bounding box', blank=True, null=True)
+
+    def __str__(self) -> str:
+        if self.label:
+            return self.label
+        return super().__str__()
+
+    @property
+    def instance(self):
+        return getattr(self, self.type)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+

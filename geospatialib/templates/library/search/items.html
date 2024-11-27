@@ -41,7 +41,7 @@
                     {% if content.map__focus_area %}
                         <h6 class="card-subtitle mb-2 text-body-secondary fs-14">{{content.map__focus_area}}</h6>
                     {% endif %}
-                    <a class="text-decoration-none text-muted fs-12 fw-normal text-truncate w-100 mt-auto" href="{% url 'library:map' content.pk %}" target="_blank" rel="noopener noreferrer" title="Go to {{content.dataset__url__url}}">
+                    <a class="text-decoration-none text-muted fs-12 fw-normal text-truncate w-100 mt-auto" href="{% url 'map:index' content.pk %}" target="_blank" rel="noopener noreferrer" title="Go to {{content.dataset__url__url}}">
                         go to map
                     </a>
                 {% endif %}
