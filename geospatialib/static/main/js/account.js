@@ -17,7 +17,6 @@ const generateRandomUserAccountPassword = (event) => {
 
 const handleAccountChanges = (formName) => {
     const elements = document.querySelectorAll(`[data-account-form="${formName}"]`)
-    console.log(elements)
     elements.forEach(element => {
         let endpoint = element.dataset.accountEndpoint
         if (endpoint) {
