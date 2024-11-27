@@ -2,7 +2,7 @@ from django import forms
 from django.urls import reverse_lazy
 from django.core.cache import cache
 
-from . import models, choices
+from apps.library import models as lib_models
 from utils.general import form_helpers, util_helpers
 from utils.gis import dataset_helpers
 
@@ -48,7 +48,7 @@ class CreateMapForm(forms.Form):
         if len(title) < 3:
             raise forms.ValidationError('Title must be at least 3 characters.')
 
-        content_query = models.Content.objects.filter(
+        content_query = lib_models.Content.objects.filter(
             map__owner__pk=self.data.get('owner'),
             label__iexact=title
         )

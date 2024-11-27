@@ -1,10 +1,11 @@
 from django.contrib import admin
 
-from .models import User
+from . import models
 
 class UserAdmin(admin.ModelAdmin):
     readonly_fields = (
         'joined_on',
     )
 
-admin.site.register(User, UserAdmin)
+admin.site.register(models.User, UserAdmin)
+

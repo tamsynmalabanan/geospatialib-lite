@@ -34,7 +34,7 @@ def index(request, pk):
         map_instance = None
 
     if map_instance:
-        return render(request, 'library/map.html', {
+        return render(request, 'map/index.html', {
             'map':map_instance, 
             'role':map_instance.get_role(user)}
         )

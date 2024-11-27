@@ -1,15 +1,4 @@
-<button
-    class="{{button_class}} btn-dark"
-    type="button"
->
-    {% if map.proper_privacy == 'Private' %}
-        <i class="bi bi-unlock-fill"></i>
-        <span class="{{label_class}}">Set as public</span>
-    {% else %}    
-        <i class="bi bi-lock-fill"></i>
-        <span class="{{label_class}}">Set as private</span>
-    {% endif %}
-</button>
+{% include "map/config/privacy.html" %}
 
 <button
     class="

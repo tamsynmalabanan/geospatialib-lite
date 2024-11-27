@@ -19,6 +19,11 @@ from apps.library import (
     choices as lib_choices, 
     models as lib_models
 )
+from apps.main import (
+    forms as main_forms, 
+    choices as main_choices, 
+    models as main_models
+)
 from utils.general import form_helpers, util_helpers, model_helpers
 from utils.gis import dataset_helpers
 import json
@@ -89,7 +94,7 @@ class SearchList(ListView):
         if query:
             queryset = super().get_queryset()
             
-            search_query = SearchQuery(query, search_type="plain")
+            search_query = SearchQuery(query, search_type="websearch")
 
             search_vector = SearchVector('type')
             for field in [
@@ -270,17 +275,8 @@ def create_map(request):
         if not map_instance or not content_instance:
             messages.error(request, 'There was an error while creating the map. Please review the form and try again.', 'create-map-form')
 
-    return render(request, 'library/create_map/form.html', {'form':form, 'content':content_instance})
+    return render(request, 'map/create_map/form.html', {'form':form, 'content':content_instance})
 
-@login_required
-def map_privacy(request):
-    map_instance = get_object_or_404(lib_models.Map, content__pk=request.GET.get('uuid'))
-
-    context_data = request.GET.get('context', '{}')
-    context = json.loads(context_data)
-    context['map'] = map_instance
-
-    return render(request, 'library/map/privacy.html', context)
 
 @require_http_methods(['POST'])
 @login_required

@@ -53,24 +53,24 @@ class Map(models.Model):
         self.create_logs()
         super().save(*args, **kwargs)
 
-# class MapReference(models.Model):
-#     map = models.ForeignKey("map.Map", verbose_name='Map', on_delete=models.CASCADE, related_name='references')
-#     url = models.ForeignKey("main.URL", verbose_name='URL', on_delete=models.CASCADE)
-#     label = models.CharField('Label', max_length=255)
+class MapReference(models.Model):
+    map = models.ForeignKey("map.Map", verbose_name='Map', on_delete=models.CASCADE, related_name='references')
+    url = models.ForeignKey("library.URL", verbose_name='URL', on_delete=models.CASCADE)
+    label = models.CharField('Label', max_length=255)
 
-# class MapRole(models.Model):
-#     map = models.ForeignKey("map.Map", verbose_name='Map', on_delete=models.CASCADE, related_name='roles')
-#     user = models.ForeignKey("main.User", verbose_name='User', on_delete=models.CASCADE)
-#     added_on = models.DateTimeField('Added on', auto_now_add=True, blank=True, null=True)
-#     updated_on = models.DateTimeField('Updated on', auto_now=True, blank=True, null=True)
-#     role = models.SmallIntegerField('Role', default=2, choices=form_helpers.dict_to_choices(choices.MAP_ROLES))
+class MapRole(models.Model):
+    map = models.ForeignKey("map.Map", verbose_name='Map', on_delete=models.CASCADE, related_name='roles')
+    user = models.ForeignKey("main.User", verbose_name='User', on_delete=models.CASCADE)
+    added_on = models.DateTimeField('Added on', auto_now_add=True, blank=True, null=True)
+    updated_on = models.DateTimeField('Updated on', auto_now=True, blank=True, null=True)
+    role = models.SmallIntegerField('Role', default=2, choices=form_helpers.dict_to_choices(choices.MAP_ROLES))
 
-#     class Meta:
-#         unique_together = ['map', 'user']
+    class Meta:
+        unique_together = ['map', 'user']
 
-# class MapLog(models.Model):
-#     map = models.ForeignKey("map.Map", verbose_name='Map', on_delete=models.CASCADE, related_name='logs')
-#     user = models.ForeignKey("main.User", verbose_name='User', on_delete=models.SET_NULL, blank=True, null=True)
-#     added_on = models.DateTimeField('Added on', auto_now_add=True, blank=True, null=True)
-#     field = models.CharField('Field', max_length=50)
-#     value = models.TextField('Value')
+class MapLog(models.Model):
+    map = models.ForeignKey("map.Map", verbose_name='Map', on_delete=models.CASCADE, related_name='logs')
+    user = models.ForeignKey("main.User", verbose_name='User', on_delete=models.SET_NULL, blank=True, null=True)
+    added_on = models.DateTimeField('Added on', auto_now_add=True, blank=True, null=True)
+    field = models.CharField('Field', max_length=50)
+    value = models.TextField('Value')

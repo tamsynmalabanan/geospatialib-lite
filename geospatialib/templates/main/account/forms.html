@@ -14,16 +14,8 @@
                 >{{name|title}}</button>
             </li>
         {% endfor %}
-        <li class="nav-item">
-            <button
-                class="accordion-button no-icon me-2 px-2 ps-3 py-1 text-bg-dark rounded-top z-3 collapsed"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#optionsAccountAccordion"
-                aria-expanded="false"
-                aria-controls="optionsAccountAccordion"
-            ><i class="bi bi-three-dots"></i></button>
-        </li>
+        
+        {% include "main/account/options_toggle.html" %}
     </ul>
 
     <div class="modal-body p-0 border-top text-bg-dark z-2 flex-grow-1 d-flex flex-column" style='margin-top:-1px;'>
@@ -38,26 +30,8 @@
                 </div>
             </div>
         {% endfor %}
-        <div
-            id="optionsAccountAccordion"
-            class="accordion-collapse collapse flex-grow-1 fade"
-            data-bs-parent="#accountAccordion"
-        >
-            <div class="accordion-body h-100 pt-4">
-                {% with button_class='btn d-flex gap-2 justify-content-start' %}
-                    <div class='d-flex gap-3'>
-                        {% include "main/dashboard/toggle.html" with button_class=button_class|add:" btn-primary" %}
-                        <button
-                            class="{{button_class}} btn-danger"
-                            type="button"
-                        >
-                            <i class="bi bi-trash3-fill"></i>
-                            <span class='text-nowrap'>Delete account</span>
-                        </button>
-                    </div>
-                {% endwith %}
-            </div>
-        </div>
+
+        {% include "main/account/options_content.html" %}
     </div>
 </div>
 

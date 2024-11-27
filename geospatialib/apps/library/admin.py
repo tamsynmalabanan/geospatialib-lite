@@ -2,6 +2,12 @@ from django.contrib import admin
 
 from . import models
 
+
+
+admin.site.register(models.Dataset)
+
+admin.site.register(models.URL)
+admin.site.register(models.Tag)
 class MetaAbstractAdmin(admin.ModelAdmin):
     readonly_fields = (
         'id',
@@ -15,11 +21,5 @@ class MetaAbstractAdmin(admin.ModelAdmin):
     )
     search_fields = ['label']
     list_filter = ['type']
-
-
-admin.site.register(models.URL)
-admin.site.register(models.Tag)
-
-admin.site.register(models.Dataset)
 
 admin.site.register(models.Content, MetaAbstractAdmin)

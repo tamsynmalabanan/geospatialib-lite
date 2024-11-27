@@ -29,11 +29,11 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
 
     path('htmx/main/', include('htmx.hx_main.urls')),
-    path('htmx/library/', include('htmx.hx_main.URLs')),
+    path('htmx/library/', include('htmx.hx_library.urls')),
     path('htmx/map/', include('htmx.hx_map.urls')),
     
     path('', include('apps.main.urls')),
-    path('', include('apps.main.URLs')),
+    path('', include('apps.library.urls')),
     path('', include('apps.map.urls')),
 
 ]

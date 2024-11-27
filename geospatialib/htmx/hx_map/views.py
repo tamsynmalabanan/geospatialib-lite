@@ -25,6 +25,11 @@ from apps.library import (
     choices as lib_choices, 
     models as lib_models
 )
+from apps.main import (
+    forms as main_forms, 
+    choices as main_choices, 
+    models as main_models
+)
 
 from utils.general import form_helpers, util_helpers, model_helpers
 from utils.gis import dataset_helpers
@@ -105,7 +110,7 @@ def create_map(request):
         if not map_instance or not content_instance:
             messages.error(request, 'There was an error while creating the map. Please review the form and try again.', 'create-map-form')
 
-    return render(request, 'library/create_map/form.html', {'form':form, 'content':content_instance})
+    return render(request, 'map/create_map/form.html', {'form':form, 'content':content_instance})
 
 @login_required
 def map_privacy(request):
@@ -115,5 +120,5 @@ def map_privacy(request):
     context = json.loads(context_data)
     context['map'] = map_instance
 
-    return render(request, 'library/map/privacy.html', context)
+    return render(request, 'map/config/privacy.html', context)
 

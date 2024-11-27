@@ -3,6 +3,11 @@
 {% if request.headers|get:'HX-Request' %}
     {% include "main/account/header.html" %}
     {% include "main/account/footer.html" %}
+    {% include "main/account/options_content.html" %}
+    {% include "main/account/options_toggle.html" %}
+    <script>
+        handleAccountChanges('profile')
+    </script>
 {% endif %}
 
 <form 

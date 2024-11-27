@@ -1,0 +1,16 @@
+<li
+    id='optionsAccountAccordionToggle'
+    hx-swap-oob="true"
+    class="nav-item"
+>
+    {% if not user.has_no_password and not user.has_no_first_name %}
+        <button
+            class="accordion-button no-icon me-2 px-2 ps-3 py-1 text-bg-dark rounded-top z-3 collapsed"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#optionsAccountAccordion"
+            aria-expanded="false"
+            aria-controls="optionsAccountAccordion"
+        ><i class="bi bi-three-dots"></i></button>
+    {% endif %}
+</li>
