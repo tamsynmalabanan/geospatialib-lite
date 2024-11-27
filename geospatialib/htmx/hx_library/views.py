@@ -1,6 +1,6 @@
 from django.db.models.query import QuerySet
 from django.views.decorators.http import require_http_methods
-from django.shortcuts import render, HttpResponse
+from django.shortcuts import render, HttpResponse, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.contrib import messages
@@ -272,6 +272,15 @@ def create_map(request):
 
     return render(request, 'library/create_map/form.html', {'form':form, 'content':content_instance})
 
+@login_required
+def map_privacy(request):
+    map_instance = get_object_or_404(lib_models.Map, content__pk=request.GET.get('uuid'))
+
+    context_data = request.GET.get('context', '{}')
+    context = json.loads(context_data)
+    context['map'] = map_instance
+
+    return render(request, 'library/map/privacy.html', context)
 
 @require_http_methods(['POST'])
 @login_required

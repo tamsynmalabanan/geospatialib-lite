@@ -1,0 +1,29 @@
+{% load util_tags %}
+
+<button
+    id="{% random_string %}"
+    class="{{button_class}} btn-dark"
+    type="button"
+    {% if user == map.owner %}
+        data-account-form="privacy"
+        data-account-endpoint="{% url 'hx_library:map_privacy' %}?uuid={{map.content.pk}}"
+        data-account-context='{"button_class":"{{button_class}}","label_class":"{{label_class}}"}'
+    {% endif %}
+>
+    <i     
+        {% if map.proper_privacy == 'Private' %}
+            class="bi bi-unlock-fill"
+        {% else %}
+            class="bi bi-lock-fill"
+        {% endif %}
+    ></i>
+    <span 
+        class="{{label_class}}"
+    >
+        {% if map.proper_privacy == 'Private' %}
+            Set as public
+        {% else %}
+            Set as private
+        {% endif %}
+    </span>
+</button>
