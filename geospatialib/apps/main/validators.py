@@ -20,12 +20,3 @@ def validate_username(username):
     
     if username in USERNAME_BLACKLIST:
         raise ValidationError('Username is not allowed.')
-
-    # if username.endswith('geospatialib_admin'):
-    #     raise ValidationError('Username is not allowed')
-
-    # if username.startswith('geospatialib_admin'):
-    #     raise ValidationError('Username is not allowed')
-
-    # if all(word in username for word in ['admin', 'geospatialib']):
-    #     raise ValidationError('Username is not allowed')

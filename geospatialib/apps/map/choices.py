@@ -1,4 +1,3 @@
-
 MAP_PRIVACY = {
     'default': 'Default',
     'public': 'Public',

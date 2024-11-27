@@ -16,8 +16,8 @@ def get_account_forms(user, data=None, name=None):
         'password': SetPasswordForm(user=user, data=data),
     }
 
-    if name and name in forms:
-        return forms[name]
+    if name:
+        return forms.get(name, None)
 
     return forms
     

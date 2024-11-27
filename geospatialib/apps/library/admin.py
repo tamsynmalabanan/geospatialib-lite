@@ -5,9 +5,9 @@ from . import models
 
 
 admin.site.register(models.Dataset)
-
 admin.site.register(models.URL)
 admin.site.register(models.Tag)
+
 class MetaAbstractAdmin(admin.ModelAdmin):
     readonly_fields = (
         'id',
