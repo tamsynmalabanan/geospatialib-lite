@@ -14,25 +14,3 @@ const generateRandomUserAccountPassword = (event) => {
     const inputEvent = new Event('input')
     newPassword1.dispatchEvent(inputEvent)
 }
-
-const handleAccountChanges = (formName) => {
-    const elements = document.querySelectorAll(`[data-account-form="${formName}"]`)
-    elements.forEach(element => {
-        let endpoint = element.dataset.accountEndpoint
-        if (endpoint) {
-            const context = element.dataset.accountContext
-            if (context) {
-                if (endpoint.includes('?')) {
-                    endpoint = `${endpoint}&context=${context}`
-                } else {
-                    endpoint = `${endpoint}?context=${context}`
-                }
-            }
-
-            htmx.ajax('GET', endpoint, {
-                target: `#${element.id}`,
-                swap: 'outerHTML',
-            });
-        }
-    })
-}

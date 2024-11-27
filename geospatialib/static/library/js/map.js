@@ -20,3 +20,4 @@ const handleMapFocusAreaBbox = (bbox) => {
         })
     }
 }
+
