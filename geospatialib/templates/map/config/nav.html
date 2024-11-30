@@ -9,14 +9,16 @@
             aria-controls="detailsMapAccordion"
         >Details</button>
     </li>
-    <li class="nav-item">
-        <button
-            class="accordion-button no-icon me-2 px-2 ps-3 py-1 text-bg-dark bg-transparent border-0 rounded-top z-3 collapsed"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#commentsMapAccordion"
-            aria-expanded="false"
-            aria-controls="commentsMapAccordion"
-        >Comments</button>
-    </li>
+    {% if role > 0 %}
+        <li class="nav-item">
+            <button
+                class="accordion-button no-icon me-2 px-2 ps-3 py-1 text-bg-dark bg-transparent border-0 rounded-top z-3 collapsed"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#logsMapAccordion"
+                aria-expanded="false"
+                aria-controls="logsMapAccordion"
+            >Logs</button>
+        </li>
+    {% endif %}
 </ul>

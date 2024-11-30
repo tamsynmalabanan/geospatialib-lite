@@ -1,18 +1,45 @@
-{% include "map/config/privacy.html" %}
+{% if role >= 3 %}
+    {% include "map/config/privacy.html" %}
 
-<button
-    class="
-        {{button_class}}
-        {% if map.published %} btn-dark
-        {% else %} btn-success {% endif %}
-    "
-    type="button"
->
-    {% if map.published %}
-        <i class="bi bi-x-circle-fill"></i>
-        <span class="{{label_class}}">Unpublish</span>
-    {% else %}    
-        <i class="bi bi-globe"></i>
-        <span class="{{label_class}}">Publish</span>
-    {% endif %}
-</button>
+    <button
+        class="
+            {{button_class}}
+            {% if map.published %} btn-dark
+            {% else %} btn-success {% endif %}
+        "
+        type="button"
+    >
+        {% if map.published %}
+            <i class="bi bi-pencil-fill"></i>
+            <span class="{{label_class}}">Edit mode</span>
+        {% else %}    
+            <i class="bi bi-globe"></i>
+            <span class="{{label_class}}">Publish</span>
+        {% endif %}
+    </button>
+{% else %}
+    <button
+        class="{{button_class}} btn-dark"
+        type="button"
+        disabled
+    >
+        <i     
+            {% if map.proper_privacy == 'Private' %}
+                class="bi bi-lock-fill"
+            {% else %}
+                class="bi bi-unlock-fill"
+            {% endif %}
+        ></i>
+        <span class="{{label_class}}">{{map.proper_privacy}}</span>
+    </button>
+    
+    <button class="{{button_class}} btn-dark" type='button' disabled>
+        {% if map.published %}
+            <i class="bi bi-globe"></i>
+            <span class="{{label_class}}">Published</span>
+        {% else %}    
+            <i class="bi bi-pencil-fill"></i>
+            <span class="{{label_class}}">Edit mode</span>
+        {% endif %}
+    </button>
+{% endif %}

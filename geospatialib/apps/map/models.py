@@ -24,7 +24,7 @@ class Map(models.Model):
     published_on = models.DateTimeField('Date published', blank=True, null=True)
     published_off = models.DateTimeField('Date unpublished', blank=True, null=True)
     
-    updated_on = models.DateTimeField('Updated on', auto_now=True)
+    updated_on = models.DateTimeField('Updated on', blank=True, null=True)
     
     focus_area = models.CharField('Focus area', max_length=255, blank=True, null=True)
 
@@ -36,7 +36,17 @@ class Map(models.Model):
         if self.privacy == 'default':
             return choices.MAP_PRIVACY.get(self.owner.map_privacy)
         return choices.MAP_PRIVACY.get(self.privacy)
-    
+        
+    @property
+    def roles_dict(self):
+        roles = self.roles.select_related('user').all()
+        roles_dict = {
+            'Admins': [role for role in roles if role.role == 3],
+            'Editors': [role for role in roles if role.role == 2],
+            'Reviewers': [role for role in roles if role.role == 1]
+        }
+        return roles_dict
+
     def get_role(self, user):
         if self.owner == user:
             return 4
@@ -67,6 +77,11 @@ class MapRole(models.Model):
 
     class Meta:
         unique_together = ['map', 'user']
+        ordering = ['-role']
+
+    @property
+    def proper_role(self):
+        return choices.MAP_ROLES.get(self.role)
 
 class MapLog(models.Model):
     map = models.ForeignKey("map.Map", verbose_name='Map', on_delete=models.CASCADE, related_name='logs')

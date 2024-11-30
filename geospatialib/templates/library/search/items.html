@@ -19,10 +19,10 @@
                     {% if content.type == 'map' %}
                         <span class="{{badge_class}} bg-danger" title="{{content.type}}">{{content.type}}</span>
                     {% else %}
-                        {% var content.dataset__format as format %}
-                        {% if content.dataset__format == 'wms' %}
+                        {% var content.dataset.format as format %}
+                        {% if content.dataset.format == 'wms' %}
                             <span class="{{badge_class}} bg-success" title="{{format}}">{{format}}</span>
-                        {% elif content.dataset__format == 'xyz' %}
+                        {% elif content.dataset.format == 'xyz' %}
                             <span class="{{badge_class}} bg-info" title="{{format}}">{{format}}</span>
                         {% else %}
                             <span class="{{badge_class}} bg-warning" title="{{format}}">{{format}}</span>
@@ -31,17 +31,17 @@
                 </div>
                 <h6 class="card-title">{{content.label}}</h6>
                 {% if content.type == 'dataset' %}
-                    {% if content.dataset__format != 'xyz' %}
-                        <h6 class="card-subtitle mb-2 text-body-secondary fs-14">{{content.dataset__name}}</h6>
+                    {% if content.dataset.format != 'xyz' %}
+                        <h6 class="card-subtitle mb-2 text-body-secondary fs-14">{{content.dataset.name}}</h6>
                     {% endif %}
-                    <a class="text-decoration-none text-muted fs-12 fw-normal text-truncate w-100 mt-auto" href="{{content.dataset__url__url}}" target="_blank" rel="noopener noreferrer" title="Go to {{content.dataset__url__url}}">
-                        {{content.dataset__url__url|domain}}
+                    <a class="text-decoration-none text-muted fs-12 fw-normal text-truncate w-100 mt-auto" href="{{content.dataset.url.url}}" target="_blank" rel="noopener noreferrer" title="Go to {{content.dataset.url.url}}">
+                        {{content.dataset.url.url|domain}}
                     </a>
                 {% else %}
-                    {% if content.map__focus_area %}
-                        <h6 class="card-subtitle mb-2 text-body-secondary fs-14">{{content.map__focus_area}}</h6>
+                    {% if content.map.focus_area %}
+                        <h6 class="card-subtitle mb-2 text-body-secondary fs-14">{{content.map.focus_area}}</h6>
                     {% endif %}
-                    <a class="text-decoration-none text-muted fs-12 fw-normal text-truncate w-100 mt-auto" href="{% url 'map:index' content.pk %}" target="_blank" rel="noopener noreferrer" title="Go to {{content.dataset__url__url}}">
+                    <a class="text-decoration-none text-muted fs-12 fw-normal text-truncate w-100 mt-auto" href="{% url 'map:index' content.pk %}" target="_blank" rel="noopener noreferrer" title="Go to {{content.dataset.url.url}}">
                         go to map
                     </a>
                 {% endif %}
@@ -55,14 +55,14 @@
                         onclick="toggleLayer(event, {mapSelector:'#geospatialibMap'})"
                         data-layer-bbox="{{content.bbox.extent}}"
                         data-layer-label="{{content.label}}"
-                        data-layer-url="{{content.dataset__url__url}}"
-                        data-layer-format="{{content.dataset__format}}"
-                        data-layer-name="{{content.dataset__name}}"
-                        {% if content.dataset__default_style %}
-                            data-layer-style="{{content.dataset__default_style}}"
+                        data-layer-url="{{content.dataset.url.url}}"
+                        data-layer-format="{{content.dataset.format}}"
+                        data-layer-name="{{content.dataset.name}}"
+                        {% if content.dataset.default_style %}
+                            data-layer-style="{{content.dataset.default_style}}"
                         {% endif %}
-                        {% if content.dataset__default_legend__url %}
-                            data-layer-legend-url="{{content.dataset__default_legend__url}}"
+                        {% if content.dataset.default_legend.url %}
+                            data-layer-legend-url="{{content.dataset.default_legend.url}}"
                         {% endif %}
                     {% endif %}
                 >

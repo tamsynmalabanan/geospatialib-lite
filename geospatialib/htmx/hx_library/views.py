@@ -13,6 +13,7 @@ from django.http import JsonResponse
 from django.urls import reverse_lazy
 
 import time
+import validators
 
 from apps.library import (
     forms as lib_forms, 
@@ -44,7 +45,7 @@ class SearchList(ListView):
     def query(self):
         query = self.request.GET.get('query')
         
-        if query.endswith('?'):
+        if validators.url(query) == True and query.endswith('?'):
             query = query[:-1]
 
         return query
@@ -94,7 +95,10 @@ class SearchList(ListView):
         if query:
             queryset = super().get_queryset()
             
-            search_query = SearchQuery(query, search_type="websearch")
+            if validators.url(query) == True:
+                search_query = SearchQuery(query, search_type="plain")
+            else:
+                search_query = SearchQuery(query, search_type="websearch")
 
             search_vector = SearchVector('type')
             for field in [
@@ -110,7 +114,6 @@ class SearchList(ListView):
                 'map__references__url',
             ]:
                 search_vector = search_vector + SearchVector(field)
-
 
             # search_headline = SearchHeadline('abstract', search_query)
 
@@ -129,26 +132,6 @@ class SearchList(ListView):
                     'map__roles__user',
                     # 'map__references',
                 )
-                .values(*self.filter_fields+[
-                    'map__published', 
-                    'map__privacy', 
-                     
-                    'added_by__pk',
-                    'map__owner__pk', 
-                    'map__roles__user__pk',
-
-                    'pk', 
-                    'label', 
-                    'bbox',     
-
-                    'dataset__url__url', 
-                    'dataset__name', 
-                    'dataset__default_style', 
-                    'dataset__default_legend__url', 
-
-                    'map__focus_area',
-                    # 'map__references__url', 
-                ])
                 .annotate(
                     rank=SearchRank(search_vector, search_query),
                     # headline=search_headline,
@@ -167,10 +150,9 @@ class SearchList(ListView):
                 queryset = self.perform_full_text_search()
 
             if queryset.exists():
-                cache.set(self.cache_key, queryset, timeout=3600)
                 queryset = self.apply_privacy_filters(queryset)
                 queryset = self.apply_query_filters(queryset)
-
+                
             self.queryset = queryset
 
         queryset = self.queryset
@@ -180,6 +162,7 @@ class SearchList(ListView):
                 .annotate(rank=Max('rank'))
                 .order_by(*['-rank']+self.filter_fields+['label'])
             )
+
         return queryset
 
     def get_filters(self):
@@ -198,84 +181,6 @@ class SearchList(ListView):
         if self.page == 1:
             context['filters'] = self.get_filters()
         return context
-
-
-
-@require_http_methods(['GET'])
-@login_required
-def tags_datalist(request):
-    current_tags = request.GET.get('tags','').split(',')
-    query = request.GET.get('tags_new', '').strip()
-
-    tags_query = lib_models.Tag.objects.filter(tag__istartswith=query)
-    tags_query = tags_query.exclude(tag__in=current_tags)
-
-    tags_query = tags_query.annotate(content_count=Count('contents', distinct=True))
-    tags_query = tags_query.order_by('-content_count')
-    tags_query = tags_query[:5]
-    
-    template = 'base/components/form/datalist.html'
-    return render(request, template, {'queryset': tags_query})
-
-@require_http_methods(['POST'])
-@login_required
-def create_map(request):
-    map_instance = None
-    content_instance = None
-
-    user = request.user
-
-    data = request.POST.dict()
-    data['owner'] = user.pk
-    form = lib_forms.CreateMapForm(data=data)
-    
-    clean_title = None
-    if data.get('title', '').strip() != '':
-        title_field = form['title']
-        clean_title = form_helpers.validate_field(title_field)
-        
-    tags_field = form['tags']
-    clean_tags = form_helpers.validate_field(tags_field)
-    if clean_tags:
-        form.data.update({'tags':clean_tags})
-    else:
-        form.data.update({'tags':''})
-        if not clean_title:
-            form_helpers.remove_classes_from_field(tags_field, ['is-invalid'])
-
-    focus_area_value = data.get('focus_area', '').strip()
-    if focus_area_value != '':
-        form.data.update({'focus_area': focus_area_value.title()})
-
-    if data.get('submit') is not None:
-        if form.is_valid():
-            clean_data = form.cleaned_data
-            map_instance = lib_models.Map.objects.create(
-                owner=user, 
-                focus_area=clean_data.get('focus_area', '')
-            )
-            if map_instance:
-                content_instance = lib_models.Content.objects.create(
-                    added_by=user,
-                    type='map',
-                    map=map_instance,
-                    label=clean_data.get('title', ''),
-                    bbox=clean_data.get('bbox', ''),
-                )
-                if content_instance:
-                    tag_instances = model_helpers.list_to_tags(clean_data.get('tags','').split(','))
-                    content_instance.tags.set(tag_instances)
-
-                    messages.success(request, 'Map successfully created!', 'map-floating-message')
-                    response = HttpResponse()
-                    response['HX-Redirect'] = reverse_lazy('library:map', kwargs={'pk': content_instance.pk})
-                    return response
-
-        
-        if not map_instance or not content_instance:
-            messages.error(request, 'There was an error while creating the map. Please review the form and try again.', 'create-map-form')
-
-    return render(request, 'map/create_map/form.html', {'form':form, 'content':content_instance})
 
 
 @require_http_methods(['POST'])

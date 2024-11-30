@@ -4,7 +4,7 @@
     id="{% random_string %}"
     class="{{button_class}} btn-dark"
     type="button"
-    {% if user == map.owner %}
+    {% if role >= 3 %}
         data-account-form="privacy"
         data-account-endpoint="{% url 'hx_map:map_privacy' %}?uuid={{map.content.pk}}"
         data-account-context='{"button_class":"{{button_class}}","label_class":"{{label_class}}"}'

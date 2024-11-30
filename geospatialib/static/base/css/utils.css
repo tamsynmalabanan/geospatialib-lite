@@ -125,3 +125,16 @@ img {
 .underline-on-hover:hover {
     text-decoration: underline;
 }
+
+table.table-rows-border-0 {
+    tr {
+        border-color: transparent;
+    }
+}
+
+table.table-condensed {
+    td {
+        padding: 5px;
+        padding-right: 10px;
+    }
+}

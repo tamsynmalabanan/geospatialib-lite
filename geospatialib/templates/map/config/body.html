@@ -1,7 +1,7 @@
 <div class="offcanvas-body d-flex flex-column flex-grow-1 overflow-x-hidden p-0 border-top pt-3" style='margin-top:-1px;'>
     <div 
         id="mapAccordion" 
-        class="accordion accordion-flush d-flex flex-column px-3 z-2" 
+        class="accordion accordion-flush d-flex flex-column ps-3 pe-4 z-2" 
     >
         <div
             id="detailsMapAccordion"
@@ -12,16 +12,16 @@
                 {% include "map/config/details.html" %}
             </div>
         </div>
-        <div
-            id="commentsMapAccordion"
-            class="accordion-collapse collapse fade"
-            data-bs-parent="#mapAccordion"
-        >
-            <div class="accordion-body d-flex flex-column gap-3 p-0">
-                {{map}}
-                {{role}}
+        {% if role > 0 %}
+            <div
+                id="logsMapAccordion"
+                class="accordion-collapse collapse fade"
+                data-bs-parent="#mapAccordion"
+            >
+                <div class="accordion-body d-flex flex-column gap-3 p-0">
+                    {% include "map/config/logs.html" %}
+                </div>
             </div>
-        </div>
+        {% endif %}
     </div>
 </div>
-

@@ -1,5 +1,7 @@
 from django import template
 from django_recaptcha.widgets import ReCaptchaV2Checkbox
+from django import template
+from django.utils import timezone
 
 from ..general import form_helpers
 
@@ -11,6 +13,12 @@ import random, string
 
 
 register = template.Library()
+
+@register.filter
+def append_timezone(value):
+    if value:
+        return f"{value} {timezone.get_current_timezone_name()}"
+    return value
 
 @register.simple_tag
 def random_string():

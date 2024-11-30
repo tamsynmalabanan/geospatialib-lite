@@ -90,6 +90,8 @@ def create_map(request):
                 focus_area=clean_data.get('focus_area', '')
             )
             if map_instance:
+                # create logs
+
                 content_instance = lib_models.Content.objects.create(
                     added_by=user,
                     type='map',
@@ -119,6 +121,7 @@ def map_privacy(request):
     context_data = request.GET.get('context', '{}')
     context = json.loads(context_data)
     context['map'] = map_instance
+    context['role'] = map_instance.get_role(request.user)
 
     return render(request, 'map/config/privacy.html', context)
 
