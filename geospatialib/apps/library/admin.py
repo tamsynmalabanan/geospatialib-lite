@@ -19,7 +19,7 @@ class MetaAbstractAdmin(admin.ModelAdmin):
         'added_on',
         'updated_on',
     )
-    search_fields = ['label']
+    search_fields = ['title']
     list_filter = ['type']
 
 admin.site.register(models.Content, MetaAbstractAdmin)

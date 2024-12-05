@@ -41,7 +41,7 @@ class MapLogAbstract(models.Model):
             'owner',
             'privacy',
             'published',
-            'content__label',
+            'content__title',
         ]
 
     @property

@@ -29,7 +29,7 @@
                         {% endif %}
                     {% endif %}
                 </div>
-                <h6 class="card-title">{{content.label}}</h6>
+                <h6 class="card-title">{{content.title}}</h6>
                 {% if content.type == 'dataset' %}
                     {% if content.dataset.format != 'xyz' %}
                         <h6 class="card-subtitle mb-2 text-body-secondary fs-14">{{content.dataset.name}}</h6>
@@ -54,7 +54,7 @@
                     {% if content.type == 'dataset' %}
                         onclick="toggleLayer(event, {mapSelector:'#geospatialibMap'})"
                         data-layer-bbox="{{content.bbox.extent}}"
-                        data-layer-label="{{content.label}}"
+                        data-layer-label="{{content.title}}"
                         data-layer-url="{{content.dataset.url.url}}"
                         data-layer-format="{{content.dataset.format}}"
                         data-layer-name="{{content.dataset.name}}"

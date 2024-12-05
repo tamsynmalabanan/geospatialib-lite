@@ -51,7 +51,7 @@ class CreateMapForm(forms.Form):
         try:
             content_instance = lib_models.Content.objects.get(
                 map__owner__pk=self.data.get('owner'),
-                label__iexact=title
+                title__iexact=title
             )
         except:
             content_instance = None
@@ -69,4 +69,4 @@ class CreateMapForm(forms.Form):
         return clean_tags
     
 # class EditMapAdminForm(forms.Form):
-#     label = forms.
+#     title = forms.

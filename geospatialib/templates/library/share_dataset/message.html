@@ -1,7 +1,7 @@
 {% load util_tags %}
 
 {% if dataset %}
-    {% var content.label as label %}
+    {% var content.title as title %}
     
     <div>
         {% if 'info' in message.tags %}
@@ -14,11 +14,11 @@
             data-bs-toggle="modal"
             data-bs-target="#shareDatasetModal"
             role="button"
-            onclick="searchLibrary('{{label}}')"
+            onclick="searchLibrary('{{title}}')"
         >
             <i class="bi bi-layers-half mx-1"></i>
             <span>
-                {{label}}
+                {{title}}
             </span>
         </a>
     </div>

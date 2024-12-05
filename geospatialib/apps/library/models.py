@@ -56,14 +56,14 @@ class Content(MapLogAbstract):
     dataset = models.OneToOneField("library.Dataset", verbose_name='Dataset', on_delete=models.CASCADE, related_name='content', blank=True, null=True, editable=False)
     map = models.OneToOneField("map.Map", verbose_name='Map', on_delete=models.CASCADE, related_name='content', blank=True, null=True, editable=False)
 
-    label = models.CharField('Title', max_length=255, blank=True, null=True)
+    title = models.CharField('Title', max_length=255, blank=True, null=True)
     abstract = models.TextField('Abstract', blank=True, null=True)
     tags = models.ManyToManyField("library.Tag", verbose_name='Tags', blank=True, related_name='contents')
     bbox = models.PolygonField('Bounding box', blank=True, null=True)
 
     def __str__(self) -> str:
-        if self.label:
-            return self.label
+        if self.title:
+            return self.title
         return super().__str__()
 
     @property

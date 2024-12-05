@@ -100,7 +100,7 @@ class SearchList(ListView):
 
             search_vector = SearchVector('type')
             for field in [
-                'label',
+                'title',
                 'abstract',
                 'tags__tag',
 
@@ -158,7 +158,7 @@ class SearchList(ListView):
             queryset = (
                 self.queryset
                 .annotate(rank=Max('rank'))
-                .order_by(*['-rank']+self.filter_fields+['label'])
+                .order_by(*['-rank']+self.filter_fields+['title'])
             )
 
         return queryset

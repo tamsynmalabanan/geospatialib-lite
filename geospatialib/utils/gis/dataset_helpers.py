@@ -39,7 +39,7 @@ class XYZHandler(DatasetHandler):
     def populate_dataset(self, dataset):
         content = dataset.content
 
-        content.label = dataset.name.replace('_', ' ')
+        content.title = dataset.name.replace('_', ' ')
         content.bbox = geom_helpers.WORLD_GEOM
         content.tags.set(
             model_helpers.collect_url_tags(
@@ -66,7 +66,7 @@ class ArcGISImageHandler(DatasetHandler):
     def populate_dataset(self, dataset):
         content = dataset.content
 
-        content.label = dataset.name.replace('_', ' ')
+        content.title = dataset.name.replace('_', ' ')
         content.bbox = geom_helpers.WORLD_GEOM
         content.tags.set(
             model_helpers.collect_url_tags(
@@ -99,12 +99,12 @@ class WMSHandler(DatasetHandler):
         if service:
             self.layers = self.get_layers(service)
 
-    def get_label(self, layer):
+    def get_title(self, layer):
         if layer and hasattr(layer, 'title'):
-            label = layer.title
+            title = layer.title
         else:
-            label = self.dataset.name
-        return label.replace('_', ' ')
+            title = self.dataset.name
+        return title.replace('_', ' ')
 
     def get_bbox(self, layer):
         bbox = None
@@ -209,7 +209,7 @@ class WMSHandler(DatasetHandler):
             dataset.save()
 
             content = dataset.content
-            content.label = self.get_label(layer)
+            content.title = self.get_title(layer)
             content.bbox = self.get_bbox(layer)
             content.abstract = self.get_abstract(id, layer)
             content.tags.set(self.get_tags(id, layer))
@@ -256,12 +256,12 @@ class WFSHandler(DatasetHandler):
         if service:
             self.layers = self.get_layers(service)
 
-    def get_label(self, layer):
+    def get_title(self, layer):
         if layer and hasattr(layer, 'title'):
-            label = layer.title
+            title = layer.title
         else:
-            label = self.dataset.name
-        return label.replace('_', ' ')
+            title = self.dataset.name
+        return title.replace('_', ' ')
 
     def get_bbox(self, layer):
         bbox = None
@@ -366,7 +366,7 @@ class WFSHandler(DatasetHandler):
             dataset.save()
 
             content = dataset.content
-            content.label = self.get_label(layer)
+            content.title = self.get_title(layer)
             content.bbox = self.get_bbox(layer)
             content.abstract = self.get_abstract(id, layer)
             content.tags.set(self.get_tags(id, layer))

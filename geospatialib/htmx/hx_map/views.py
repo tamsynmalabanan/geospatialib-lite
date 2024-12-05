@@ -100,7 +100,7 @@ def create_map(request):
                     updated_by=user,
                     type='map',
                     map=map_instance,
-                    label=clean_data.get('title', ''),
+                    title=clean_data.get('title', ''),
                     bbox=clean_data.get('bbox', ''),
                 )
                 if content_instance:
