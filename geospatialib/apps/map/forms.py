@@ -67,3 +67,6 @@ class CreateMapForm(forms.Form):
         tags = clean_data.get('tags')
         clean_tags = ','.join(util_helpers.split_by_special_characters(tags, ['_', '-', ','])).lower()
         return clean_tags
+    
+# class EditMapAdminForm(forms.Form):
+#     label = forms.

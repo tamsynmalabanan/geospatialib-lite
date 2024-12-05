@@ -21,7 +21,7 @@ def get_map_privacy_filters(user, map_field_name=None):
             user_pk = user.pk
             queries |= (
                 Q(**{f'{prefix}owner__pk':user_pk})
-                | Q(**{f'{prefix}roles__user__pk':user_pk})
+                | Q(**{f'{prefix}contributors__user__pk':user_pk})
                 # | Q(**{f'{prefix}content__added_by__pk':user_pk})
             )
 
@@ -49,3 +49,18 @@ def list_to_tags(tags_list):
                 tag_instances.append(tag_instance)
 
     return tag_instances
+    
+
+def get_field_from_instance(instance, field_exp):
+    field_names = field_exp.split('__')
+    model_class = instance.__class__
+
+    index = 0
+    while index != len(field_names):
+        field_name = field_names[index]
+        field = model_class._meta.get_field(field_name)
+        if field.is_relation:
+            model_class = field.related_model
+        index +=1
+
+    return field

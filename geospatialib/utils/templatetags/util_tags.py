@@ -3,7 +3,7 @@ from django_recaptcha.widgets import ReCaptchaV2Checkbox
 from django import template
 from django.utils import timezone
 
-from ..general import form_helpers
+from ..general import form_helpers, model_helpers
 
 import json
 import shortuuid
@@ -19,6 +19,11 @@ def append_timezone(value):
     if value:
         return f"{value} {timezone.get_current_timezone_name()}"
     return value
+
+@register.filter
+def get_field_verbose_name(instance, field_exp):
+    field = model_helpers.get_field_from_instance(instance, field_exp)
+    return field.verbose_name
 
 @register.simple_tag
 def random_string():

@@ -11,6 +11,7 @@ from django.utils.text import slugify
 from django.contrib.gis.geos import Polygon, GEOSGeometry
 from django.http import JsonResponse
 from django.urls import reverse_lazy
+from django.forms.models import model_to_dict
 
 import time
 
@@ -78,22 +79,25 @@ def create_map(request):
         if not clean_title:
             form_helpers.remove_classes_from_field(tags_field, ['is-invalid'])
 
-    focus_area_value = data.get('focus_area', '').strip()
+    focus_area_value = data.get('focus_area', '').strip().title()
     if focus_area_value != '':
-        form.data.update({'focus_area': focus_area_value.title()})
+        form.data.update({'focus_area': focus_area_value})
+    else:
+        focus_area_value = None
 
     if data.get('submit') is not None:
         if form.is_valid():
             clean_data = form.cleaned_data
             map_instance = map_models.Map.objects.create(
+                added_by=user,
+                updated_by=user,
                 owner=user, 
-                focus_area=clean_data.get('focus_area', '')
+                focus_area=focus_area_value
             )
             if map_instance:
-                # create logs
-
                 content_instance = lib_models.Content.objects.create(
                     added_by=user,
+                    updated_by=user,
                     type='map',
                     map=map_instance,
                     label=clean_data.get('title', ''),
@@ -102,6 +106,9 @@ def create_map(request):
                 if content_instance:
                     tag_instances = model_helpers.list_to_tags(clean_data.get('tags','').split(','))
                     content_instance.tags.set(tag_instances)
+
+                    map_instance.create_logs()
+                    content_instance.create_logs()
 
                     messages.success(request, 'Map successfully created!', 'map-floating-message')
                     response = HttpResponse()
@@ -113,6 +120,20 @@ def create_map(request):
             messages.error(request, 'There was an error while creating the map. Please review the form and try again.', 'create-map-form')
 
     return render(request, 'map/create_map/form.html', {'form':form, 'content':content_instance})
+
+@login_required
+def edit_map(request, pk, form):
+    map_instance = get_object_or_404(map_models.Map, pk=pk)
+    context = {
+        'map': map_instance,
+        'role': map_instance.get_role(request.user),
+    }
+
+    # if request.method == "GET":
+    #     field = model_helpers.get_field_from_instance(map_instance, field_exp)
+    #     context['field'] = field
+
+    return render(request, f'map/config/details/body.html', context)
 
 @login_required
 def map_privacy(request):

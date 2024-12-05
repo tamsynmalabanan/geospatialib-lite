@@ -21,8 +21,11 @@ def index(request, pk):
                 'references', 
                 'references__url', 
 
-                'roles', 
-                'roles__user'
+                # 'contributors', 
+                # 'contributors__user',
+
+                'logs',
+                'logs__added_by',
             )
             .get(
                 Q(content__pk=pk) & 

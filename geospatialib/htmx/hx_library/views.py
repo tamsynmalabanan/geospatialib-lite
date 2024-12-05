@@ -55,8 +55,6 @@ class SearchList(ListView):
         return [
             'type', 
             'dataset__format',
-            # 'map__privacy',
-            # 'map__published',
         ]
 
     @property
@@ -129,7 +127,7 @@ class SearchList(ListView):
                 )
                 .prefetch_related(
                     'tags', 
-                    'map__roles__user',
+                    'map__contributors__user',
                     # 'map__references',
                 )
                 .annotate(

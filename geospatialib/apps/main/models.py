@@ -79,6 +79,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
 
+    def __str__(self) -> str:
+        return self.proper_name
+
     @property
     def proper_name(self):
         names = [name for name in [self.first_name, self.last_name] if name]
