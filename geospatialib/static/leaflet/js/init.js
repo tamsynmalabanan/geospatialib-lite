@@ -224,7 +224,7 @@ const handleMapLegend = (map) => {
 
             const legendContainer = createButtonAndCollapse(
                 containerId, {
-                    label: layer.data.layerLabel,
+                    label: layer.data.layerTitle,
                     buttonClassName: 'text-wrap'
                 }
             )
@@ -531,7 +531,7 @@ const handleMapQuery = (map) => {
             libraryLayers.forEach(layer => {
                 const data = layer.data
                 fetchers[`${data.layerUrl}:${data.layerFormat}:${data.layerName}`] = {
-                    label: data.layerLabel,
+                    label: data.layerTitle,
                     data: fetchLibraryData(event, layer, {abortBtn:cancelQueryBtn}),
                 }
             })

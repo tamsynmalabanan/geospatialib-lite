@@ -1,0 +1,36 @@
+{% load static %}
+
+<form
+    hx-post="{% url 'hx_map:edit_map' pk=map.pk section=section %}"
+    hx-trigger="submit"
+    hx-target="#mapDetails"
+    hx-swap="outerHTML"
+>
+    <div class="px-0">
+        {% include "base/components/messages/body.html" with dismissible=1 tag='edit-map-'|add:section|add:'-form' %}
+    </div>
+    <div class='d-flex flex-column gap-3 overflow-hidden p-1'>
+        {% csrf_token %}
+        {% for field in form %}
+            {% include "base/components/form/field.html" %}
+        {% endfor %}
+        <div class='d-flex justify-content-between gap-2'>
+            <button
+                type="button"
+                class="btn btn-sm btn-secondary text-nowrap"
+                hx-get="{% url 'hx_map:edit_map' pk=map.pk section='details' %}"
+                hx-trigger="click"
+                hx-target="#mapDetails"
+                hx-swap="outerHTML"
+            >Back</button>
+            <button
+                type="submit"
+                class="btn btn-sm btn-primary htmx-request-hide"
+            >Save</button>
+            <button class="btn btn-sm btn-primary htmx-indicator" type="button" disabled>
+                <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+                <span role="status">Saving...</span>
+            </button>
+        </div>
+    </div>
+</form>

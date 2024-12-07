@@ -122,16 +122,54 @@ def create_map(request):
     return render(request, 'map/create_map/form.html', {'form':form, 'content':content_instance})
 
 @login_required
-def edit_map(request, pk, form):
+def edit_map(request, pk, section):
     map_instance = get_object_or_404(map_models.Map, pk=pk)
+    role = map_instance.get_role(request.user)
     context = {
+        'section': section,
         'map': map_instance,
-        'role': map_instance.get_role(request.user),
+        'role': role,
     }
 
-    # if request.method == "GET":
-    #     field = model_helpers.get_field_from_instance(map_instance, field_exp)
-    #     context['field'] = field
+    map_edit_forms = map_forms.get_map_edit_forms()
+    if section in map_edit_forms:
+        min_role, form_class = map_edit_forms.get(section)
+        if role >= min_role:
+            form = form_class(data={
+                'map': map_instance.pk,
+                'owner': map_instance.owner.pk,
+                'role': role,
+            })
+
+            if role < 4:
+                title_field = form['title']
+                title_field.field.initial = map_instance.content.title
+                title_field.field.widget.attrs['hidden'] = True
+
+            if request.method == "GET":
+                data = model_to_dict(map_instance.content)
+                data.update(model_to_dict(map_instance))
+
+                for key, value in data.items():
+                    if value and not isinstance(value, (str, int, float)):
+                        if isinstance(value, GEOSGeometry):
+                            data[key] = value.geojson
+                        elif isinstance(value, list):
+                            data[key] = ','.join([str(i) for i in value])
+                        else:
+                            print(key, value, type(value))
+
+                form.data.update(data)
+                context['form'] = form
+
+            if request.method == 'POST':
+                form.data.update(request.POST.dict())
+                if not form.is_valid():
+                    for field_name in form.errors.keys():
+                        field = form[field_name]
+                        form_helpers.validate_field(field)
+                    context['form'] = form
+                    messages.error(request, 'Please review below error/s:', f'edit-map-{section}-form')
 
     return render(request, f'map/config/details/body.html', context)
 

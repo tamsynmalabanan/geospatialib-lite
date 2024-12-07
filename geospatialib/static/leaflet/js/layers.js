@@ -451,6 +451,8 @@ const createWFSLayer = (data) => {
             let prefix
             let suffix
 
+            const defaultTooltip = `Zoom in to load individual ${data.layerTitle} features.`
+
             if (geojson) {
                 const mapScale = getMeterScale(map)
                 const featureCount = geojson.features.length
@@ -458,7 +460,7 @@ const createWFSLayer = (data) => {
                 if ((mapScale && mapScale > 10000) || (!mapScale && map.getZoom() < 9)) {
                     if (featureCount > 1000) {
                         geojson.features = [turf.bboxPolygon(turf.bbox(geojson))]
-                        geojson.tooltip = `Zoom in to load individual ${data.layerLabel} features.`
+                        geojson.tooltip = defaultTooltip
                         prefix = 'Bounding'
                         suffix = `for ${formatNumberWithCommas(featureCount)} features`
                     } else {
@@ -477,7 +479,7 @@ const createWFSLayer = (data) => {
                     geojson = {
                         type: 'FeatureCollection',
                         features: [turf.bboxPolygon(data.layerBbox.slice(1, -1).split(','))],
-                        tooltip: `Zoom in to load individual ${data.layerLabel} features.`
+                        tooltip: defaultTooltip
                     }
     
                     prefix = 'Bounding'

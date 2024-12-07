@@ -58,6 +58,8 @@ def assign_field_attributes(field):
     attrs = widget.attrs
     attrs['id'] = f'{field.form.__class__.__name__.lower()}_{field.name}'
 
+    print(field)
+
     if isinstance(widget, ReCaptchaV2Checkbox):
         pass
         # attrs['data-theme'] = 'light'

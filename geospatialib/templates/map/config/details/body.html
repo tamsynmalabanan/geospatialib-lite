@@ -1,64 +1,13 @@
-{% load util_tags %}
-
 {% with label_class="lead fs-14 text-muted user-select-none d-flex justify-content-between" %}
     <div id='mapDetails' class='d-flex flex-column gap-3 p-0'>
-        {% include "map/config/details/admin.html" %}
-        
+        {% if not form or section != 'info' %}
+            {% include "map/config/details/info.html" %}
+        {% else %}
+            {% include "map/config/details/form.html" %}
+        {% endif %}
         <hr>
-    
-        <div class="fs-14" >
-            <table class="table table-dark table-rows-border-0 table-condensed" >
-                <tbody>
-                    <tr class="">
-                        <td scope="row" class="{{label_class}}">Owner</td>
-                        <td>
-                            {{map.owner.proper_name}}
-                            {% if map.owner_since %}
-                                since {{map.owner_since|date:"M d, Y"}}
-                            {% endif %}                
-                        </td>
-                    </tr>
-                    {% for label, contributors in map.contributors_dict.items %}
-                        <tr class="">
-                            <td scope="row" class="{{label_class}}">{{label}}</td>
-                            <td>
-                                <ul class="list-unstyled mb-0">
-                                    {% for role in contributors %}
-                                        <li>{{role.user.proper_name}}</li>
-                                    {% endfor %}            
-                                </ul>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                    <tr class="">
-                        <td scope="row" class="{{label_class}}">Created on</td>
-                        <td>{{map.content.added_on|date:"M d, Y h:i a"|append_timezone}}</td>
-                    </tr>
-                    <tr class="">
-                        <td scope="row" class="{{label_class}}">Last update</td>
-                        <td>{{map.updated_on|timesince}} ago</td>
-                    </tr>
-                    <tr class="">
-                        <td scope="row" class="{{label_class}}">Publication</td>
-                        <td>
-                            {% if map.published %}
-                                {% if map.published_off %}
-                                    Re-published
-                                {% else %}
-                                    Published
-                                {% endif %}
-                                 on {{map.published_on|date:"M d, Y h:i a"|append_timezone}}
-                            {% else %}
-                                {% if map.published_off %}
-                                    Not published; un-published on {{map.published_off|date:"M d, Y h:i a"|append_timezone}}
-                                {% else %}
-                                    Not published since creation
-                                {% endif %}
-                            {% endif %}                
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+        {% if not form or section != 'meta' %}
+            {% include "map/config/details/meta.html" %}                
+        {% endif %}
     </div>
 {% endwith %}
