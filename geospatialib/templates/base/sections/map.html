@@ -15,7 +15,7 @@
     data-leaflet-bbox-fields='.geospatialibMap-bbox-field'
 >
     <div class='position-absolute top-0 start-0 z-2 d-flex w-100 justify-content-center px-5' style='margin-top:10px;'>
-        {% include "base/components/messages/body.html" with tag='map-floating-message' dismissible=1 fadeout=1 %}
+        {% include "base/components/messages/body.html" with tag='map-floating-message' dismissible=1 fadeout=1 hx_swap_oob="true" %}
     </div>
     {% leaflet_map 'geospatialibMap' %}
 </div>

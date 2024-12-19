@@ -161,6 +161,9 @@ def edit_map(request, pk, section):
                 else:
                     if form.has_changed():
                         form.save()
+                        messages.success(request, 'Map successfully updated!', f'map-floating-message')
+                    else:
+                        messages.info(request, 'No changes made to map.', f'map-floating-message')
 
     return render(request, f'map/config/details/body.html', context)
 

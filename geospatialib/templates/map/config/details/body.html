@@ -16,4 +16,5 @@
 
 {% if request.headers|get:'HX-Request' and not form %}
     {% include "map/config/logs.html" %}
+    {% include "base/components/messages/body.html" with tag='map-floating-message' dismissible=1 fadeout=1 hx_swap_oob="true" %}
 {% endif %}
