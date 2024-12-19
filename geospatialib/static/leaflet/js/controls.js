@@ -38,7 +38,7 @@ const searchBar = (map, include=true) => {
     if (include) {
         const geocoder = L.Control.geocoder({
             defaultMarkGeocode: false,
-            collapsed: true,
+            // collapsed: true,
             position: 'topleft',
         })
         .on('markgeocode', (e) => {
@@ -65,6 +65,9 @@ const searchBar = (map, include=true) => {
         button.innerText = ''
         button.classList.add('bi','bi-binoculars-fill')
 
+        const alternativesList = geocoderContainer.querySelector('.leaflet-control-geocoder-alternatives')
+        alternativesList.classList.add('list-unstyled', 'px-2')
+
         const geocoderFieldsSelector = map.getContainer().parentElement.getAttribute('data-leaflet-geocoder-fields')
         if (geocoderFieldsSelector) {
             document.addEventListener('change', (event) => {
@@ -90,15 +93,20 @@ const searchBar = (map, include=true) => {
 }
 
 const resetView = (map, include) => {
+    const resetViewControl = map.resetviewControl
     if (include) {
-        const container = map.resetviewControl.getContainer()
+        const container = resetViewControl.getContainer()
         const control = container.querySelector('a')
         control.classList.add('rounded', 'bi', 'bi-globe-americas', 'fs-6')
         
         const defautMapBounds = map.getBounds()
-        map.resetviewControl.getBounds = () => defautMapBounds
+        resetViewControl.getBounds = () => defautMapBounds
+
+        control.addEventListener('click', () => {
+            map._viewReset = true
+        })
     } else {
-        map.removeControl(map.resetviewControl)
+        map.removeControl(resetViewControl)
     }
 }
 

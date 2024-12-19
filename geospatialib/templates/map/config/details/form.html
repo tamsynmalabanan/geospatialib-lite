@@ -12,7 +12,7 @@
     <div class='d-flex flex-column gap-3 overflow-hidden p-1'>
         {% csrf_token %}
         {% for field in form %}
-            {% include "base/components/form/field.html" %}
+            {% include "base/components/form/field.html" with format=default label=1 %}
         {% endfor %}
         <div class='d-flex justify-content-between gap-2'>
             <button
@@ -25,6 +25,7 @@
             >Back</button>
             <button
                 type="submit"
+                name='submit'
                 class="btn btn-sm btn-primary htmx-request-hide"
             >Save</button>
             <button class="btn btn-sm btn-primary htmx-indicator" type="button" disabled>

@@ -132,7 +132,7 @@ LEAFLET_CONFIG = {
                 'https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css', 
             ],
             'js': [
-                'https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js'
+                'https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js',
             ],
             'auto_include': True,
         },

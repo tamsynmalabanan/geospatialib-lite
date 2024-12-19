@@ -53,7 +53,6 @@ const handleMapControls = (map) => {
     })
 
     setAsThemedControl(map.attributionControl.getContainer())
-
     map.getContainer().querySelectorAll('.leaflet-control-scale-line')
     .forEach(scale => setAsThemedControl(scale))
 
@@ -745,20 +744,28 @@ const handleMapObservers = (map) => {
     if (bboxFieldsSelector) {
         const updateBboxFields = () => {
             const bboxFields = document.querySelectorAll(bboxFieldsSelector)
-            bboxFields.forEach(field => {
-                const bounds = loopThroughCoordinates(map.getBounds(), validateCoordinates)
-                const geom = JSON.stringify(L.rectangle(bounds).toGeoJSON().geometry)
-                field.value = geom
-            })
+            if (bboxFields.length > 0) {
+                let geom
+                if (map._viewReset) {
+                    geom = JSON.stringify(L.rectangle(map.resetviewControl.getBounds()).toGeoJSON().geometry)
+                    map._viewReset = false
+                } else {
+                    const bounds = loopThroughCoordinates(map.getBounds(), validateCoordinates)
+                    geom = JSON.stringify(L.rectangle(bounds).toGeoJSON().geometry)
+                }
+                bboxFields.forEach(field => {
+                    field.value = geom
+                })
+            }
         }        
 
-        updateBboxFields(map)
+        updateBboxFields()
         
         let updateBboxFieldsTimeout
         map.on('resize moveend zoomend updateBboxFields', (event) => {
             clearTimeout(updateBboxFieldsTimeout)
             updateBboxFieldsTimeout = setTimeout(() => {
-                updateBboxFields(map)
+                updateBboxFields()
             }, 100)
         })
     }

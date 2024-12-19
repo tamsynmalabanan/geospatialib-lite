@@ -1,13 +1,15 @@
-{% for log in map.logs.all %}
-    <div class='d-flex flex-column'>
-        <span>
-            {% if log.added_by == user %}
-                You
-            {% else %}
-                {{log.added_by}}
-            {% endif %}
-            {{log.remark|safe}}
-        </span>
-        <span class='small text-muted'>{{log.added_on|timesince}} ago</span>
-    </div>
-{% endfor %}
+<div id='mapLogsContainer' hx-swap-oob="true" class='d-flex flex-column gap-3 p-0'>
+    {% for log in map.logs.all %}
+        <div class='d-flex flex-column'>
+            <span>
+                {% if log.added_by == user %}
+                    You
+                {% else %}
+                    {{log.added_by}}
+                {% endif %}
+                {{log.remark|safe}}
+            </span>
+            <span class='small text-muted'>{{log.added_on|timesince}} ago</span>
+        </div>
+    {% endfor %}
+</div>

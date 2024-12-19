@@ -54,8 +54,8 @@
     }
     
     .leaflet-control-geocoder-icon {
-        border-radius: var(--bs-border-radius) !important;
-        background-image: none !important;
+        /* border-radius: var(--bs-border-radius) !important; */
+        /* background-image: none !important; */
     }
     
     .leaflet-control-geocoder-icon.btn-dark {

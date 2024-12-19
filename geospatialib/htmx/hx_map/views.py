@@ -11,7 +11,8 @@ from django.utils.text import slugify
 from django.contrib.gis.geos import Polygon, GEOSGeometry
 from django.http import JsonResponse
 from django.urls import reverse_lazy
-from django.forms.models import model_to_dict
+from django.forms.models import model_to_dict, ModelMultipleChoiceField
+# from django.forms import MultipleChoiceField
 
 import time
 
@@ -62,8 +63,7 @@ def create_map(request):
     user = request.user
 
     data = request.POST.dict()
-    data['owner'] = user.pk
-    form = map_forms.CreateMapForm(data=data)
+    form = map_forms.CreateMapForm(data=data, owner_pk=user.pk)
     
     clean_title = None
     if data.get('title', '').strip() != '':
@@ -115,7 +115,6 @@ def create_map(request):
                     response['HX-Redirect'] = reverse_lazy('map:index', kwargs={'pk': content_instance.pk})
                     return response
 
-        
         if not map_instance or not content_instance:
             messages.error(request, 'There was an error while creating the map. Please review the form and try again.', 'create-map-form')
 
@@ -135,41 +134,33 @@ def edit_map(request, pk, section):
     if section in map_edit_forms:
         min_role, form_class = map_edit_forms.get(section)
         if role >= min_role:
-            form = form_class(data={
-                'map': map_instance.pk,
-                'owner': map_instance.owner.pk,
-                'role': role,
-            })
-
-            if role < 4:
-                title_field = form['title']
-                title_field.field.initial = map_instance.content.title
-                title_field.field.widget.attrs['hidden'] = True
+            form_kwargs = {
+                'map_instance': map_instance,
+                'role':role,
+                'section':section,
+                'user':request.user,
+            }
 
             if request.method == "GET":
-                data = model_to_dict(map_instance.content)
-                data.update(model_to_dict(map_instance))
-
-                for key, value in data.items():
-                    if value and not isinstance(value, (str, int, float)):
-                        if isinstance(value, GEOSGeometry):
-                            data[key] = value.geojson
-                        elif isinstance(value, list):
-                            data[key] = ','.join([str(i) for i in value])
-                        else:
-                            print(key, value, type(value))
-
-                form.data.update(data)
-                context['form'] = form
+                context['form'] = form_class(**form_kwargs)
 
             if request.method == 'POST':
-                form.data.update(request.POST.dict())
-                if not form.is_valid():
-                    for field_name in form.errors.keys():
-                        field = form[field_name]
-                        form_helpers.validate_field(field)
+                data = request.POST.dict()
+                form = form_class(data=data, **form_kwargs)
+                
+                valid_form = form.is_valid()
+                submitted = 'submit' in data
+                if not valid_form or not submitted:
+                    if not valid_form:
+                        for field_name in form.errors.keys():
+                            field = form[field_name]
+                            form_helpers.validate_field(field)
+                        if submitted:
+                            messages.error(request, 'Please review below error/s:', f'edit-map-{section}-form')
                     context['form'] = form
-                    messages.error(request, 'Please review below error/s:', f'edit-map-{section}-form')
+                else:
+                    if form.has_changed():
+                        form.save()
 
     return render(request, f'map/config/details/body.html', context)
 
@@ -183,4 +174,3 @@ def map_privacy(request):
     context['role'] = map_instance.get_role(request.user)
 
     return render(request, 'map/config/privacy.html', context)
-

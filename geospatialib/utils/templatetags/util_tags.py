@@ -15,6 +15,14 @@ import random, string
 register = template.Library()
 
 @register.filter
+def object_type(value):
+    return str(type(value))
+
+@register.filter
+def vars_dict(value):
+    return vars(value)
+
+@register.filter
 def append_timezone(value):
     if value:
         return f"{value} {timezone.get_current_timezone_name()}"
@@ -62,8 +70,12 @@ def sub_bool(value, sub):
     return value
 
 @register.filter
-def get(dict, key):
-    return dict.get(key)
+def get(dictionary, key):
+    try:
+        return dictionary.get(key)
+    except:
+        pass    
+        
 
 @register.filter
 def stringify(value):

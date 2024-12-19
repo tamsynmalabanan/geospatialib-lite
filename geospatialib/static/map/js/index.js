@@ -3,7 +3,8 @@ let geospatialibMap
 const handleMapFocusAreaBbox = (bbox) => {
     const handler = () => {
         const bounds = zoomMapToBbox(geospatialibMap, bbox)
-        geospatialibMap.resetviewControl.getBounds = () => bounds
+        const resetViewControl = geospatialibMap.resetviewControl
+        resetViewControl.getBounds = () => bounds
     }
 
     if (geospatialibMap && geospatialibMap.initComplete === true) {

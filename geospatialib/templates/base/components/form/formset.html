@@ -1,0 +1,49 @@
+{% load widget_tweaks %}
+{% load util_tags %}
+
+<div class='mt-2'>
+    {{ formset.management_form }}
+    <div class='d-flex flex-column gap-2'>
+        {% for form in formset %}
+            {% var form.DELETE as delete_field %}
+            {% random_string as id %}
+            <div 
+                id="{{id}}" 
+                class="
+                    d-flex flex-wrap formset-container 
+                    {% if delete_field and delete_field.value == 'on' %}d-none{% endif %}
+                "
+            >
+                {% for formset_field in form %}
+                    {% var formset_field.field.widget as widget  %}
+                    <div 
+                        class="
+                            {% if widget.input_type == 'hidden' or widget.attrs.hidden %}
+                                col-0
+                            {% else %}
+                                col-lg-5 col-12 {% if not forloop.last %} me-2{% endif %}
+                            {% endif %}
+                            {% if forloop.first %}flex-grow-1{% endif %}
+                        "
+                    >
+                        {% include "base/components/form/field.html" with field=formset_field format='default' %}
+                    </div>
+                    {% if formset_field.name == 'DELETE' %}
+                        <div>
+                            <button 
+                                class='badge bg-transparent border-0 text-danger ms-auto formset-field'
+                                data-formset-field="#{{field.id_for_label}}"
+                                type='button'
+                                tabindex='-1'
+                                onclick="deleteFormset('#{{id}}', '{{form.prefix}}')"
+                                title='Delete'
+                            ><i class="bi bi-dash-circle-fill"></i></button>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% comment %} should be able to reorder {% endcomment %}

@@ -1,3 +1,5 @@
+{% load util_tags %}
+
 {% with label_class="lead fs-14 text-muted user-select-none d-flex justify-content-between" %}
     <div id='mapDetails' class='d-flex flex-column gap-3 p-0'>
         {% if not form or section != 'info' %}
@@ -7,7 +9,11 @@
         {% endif %}
         <hr>
         {% if not form or section != 'meta' %}
-            {% include "map/config/details/meta.html" %}                
+            {% include "map/config/details/meta.html" %}     
         {% endif %}
     </div>
 {% endwith %}
+
+{% if request.headers|get:'HX-Request' and not form %}
+    {% include "map/config/logs.html" %}
+{% endif %}

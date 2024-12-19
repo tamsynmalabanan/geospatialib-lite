@@ -5,15 +5,18 @@
 {% var field.field.widget as widget %}
 {% var widget.attrs|get:'data-datalist-endpoint' as datalist_endpoint %}
 {% var widget.input_type as input_type %}
+{% var widget.attrs.meta as meta_attrs %}
+{% var field|remove_attr:"meta" as field %}
 
 <div class="flex-grow-1 field-container">
-    {% if format == 'default' %}
+    {% if meta_attrs and 'formset' in meta_attrs %}
+        <label for="{{widget.attrs.id}}">{{field.label}}</label>
+        {% render_field field hidden="true" %}
+        {% include "base/components/form/invalid_feedback.html" %}
+        {% include "base/components/form/formset.html" with formset=meta_attrs|get:'formset' %}
+    {% elif format == 'default' or widget|is_captchta_widget or input_type == 'hidden' or widget.attrs.hidden %}
         {% render_field field %}
-    {% elif widget|is_captchta_widget %}
-        {% render_field field %}
-    {% elif input_type and input_type == 'hidden' or widget.attrs.hidden %}
-        {% render_field field %}
-        {% if widget.attrs|get:'data-role' == 'tagsinput' %}
+        {% if format == 'default' or widget.attrs|get:'data-role' == 'tagsinput' %}
             {% include "base/components/form/invalid_feedback.html" %}
         {% endif %}
     {% elif input_type and input_type == 'checkbox' %}
@@ -27,6 +30,12 @@
             <label for="{{widget.attrs.id}}">{{field.label}}</label>
             {% include "base/components/form/invalid_feedback.html" %}
         </div>
+    {% endif %}
+    
+    {% if field.help_text %}
+        <span class='small text-muted'>
+            {{field.help_text|safe}}
+        </span>
     {% endif %}
 
     {% if datalist_endpoint %}

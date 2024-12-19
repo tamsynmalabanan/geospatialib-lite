@@ -37,10 +37,11 @@
     <h6 class="{{label_class}}">References</h6>
     <ul class="list-unstyled">
         {% for reference in map.references.all %}
-            <li>
-                <a class='fs-14' href="{{reference.url.url}}" target="_blank" rel="noopener noreferrer">
+            <li class='fs-14'>
+                {{reference|safe}}
+                {% comment %} <a class='fs-14' href="{{reference.url.url}}" target="_blank" rel="noopener noreferrer">
                     {{reference.label}}
-                </a>
+                </a> {% endcomment %}
             </li>
         {% endfor %}
     </ul>

@@ -258,6 +258,18 @@ class MapReference(MapLogAbstract):
     map = models.ForeignKey("map.Map", verbose_name='Map', on_delete=models.CASCADE, related_name='references')
     url = models.ForeignKey("library.URL", verbose_name='URL', on_delete=models.CASCADE)
     label = models.CharField('Label', max_length=255)
+    order = models.PositiveSmallIntegerField('Order', default=0)
+
+    class Meta:
+        unique_together = ['map', 'url']
+        ordering = ['order', 'id']
+
+    def __str__(self):
+        return self.html_format
+
+    @property
+    def html_format(self):
+        return f'{self.label} @ <a class="text-reset text-decoration-none" href="{self.url}" target="_blank">{self.url.domain}</a>'
 
 class MapContributor(MapLogAbstract):
     map = models.ForeignKey("map.Map", verbose_name='Map', on_delete=models.CASCADE, related_name='contributors')
