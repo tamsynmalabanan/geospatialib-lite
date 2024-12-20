@@ -11,6 +11,9 @@
                         since {{map.owner_since|date:"M d, Y"}}
                     {% endif %}                
                 </td>
+                <td class='pe-0 d-flex justify-content-end'>
+                    {% include "map/config/details/edit_button.html" with section='meta' %}
+                </td>
             </tr>
             {% for label, contributors in map.contributors_dict.items %}
                 <tr class="">

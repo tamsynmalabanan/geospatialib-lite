@@ -23,9 +23,6 @@ def index(request, pk):
 
                 # 'contributors', 
                 # 'contributors__user',
-
-                'logs',
-                'logs__added_by',
             )
             .get(
                 Q(content__pk=pk) & 

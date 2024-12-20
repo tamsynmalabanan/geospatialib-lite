@@ -1,3 +1,5 @@
+{% load util_tags %}
+
 <div id='mapLogsContainer' hx-swap-oob="true" class='d-flex flex-column gap-3 p-0'>
     {% for log in map.logs.all %}
         <div class='d-flex flex-column'>
@@ -7,7 +9,7 @@
                 {% else %}
                     {{log.added_by}}
                 {% endif %}
-                {{log.remark|safe}}
+                {{log}}
             </span>
             <span class='small text-muted'>{{log.added_on|timesince}} ago</span>
         </div>

@@ -7,14 +7,16 @@
         {% else %}
             {% include "map/config/details/form.html" %}
         {% endif %}
-        <hr>
+        <hr class='my-0'>
         {% if not form or section != 'meta' %}
             {% include "map/config/details/meta.html" %}     
+        {% else %}
+            {% include "map/config/details/form.html" %}
         {% endif %}
     </div>
 {% endwith %}
 
 {% if request.headers|get:'HX-Request' and not form %}
-    {% include "map/config/logs.html" %}
+    {% comment %} {% include "map/config/logs.html" %} {% endcomment %}
     {% include "base/components/messages/body.html" with tag='map-floating-message' dismissible=1 fadeout=1 hx_swap_oob="true" %}
 {% endif %}

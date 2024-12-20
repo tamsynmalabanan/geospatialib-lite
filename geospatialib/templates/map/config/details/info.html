@@ -1,9 +1,8 @@
+
 <div>
     <h6 class="{{label_class}}">
         <span>Title</span>
-        {% if role >= 3 %}
-            {% include "map/config/details/edit_button.html" with section='info' %}
-        {% endif %}
+        {% include "map/config/details/edit_button.html" with section='info' %}
     </h6>
     <h4>{{map.content.title}}</h4>
 </div>

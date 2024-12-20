@@ -9,9 +9,16 @@ from urllib.parse import urlparse
 import json
 
 from . import choices
-from apps.map.models import MapLogAbstract
 from utils.general import form_helpers, util_helpers
+
+class ContentLogAbstract(models.Model):
+    added_by = models.ForeignKey("main.User", verbose_name='Added by', editable=False, on_delete=models.SET_NULL, blank=True, null=True, related_name='%(class)ss_added')
+    updated_by = models.ForeignKey("main.User", verbose_name='Updated by', editable=False, on_delete=models.SET_NULL, blank=True, null=True, related_name='%(class)ss_updated')
+    added_on = models.DateTimeField('Added on', auto_now_add=True, blank=True, null=True)
+    updated_on = models.DateTimeField('Updated on', auto_now=True, blank=True, null=True)
     
+    class Meta:
+        abstract = True
     
 class Dataset(models.Model):
     url = models.ForeignKey("library.URL", verbose_name='URL', on_delete=models.CASCADE, related_name='datasets')
@@ -48,7 +55,7 @@ class URL(models.Model):
     def domain(self):
         return urlparse(self.url).netloc
     
-class Content(MapLogAbstract):
+class Content(ContentLogAbstract):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
         
     type = models.CharField('Type', choices=[('dataset','dataset'), ('map', 'map')], editable=False, max_length=8, default='dataset')

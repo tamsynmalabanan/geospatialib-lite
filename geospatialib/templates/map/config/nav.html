@@ -9,7 +9,7 @@
             aria-controls="detailsMapAccordion"
         >Details</button>
     </li>
-    {% if role > 0 %}
+    {% comment %} {% if role > 0 %}
         <li class="nav-item">
             <button
                 class="accordion-button no-icon me-2 px-2 ps-3 py-1 text-bg-dark bg-transparent border-0 rounded-top z-3 collapsed"
@@ -20,5 +20,5 @@
                 aria-controls="logsMapAccordion"
             >Logs</button>
         </li>
-    {% endif %}
+    {% endif %} {% endcomment %}
 </ul>

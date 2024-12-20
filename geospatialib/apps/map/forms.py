@@ -359,8 +359,9 @@ class EditMapInfoForm(MapAbstractForm):
 
         if updated_map:
             self.map_instance.save()
-            # self.map_instance.create_logs(self.map_dict)
         
         if updated_content:
             self.content_instance.save()
-            # self.content_instance.create_logs(self.content_dict)
+
+# class EditMapMetaForm(MapAbstractForm):
+#     owner = forms.CharField('Owner', max_length=, required=False)

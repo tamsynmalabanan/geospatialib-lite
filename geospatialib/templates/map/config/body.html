@@ -12,7 +12,7 @@
                 {% include "map/config/details/body.html" %}
             </div>
         </div>
-        {% if role > 0 %}
+        {% comment %} {% if role > 0 %}
             <div
                 id="logsMapAccordion"
                 class="accordion-collapse collapse fade"
@@ -22,6 +22,6 @@
                     {% include "map/config/logs.html" %}
                 </div>
             </div>
-        {% endif %}
+        {% endif %} {% endcomment %}
     </div>
 </div>

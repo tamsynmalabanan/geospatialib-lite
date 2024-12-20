@@ -52,7 +52,7 @@ def tags_datalist(request):
     tags_query = tags_query[:5]
     
     template = 'base/components/form/datalist.html'
-    return render(request, template, {'queryset': tags_query})
+    return render(request, template, {'data': {i.tag:i.tag for i in tags_query}})
 
 @require_http_methods(['POST'])
 @login_required
@@ -106,9 +106,6 @@ def create_map(request):
                 if content_instance:
                     tag_instances = model_helpers.list_to_tags(clean_data.get('tags','').split(','))
                     content_instance.tags.set(tag_instances)
-
-                    map_instance.create_logs()
-                    content_instance.create_logs()
 
                     messages.success(request, 'Map successfully created!', 'map-floating-message')
                     response = HttpResponse()
